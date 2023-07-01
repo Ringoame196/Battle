@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
@@ -59,10 +60,34 @@ class Events(private val plugin: Plugin) : Listener {
             GUIclick.homeshop(player, item)
             e.isCancelled = true
             player.playSound(player, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
-        } else if (GUI_name == "${ChatColor.AQUA}攻防戦設定") {
-            GUIclick.setting(e, item, player)
+        } else if (GUI_name == "${ChatColor.DARK_GREEN}ショップ") {
             e.isCancelled = true
-            player.playSound(player, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
+            val price = item.itemMeta?.lore?.get(0) // 値段取得
+            var price_int = 0
+            var point = playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
+
+            for (i in 1..10000) {
+                if (price == i.toString() + "p") {
+                    price_int = i
+                    break
+                }
+            }
+
+            if (price_int > point) {
+                player.sendMessage("${ChatColor.RED}値段が足りません")
+                player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
+                player.closeInventory()
+            } else {
+                point -= price_int
+                player.playSound(player, Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f)
+                val meta = item.itemMeta
+                meta?.lore = null
+                item.setItemMeta(meta)
+                player.inventory.addItem(item)
+                playerDataMap[player.uniqueId]?.let { playerData ->
+                    playerData.point = point
+                }
+            }
         } else {
             return
         }
@@ -188,5 +213,20 @@ class Events(private val plugin: Plugin) : Listener {
             },
             cooltime.toLong() * 20 // クールダウン時間をtick単位に変換
         )
+    }
+    @EventHandler
+    fun onBEntityDeathEvent(e: EntityDeathEvent) {
+        // モブをキルしたときの処理
+        val player = e.entity.killer as Player
+        var point = playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
+        val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
+        if (team_name == null) {
+            return
+        }
+        point += 10
+        player.sendMessage("${ChatColor.AQUA}[現在]$point P")
+        playerDataMap[player.uniqueId]?.let { playerData ->
+            playerData.point = point
+        }
     }
 }
