@@ -10,12 +10,14 @@ import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 import java.util.UUID
 
@@ -62,6 +64,7 @@ class Events(private val plugin: Plugin) : Listener {
             player.playSound(player, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
         } else if (GUI_name == "${ChatColor.DARK_GREEN}ショップ") {
             e.isCancelled = true
+            if (item.type == Material.RED_STAINED_GLASS_PANE) { return }
             val price = item.itemMeta?.lore?.get(0) // 値段取得
             var price_int = 0
             var point = playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
@@ -74,16 +77,17 @@ class Events(private val plugin: Plugin) : Listener {
             }
 
             if (price_int > point) {
-                player.sendMessage("${ChatColor.RED}値段が足りません")
+                player.sendMessage("${ChatColor.RED}" + (price_int - point) + "ポイント足りません")
                 player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
                 player.closeInventory()
             } else {
                 point -= price_int
                 player.playSound(player, Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f)
+                val give_item = ItemStack(item)
                 val meta = item.itemMeta
                 meta?.lore = null
-                item.setItemMeta(meta)
-                player.inventory.addItem(item)
+                give_item.setItemMeta(meta)
+                player.inventory.addItem(give_item)
                 playerDataMap[player.uniqueId]?.let { playerData ->
                     playerData.point = point
                 }
@@ -177,6 +181,10 @@ class Events(private val plugin: Plugin) : Listener {
         val item = e.item
         val item_type = item?.type
         if (item_type == Material.SLIME_BALL) { // ゾンビ召喚
+            if (player.location.subtract(0.0, 1.0, 0.0).block.type != Material.GLASS) {
+                player.sendMessage("${ChatColor.RED}ガラスの上で実行してください")
+                return
+            }
             itemClick.summonzombie(player, item)
         }
     }
@@ -191,6 +199,9 @@ class Events(private val plugin: Plugin) : Listener {
         }
         if (team_name != "red" && team_name != "blue") {
             return
+        }
+        if (player.gameMode != GameMode.CREATIVE) {
+            e.isCancelled = true
         }
 
         val block = e.block
@@ -225,6 +236,20 @@ class Events(private val plugin: Plugin) : Listener {
         )
     }
     @EventHandler
+    fun onBlockPlaceEvent(e: BlockPlaceEvent) {
+        val player = e.player
+        val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
+        if (team_name == null) {
+            return
+        }
+        if (team_name != "red" && team_name != "blue") {
+            return
+        }
+        if (player.gameMode != GameMode.CREATIVE) {
+            e.isCancelled = true
+        }
+    }
+    @EventHandler
     fun onBEntityDeathEvent(e: EntityDeathEvent) {
         // モブをキルしたときの処理
         val player = e.entity.killer as Player
@@ -233,7 +258,8 @@ class Events(private val plugin: Plugin) : Listener {
         if (team_name == null) {
             return
         }
-        point += 10
+        if (!(e.entity is Player)) { return }
+        point += 300
         player.sendMessage("${ChatColor.AQUA}[現在]$point P")
         playerDataMap[player.uniqueId]?.let { playerData ->
             playerData.point = point

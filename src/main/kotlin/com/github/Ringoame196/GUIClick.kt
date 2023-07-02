@@ -18,7 +18,7 @@ class GUIClick {
         val item_type = item?.type
         val item_name = item?.itemMeta?.displayName
         val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
-        val shop: Inventory = Bukkit.createInventory(null, 27, "${ChatColor.DARK_GREEN}ショップ")
+        val shop: Inventory = Bukkit.createInventory(null, 36, "${ChatColor.DARK_GREEN}ショップ")
         if (item_type == Material.CHEST && item_name == "${ChatColor.YELLOW}共通チェスト") {
             // 共有チェストの処理
             if (team_name == null) {
@@ -39,8 +39,6 @@ class GUIClick {
             GUI().equipmentshop(shop, player)
         } else if (item_type == Material.ANVIL && item_name == "${ChatColor.YELLOW}金床") {
             GUI().enchant_anvil(player)
-        } else if (item_type == Material.ENCHANTED_BOOK && item_name == "${ChatColor.YELLOW}エンチャント") {
-            GUI().enchantshop(shop, player)
         }
     }
     fun anvil(player: Player, inv: Inventory) {
@@ -52,7 +50,8 @@ class GUIClick {
             player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
             return
         }
-        if (enchantitem?.type.toString().contains("pickaxe")) {} else if (inv.getItem(3)?.type.toString().contains("sword")) {} else {
+        var enchantitem_name = enchantitem?.type.toString()
+        if (enchantitem_name.contains("PICKAXE")) {} else if (enchantitem_name.contains("SWORD")) {} else if (enchantitem_name.contains("BOW")) {} else if (enchantitem_name.contains("CHESTPLATE")) {} else if (enchantitem_name.contains("LEGGINGS")) {} else if (enchantitem_name.contains("BOOTS")) {} else {
             player.sendMessage("${ChatColor.RED}対応するものをセットしてください")
             player.closeInventory()
             player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
