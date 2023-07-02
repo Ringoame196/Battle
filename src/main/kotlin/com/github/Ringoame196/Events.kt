@@ -88,6 +88,16 @@ class Events(private val plugin: Plugin) : Listener {
                     playerData.point = point
                 }
             }
+        } else if (GUI_name == "${ChatColor.DARK_GREEN}金床") {
+            if (item.type == Material.RED_STAINED_GLASS_PANE) {
+                e.isCancelled = true
+                return
+            }
+            if (item.type != Material.COMMAND_BLOCK) {
+                return
+            }
+            e.isCancelled = true
+            GUIclick.anvil(player, e.inventory)
         } else {
             return
         }
@@ -98,10 +108,15 @@ class Events(private val plugin: Plugin) : Listener {
         // インベントリを閉じたときの処理
         val player = e.player as Player
         val inventory = e.view
-        if (inventory.title != "${ChatColor.DARK_GREEN}チームチェスト") {
-            return
+        if (inventory.title == "${ChatColor.DARK_GREEN}チームチェスト") {
+            player.playSound(player, Sound.BLOCK_CHEST_CLOSE, 1f, 1f)
+        } else if (inventory.title == "${ChatColor.DARK_GREEN}金床") {
+            for (i in 0..8) {
+                if (e.inventory.getItem(i)?.type == Material.RED_STAINED_GLASS_PANE) { } else if (e.inventory.getItem(i)?.type == Material.COMMAND_BLOCK) { } else {
+                    player.inventory.addItem(e.inventory.getItem(i))
+                }
+            }
         }
-        player.playSound(player, Sound.BLOCK_CHEST_CLOSE, 1f, 1f)
     }
 
     @EventHandler
@@ -163,11 +178,6 @@ class Events(private val plugin: Plugin) : Listener {
         val item_type = item?.type
         if (item_type == Material.SLIME_BALL) { // ゾンビ召喚
             itemClick.summonzombie(player, item)
-        } else if (item_type == Material.ENDER_EYE) { // 設定
-            if (item.itemMeta?.displayName != "攻防戦設定") { return }
-            if (!(player.isOp)) { return }
-            e.isCancelled = true
-            itemClick.setting(player)
         }
     }
 

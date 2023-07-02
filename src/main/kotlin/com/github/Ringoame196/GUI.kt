@@ -1,7 +1,9 @@
 package com.github.Ringoame196
 
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
@@ -72,6 +74,37 @@ class GUI {
         set_GUIitem(GUI, 13, Material.NETHERITE_CHESTPLATE, "ネザーライトのチェストプレート", "5000p")
         set_GUIitem(GUI, 14, Material.NETHERITE_LEGGINGS, "ネザーライトのレギンス", "5000p")
         set_GUIitem(GUI, 15, Material.NETHERITE_BOOTS, "ネザーライトのブーツ", "5000p")
+        player.openInventory(GUI)
+    }
+    fun enchant_anvil(player: Player) {
+        val anvil: Inventory = Bukkit.createInventory(null, 9, "${ChatColor.DARK_GREEN}金床")
+        for (i in 0..7) {
+            set_GUIitem(anvil, i, Material.RED_STAINED_GLASS_PANE, " ", "")
+        }
+        set_GUIitem(anvil, 3, Material.AIR, "", "")
+        set_GUIitem(anvil, 5, Material.AIR, "", "")
+
+        set_GUIitem(anvil, 8, Material.COMMAND_BLOCK, "${ChatColor.YELLOW}合成", "")
+        player.openInventory(anvil)
+    }
+    fun set_enchant_GUIitem(GUI: Inventory, number: Int, lore: String, enchant: Enchantment, level: Int) {
+        // GUIにアイテムを楽にセットする
+        var item = ItemStack(Material.ENCHANTED_BOOK)
+        var itemMeta: ItemMeta? = item.itemMeta
+        itemMeta?.addEnchant(enchant, level, true)
+        val lore_list: MutableList<String> = mutableListOf()
+        lore_list.add(lore)
+        itemMeta?.lore = lore_list
+        item.setItemMeta(itemMeta)
+        GUI.setItem(number, item)
+    }
+    fun enchantshop(GUI: Inventory, player: Player) {
+        set_enchant_GUIitem(GUI, 0, "5p", Enchantment.DIG_SPEED, 1)
+        set_enchant_GUIitem(GUI, 1, "20p", Enchantment.DIG_SPEED, 2)
+        set_enchant_GUIitem(GUI, 2, "300p", Enchantment.DIG_SPEED, 3)
+        set_enchant_GUIitem(GUI, 3, "500p", Enchantment.DIG_SPEED, 4)
+        set_enchant_GUIitem(GUI, 4, "5000p", Enchantment.DIG_SPEED, 5)
+
         player.openInventory(GUI)
     }
 }
