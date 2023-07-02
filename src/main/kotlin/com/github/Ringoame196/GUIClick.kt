@@ -15,8 +15,8 @@ class GUIClick {
     }
 
     fun homeshop(player: Player, item: ItemStack) {
-        val item_type = item?.type
-        val item_name = item?.itemMeta?.displayName
+        val item_type = item.type
+        val item_name = item.itemMeta?.displayName
         val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
         val shop: Inventory = Bukkit.createInventory(null, 36, "${ChatColor.DARK_GREEN}ショップ")
         if (item_type == Material.CHEST && item_name == "${ChatColor.YELLOW}共通チェスト") {
@@ -28,7 +28,7 @@ class GUIClick {
             if (team_name != "red" && team_name != "blue") {
                 return
             }
-            var chest = teamDataMap.getOrPut(team_name) { Team() }.chest
+            val chest = teamDataMap.getOrPut(team_name) { Team() }.chest
             player.playSound(player, Sound.BLOCK_CHEST_OPEN, 1f, 1f)
             player.openInventory(chest)
         } else if (item_type == Material.IRON_PICKAXE && item_name == "${ChatColor.YELLOW}ピッケル") {
@@ -42,7 +42,7 @@ class GUIClick {
         }
     }
     fun anvil(player: Player, inv: Inventory) {
-        var enchantitem = inv.getItem(3)
+        val enchantitem = inv.getItem(3)
         val enchant_book = inv.getItem(5)
         if (enchantitem == null) {
             player.sendMessage("${ChatColor.RED}エンチャントするものをセットしてください")
@@ -50,8 +50,39 @@ class GUIClick {
             player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
             return
         }
-        var enchantitem_name = enchantitem?.type.toString()
-        if (enchantitem_name.contains("PICKAXE")) {} else if (enchantitem_name.contains("SWORD")) {} else if (enchantitem_name.contains("BOW")) {} else if (enchantitem_name.contains("CHESTPLATE")) {} else if (enchantitem_name.contains("LEGGINGS")) {} else if (enchantitem_name.contains("BOOTS")) {} else {
+        val enchantitem_name = enchantitem.type.toString()
+        var shouldExecute = false
+
+        if (enchantitem_name.contains("PICKAXE")) {
+            // PICKAXEに関する処理
+            shouldExecute = true
+        }
+
+        if (enchantitem_name.contains("SWORD")) {
+            // SWORDに関する処理
+            shouldExecute = true
+        }
+
+        if (enchantitem_name.contains("BOW")) {
+            // BOWに関する処理
+            shouldExecute = true
+        }
+
+        if (enchantitem_name.contains("CHESTPLATE")) {
+            // CHESTPLATEに関する処理
+            shouldExecute = true
+        }
+
+        if (enchantitem_name.contains("LEGGINGS")) {
+            // LEGGINGSに関する処理
+            shouldExecute = true
+        }
+
+        if (enchantitem_name.contains("BOOTS")) {
+            // BOOTSに関する処理
+            shouldExecute = true
+        }
+        if (!shouldExecute) {
             player.sendMessage("${ChatColor.RED}対応するものをセットしてください")
             player.closeInventory()
             player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)

@@ -12,8 +12,8 @@ import org.bukkit.inventory.meta.ItemMeta
 class GUI {
     fun set_GUIitem(GUI: Inventory, number: Int, set_item: Material, displayname: String, lore: String) {
         // GUIにアイテムを楽にセットする
-        var item = ItemStack(set_item)
-        var itemMeta: ItemMeta? = item.itemMeta
+        val item = ItemStack(set_item)
+        val itemMeta: ItemMeta? = item.itemMeta
         itemMeta?.setDisplayName(displayname)
         val lore_list: MutableList<String> = mutableListOf()
         lore_list.add(lore)
@@ -45,7 +45,7 @@ class GUI {
         no_set(GUI, 25)
     }
     fun pickaxeshop(GUI: Inventory, player: Player) {
-        dividing_line(GUI, player, 9)
+        dividing_line(GUI, 9)
         set_GUIitem(GUI, 0, Material.STONE_PICKAXE, "石ピッケル", "5p")
         set_GUIitem(GUI, 1, Material.IRON_PICKAXE, "鉄ピッケル", "20p")
         set_GUIitem(GUI, 2, Material.DIAMOND_PICKAXE, "ダイヤモンドピッケル", "300p")
@@ -58,7 +58,7 @@ class GUI {
         player.openInventory(GUI)
     }
     fun weaponshop(GUI: Inventory, player: Player) {
-        dividing_line(GUI, player, 9)
+        dividing_line(GUI, 9)
         set_GUIitem(GUI, 0, Material.STONE_SWORD, "石の剣", "5p")
         set_GUIitem(GUI, 1, Material.IRON_SWORD, "鉄の剣", "20p")
         set_GUIitem(GUI, 2, Material.DIAMOND_SWORD, "ダイヤモンドの剣", "100p")
@@ -78,7 +78,7 @@ class GUI {
         player.openInventory(GUI)
     }
     fun equipmentshop(GUI: Inventory, player: Player) {
-        dividing_line(GUI, player, 18)
+        dividing_line(GUI, 18)
         set_GUIitem(GUI, 0, Material.GOLDEN_CHESTPLATE, "金のチェストプレート", "100p")
         set_GUIitem(GUI, 1, Material.GOLDEN_LEGGINGS, "金のレギンス", "100p")
         set_GUIitem(GUI, 2, Material.GOLDEN_BOOTS, "金のブーツ", "100p")
@@ -121,7 +121,7 @@ class GUI {
         item.itemMeta = itemMeta
         GUI.setItem(number, item)
     }
-    fun dividing_line(GUI: Inventory, player: Player, beginning: Int) {
+    fun dividing_line(GUI: Inventory, beginning: Int) {
         for (i in beginning..beginning + 8) {
             set_GUIitem(GUI, i, Material.RED_STAINED_GLASS_PANE, "", "")
         }

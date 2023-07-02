@@ -116,7 +116,20 @@ class Events(private val plugin: Plugin) : Listener {
             player.playSound(player, Sound.BLOCK_CHEST_CLOSE, 1f, 1f)
         } else if (inventory.title == "${ChatColor.DARK_GREEN}金床") {
             for (i in 0..8) {
-                if (e.inventory.getItem(i)?.type == Material.RED_STAINED_GLASS_PANE) { } else if (e.inventory.getItem(i)?.type == Material.COMMAND_BLOCK) { } else {
+                var shouldExecute = true
+                val item = e.inventory.getItem(i)?.type
+
+                if (item == Material.RED_STAINED_GLASS_PANE) {
+                    // RED_STAINED_GLASS_PANEに関する処理
+                    shouldExecute = false
+                }
+
+                if (item == Material.COMMAND_BLOCK) {
+                    // COMMAND_BLOCKに関する処理
+                    shouldExecute = false
+                }
+
+                if (shouldExecute) {
                     player.inventory.addItem(e.inventory.getItem(i))
                 }
             }
@@ -155,7 +168,7 @@ class Events(private val plugin: Plugin) : Listener {
         val message = "${ChatColor.RED}ショップがダメージを食らっています (残りHP" + health + ")"
         villager.customName = NPC_name + " ${ChatColor.RED}" + health + "HP"
         val blockBelow = villager.location.subtract(0.0, 1.0, 0.0).block.type
-        var set_team_name = ""
+        var set_team_name = "team_name"
         if (blockBelow == Material.RED_WOOL) {
             set_team_name = "red"
         } else if (blockBelow == Material.BLUE_WOOL) {

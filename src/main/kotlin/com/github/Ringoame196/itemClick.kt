@@ -9,7 +9,6 @@ import org.bukkit.entity.Zombie
 import org.bukkit.inventory.ItemStack
 
 class itemClick {
-    val guiclass = GUI()
     fun summonzombie(player: Player, item: ItemStack?) {
         val item_name = item?.itemMeta?.displayName
         if (item_name?.contains("[召喚]") == false) { return }
@@ -29,8 +28,8 @@ class itemClick {
         zombieEquipment?.helmet = helmet
 
         if (player.gameMode != GameMode.CREATIVE) {
-            val itemInHand: ItemStack? = player.inventory.itemInMainHand
-            val oneItem: ItemStack = itemInHand!!.clone()
+            val itemInHand: ItemStack = player.inventory.itemInMainHand
+            val oneItem: ItemStack = itemInHand.clone()
             oneItem.amount = 1
             player.inventory.removeItem(oneItem)
         }
