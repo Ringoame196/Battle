@@ -135,41 +135,48 @@ class GUIClick {
         var time = 0
 
         check_name.let {
-            if (it == "攻撃力UP(3分)") {
-                effect = PotionEffectType.INCREASE_DAMAGE
-                level = 2
-                time = 180
-            } else if (it == "再生UP(3分)") {
-                effect = PotionEffectType.INCREASE_DAMAGE
-                level = 2
-                time = 180
-            } else if (it == "採掘速度UP(5分)") {
-                effect = PotionEffectType.FAST_DIGGING
-                level = 3
-                time = 300
-            } else if (it == "耐性(3分)") {
-                effect = PotionEffectType.REGENERATION
-                level = 1
-                time = 180
-            } else if (it == "移動速度UP(3分)") {
-                effect = PotionEffectType.SPEED
-                level = 1
-                time = 180
-            } else if (it == "攻撃力UP&再生(1分)") {
-                effect = PotionEffectType.REGENERATION
-                effect2 = PotionEffectType.INCREASE_DAMAGE
-                level = 5
-                time = 60
+            when (it) {
+                "攻撃力UP(3分)" -> {
+                    effect = PotionEffectType.INCREASE_DAMAGE
+                    level = 2
+                    time = 180
+                }
+                "再生UP(3分)" -> {
+                    effect = PotionEffectType.INCREASE_DAMAGE
+                    level = 2
+                    time = 180
+                }
+                "採掘速度UP(5分)" -> {
+                    effect = PotionEffectType.FAST_DIGGING
+                    level = 3
+                    time = 300
+                }
+                "耐性(3分)" -> {
+                    effect = PotionEffectType.REGENERATION
+                    level = 1
+                    time = 180
+                }
+                "移動速度UP(3分)" -> {
+                    effect = PotionEffectType.SPEED
+                    level = 1
+                    time = 180
+                }
+                "攻撃力UP&再生(1分)" -> {
+                    effect = PotionEffectType.REGENERATION
+                    effect2 = PotionEffectType.INCREASE_DAMAGE
+                    level = 5
+                    time = 60
+                }
             }
         }
 
         for (teamplayer in Bukkit.getServer().onlinePlayers) {
             val team_name = teamplayer.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
             if (team_name == set_team_name) {
-                player.sendMessage("${ChatColor.AQUA}" + player.name + "さんが" + item_name + "${ChatColor.AQUA}を発動しました(レベル" + level.toString() + ")")
+                player.sendMessage("${ChatColor.AQUA}[チーム強化]" + player.name + "さんが" + item_name + "${ChatColor.AQUA}を発動しました(レベル" + level.toString() + ")")
                 effect?.let { teamplayer.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
                 effect2?.let { teamplayer.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
-                player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 1.0f)
+                teamplayer.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
             }
         }
     }

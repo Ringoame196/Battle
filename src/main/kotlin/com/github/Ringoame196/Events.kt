@@ -79,6 +79,7 @@ class Events(private val plugin: Plugin) : Listener {
                     break
                 }
             }
+            if (price_int == 0) { return }
 
             if (price_int > point) {
                 player.sendMessage("${ChatColor.RED}" + (price_int - point) + "ポイント足りません")
@@ -177,13 +178,17 @@ class Events(private val plugin: Plugin) : Listener {
         val message = "${ChatColor.RED}ショップがダメージを食らっています (残りHP" + health + ")"
         villager.customName = NPC_name + " ${ChatColor.RED}" + health + "HP"
         val blockBelow = villager.location.subtract(0.0, 1.0, 0.0).block.type
-        var set_team_name = "team_name"
-        if (blockBelow == Material.RED_WOOL) {
-            set_team_name = "red"
-        } else if (blockBelow == Material.BLUE_WOOL) {
-            set_team_name = "blue"
-        } else {
-            return
+        val set_team_name: String
+        set_team_name = when (blockBelow) {
+            Material.RED_WOOL -> {
+                "red"
+            }
+            Material.BLUE_WOOL -> {
+                "blue"
+            }
+            else -> {
+                return
+            }
         }
 
         for (player in Bukkit.getServer().onlinePlayers) {
@@ -230,17 +235,23 @@ class Events(private val plugin: Plugin) : Listener {
         val block_type = block.type
         var point = playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
         var cooltime = teamDataMap.getOrPut(team_name) { Team() }.blockTime
-        if (block_type == Material.COAL_ORE) {
-            point += 1
-        } else if (block_type == Material.IRON_ORE) {
-            point += 3
-        } else if (block_type == Material.GOLD_ORE) {
-            point += 5
-        } else if (block_type == Material.DIAMOND_ORE) {
-            point += 100
-            cooltime = 7 // ダイヤモンドだけ別時間
-        } else {
-            return
+        when (block_type) {
+            Material.COAL_ORE -> {
+                point += 1
+            }
+            Material.IRON_ORE -> {
+                point += 3
+            }
+            Material.GOLD_ORE -> {
+                point += 5
+            }
+            Material.DIAMOND_ORE -> {
+                point += 100
+                cooltime = 7 // ダイヤモンドだけ別時間
+            }
+            else -> {
+                return
+            }
         }
 
         e.isCancelled = true
