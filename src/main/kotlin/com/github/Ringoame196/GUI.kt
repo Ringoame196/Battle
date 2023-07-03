@@ -9,6 +9,10 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.inventory.meta.ItemMeta
+import org.bukkit.inventory.meta.PotionMeta
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
+
 class GUI {
     fun set_GUIitem(GUI: Inventory, number: Int, set_item: Material, displayname: String, lore: String) {
         // GUIにアイテムを楽にセットする
@@ -22,6 +26,22 @@ class GUI {
         item.setItemMeta(itemMeta)
         GUI.setItem(number, item)
     }
+    fun set_potionGUIitem(GUI: Inventory, number: Int, item: Material, lore: String, typePotion: PotionEffectType, level: Int, time: Int) {
+        // GUIにアイテムを楽にセットする
+        val itemStack = ItemStack(item)
+        val potionMeta = itemStack.itemMeta as PotionMeta
+        val loreList: MutableList<String> = mutableListOf()
+        loreList.add(lore)
+        potionMeta.lore = loreList
+
+        // 既存のカスタムエフェクトをクリア
+        potionMeta.clearCustomEffects()
+        val regenerationEffect = PotionEffect(typePotion, time * 20, level)
+        potionMeta.addCustomEffect(regenerationEffect, true)
+        itemStack.setItemMeta(potionMeta)
+        GUI.setItem(number, itemStack)
+    }
+
     fun no_set(GUI: Inventory, number: Int) {
         set_GUIitem(GUI, number, Material.OAK_SIGN, "${ChatColor.YELLOW}近日公開", "")
     }
@@ -84,17 +104,30 @@ class GUI {
         set_GUIitem(GUI, 2, Material.GOLDEN_BOOTS, "金のブーツ", "100p")
         set_GUIitem(GUI, 4, Material.DIAMOND_CHESTPLATE, "ダイヤモンドのチェストプレート", "2500p")
         set_GUIitem(GUI, 5, Material.DIAMOND_LEGGINGS, "ダイヤモンドのレギンス", "2500p")
-        set_GUIitem(GUI, 6, Material.DIAMOND_BOOTS, "ダイヤモンドのブーツ", "2500p")
+        set_GUIitem(GUI, 6, Material.DIAMOND_BOOTS, "ダイヤモンドのブーツ", "1500p")
         set_GUIitem(GUI, 9, Material.IRON_CHESTPLATE, "鉄のチェストプレート", "300p")
         set_GUIitem(GUI, 10, Material.IRON_LEGGINGS, "鉄のレギンス", "300p")
         set_GUIitem(GUI, 11, Material.IRON_BOOTS, "鉄のブーツ", "300p")
-        set_GUIitem(GUI, 13, Material.NETHERITE_CHESTPLATE, "ネザーライトのチェストプレート", "5000p")
-        set_GUIitem(GUI, 14, Material.NETHERITE_LEGGINGS, "ネザーライトのレギンス", "5000p")
+        set_GUIitem(GUI, 13, Material.NETHERITE_CHESTPLATE, "ネザーライトのチェストプレート", "10000p")
+        set_GUIitem(GUI, 14, Material.NETHERITE_LEGGINGS, "ネザーライトのレギンス", "8000p")
         set_GUIitem(GUI, 15, Material.NETHERITE_BOOTS, "ネザーライトのブーツ", "5000p")
         set_enchant_GUIitem(GUI, 27, "20p", Enchantment.PROTECTION_ENVIRONMENTAL, 1)
         set_enchant_GUIitem(GUI, 28, "100p", Enchantment.PROTECTION_ENVIRONMENTAL, 2)
         set_enchant_GUIitem(GUI, 29, "300p", Enchantment.PROTECTION_ENVIRONMENTAL, 3)
         set_enchant_GUIitem(GUI, 30, "500p", Enchantment.PROTECTION_ENVIRONMENTAL, 4)
+        player.openInventory(GUI)
+    }
+    fun potionshop(GUI: Inventory, player: Player) {
+        player.openInventory(GUI)
+        set_potionGUIitem(GUI, 0, Material.SPLASH_POTION, "20p", PotionEffectType.HEAL, 1, 1)
+        set_potionGUIitem(GUI, 1, Material.SPLASH_POTION, "100p", PotionEffectType.REGENERATION, 1, 22)
+        dividing_line(GUI, 9)
+        set_GUIitem(GUI, 18, Material.MAGMA_CREAM, "${ChatColor.YELLOW}チーム全員に攻撃力UP(3分)", "100p")
+        set_GUIitem(GUI, 19, Material.MAGMA_CREAM, "${ChatColor.YELLOW}チーム全員に再生UP(3分)", "100p")
+        set_GUIitem(GUI, 20, Material.MAGMA_CREAM, "${ChatColor.YELLOW}チーム全員に採掘速度UP(5分)", "100p")
+        set_GUIitem(GUI, 21, Material.MAGMA_CREAM, "${ChatColor.YELLOW}チーム全員に耐性(3分)", "100p")
+        set_GUIitem(GUI, 22, Material.MAGMA_CREAM, "${ChatColor.YELLOW}チーム全員に移動速度UP(3分)", "100p")
+        set_GUIitem(GUI, 23, Material.MAGMA_CREAM, "${ChatColor.YELLOW}チーム全員に攻撃力UP&再生(1分)", "500p")
         player.openInventory(GUI)
     }
     fun enchant_anvil(player: Player) {

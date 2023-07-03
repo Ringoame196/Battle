@@ -8,6 +8,8 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 
 class GUIClick {
     companion object {
@@ -39,8 +41,11 @@ class GUIClick {
             GUI().equipmentshop(shop, player)
         } else if (item_type == Material.ANVIL && item_name == "${ChatColor.YELLOW}金床") {
             GUI().enchant_anvil(player)
+        } else if (item_type == Material.POTION && item_name == "${ChatColor.YELLOW}チーム強化") {
+            GUI().potionshop(shop, player)
         }
     }
+
     fun anvil(player: Player, inv: Inventory) {
         val enchantitem = inv.getItem(3)
         val enchant_book = inv.getItem(5)
@@ -115,5 +120,57 @@ class GUIClick {
         val newBookItem = ItemStack(Material.AIR)
         inv.setItem(5, newBookItem)
         player.playSound(player, Sound.BLOCK_ANVIL_USE, 1f, 1f)
+    }
+
+    fun teameffect(player: Player, item_name: String) {
+        val set_team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name.toString()
+        player.closeInventory()
+        var check_name = item_name
+        check_name = check_name.replace("${ChatColor.YELLOW}", "")
+        check_name = check_name.replace("チーム全員に", "")
+
+        var effect: PotionEffectType? = null
+        var effect2: PotionEffectType? = null
+        var level = 0
+        var time = 0
+
+        check_name.let {
+            if (it == "攻撃力UP(3分)") {
+                effect = PotionEffectType.INCREASE_DAMAGE
+                level = 2
+                time = 180
+            } else if (it == "再生UP(3分)") {
+                effect = PotionEffectType.INCREASE_DAMAGE
+                level = 2
+                time = 180
+            } else if (it == "採掘速度UP(5分)") {
+                effect = PotionEffectType.FAST_DIGGING
+                level = 3
+                time = 300
+            } else if (it == "耐性(3分)") {
+                effect = PotionEffectType.REGENERATION
+                level = 1
+                time = 180
+            } else if (it == "移動速度UP(3分)") {
+                effect = PotionEffectType.SPEED
+                level = 1
+                time = 180
+            } else if (it == "攻撃力UP&再生(1分)") {
+                effect = PotionEffectType.REGENERATION
+                effect2 = PotionEffectType.INCREASE_DAMAGE
+                level = 5
+                time = 60
+            }
+        }
+
+        for (teamplayer in Bukkit.getServer().onlinePlayers) {
+            val team_name = teamplayer.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
+            if (team_name == set_team_name) {
+                player.sendMessage("${ChatColor.AQUA}" + player.name + "さんが" + item_name + "${ChatColor.AQUA}を発動しました(レベル" + level.toString() + ")")
+                effect?.let { teamplayer.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
+                effect2?.let { teamplayer.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
+                player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 1.0f)
+            }
+        }
     }
 }

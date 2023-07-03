@@ -5,6 +5,7 @@ import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Sound
+import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
@@ -13,6 +14,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.entity.EntityRegainHealthEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
@@ -64,7 +66,9 @@ class Events(private val plugin: Plugin) : Listener {
             player.playSound(player, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
         } else if (GUI_name == "${ChatColor.DARK_GREEN}ショップ") {
             e.isCancelled = true
-            if (item.type == Material.RED_STAINED_GLASS_PANE) { return }
+            if (item.type == Material.RED_STAINED_GLASS_PANE) {
+                return
+            }
             val price = item.itemMeta?.lore?.get(0) // 値段取得
             var price_int = 0
             var point = playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
@@ -83,14 +87,19 @@ class Events(private val plugin: Plugin) : Listener {
             } else {
                 point -= price_int
                 player.playSound(player, Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f)
+                playerDataMap[player.uniqueId]?.let { playerData ->
+                    playerData.point = point
+                }
+                if (item.type == Material.MAGMA_CREAM) {
+                    val item_name = item.itemMeta?.displayName.toString()
+                    GUIclick.teameffect(player, item_name)
+                    return
+                }
                 val give_item = ItemStack(item)
                 val meta = item.itemMeta
                 meta?.lore = null
                 give_item.setItemMeta(meta)
                 player.inventory.addItem(give_item)
-                playerDataMap[player.uniqueId]?.let { playerData ->
-                    playerData.point = point
-                }
             }
         } else if (GUI_name == "${ChatColor.DARK_GREEN}金床") {
             if (item.type == Material.RED_STAINED_GLASS_PANE) {
@@ -248,8 +257,10 @@ class Events(private val plugin: Plugin) : Listener {
             cooltime.toLong() * 20 // クールダウン時間をtick単位に変換
         )
     }
+
     @EventHandler
     fun onBlockPlaceEvent(e: BlockPlaceEvent) {
+        // ブロック設置阻止
         val player = e.player
         val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
         if (team_name == null) {
@@ -262,6 +273,7 @@ class Events(private val plugin: Plugin) : Listener {
             e.isCancelled = true
         }
     }
+
     @EventHandler
     fun onBEntityDeathEvent(e: EntityDeathEvent) {
         // モブをキルしたときの処理
@@ -271,11 +283,28 @@ class Events(private val plugin: Plugin) : Listener {
         if (team_name == null) {
             return
         }
-        if (!(e.entity is Player)) { return }
+        if (!(e.entity is Player)) {
+            return
+        }
         point += 300
         player.sendMessage("${ChatColor.AQUA}[現在]$point P")
         playerDataMap[player.uniqueId]?.let { playerData ->
             playerData.point = point
         }
+    }
+    @EventHandler
+    fun onEntityRegainHealthEvent(e: EntityRegainHealthEvent) {
+        // ショップが回復したときにHP反映させる
+        val shop = e.entity
+        if (!(shop is Villager)) {
+            return
+        }
+
+        if (!shop.scoreboardTags.contains("shop")) { return }
+        val maxHP = shop.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value
+        val currentHP = shop.health + e.amount
+        val newHP = maxHP?.let { if (currentHP >= it) it else currentHP }
+
+        shop.customName = "$NPC_name ${ChatColor.RED}${newHP}HP"
     }
 }
