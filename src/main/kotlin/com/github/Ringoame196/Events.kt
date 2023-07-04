@@ -34,6 +34,8 @@ class Events(private val plugin: Plugin) : Listener {
         // ショップGUIを開く
         val player = e.player
         val entity = e.rightClicked
+        val item = player.inventory.itemInMainHand
+        val item_name = item.itemMeta?.displayName
         if (!(entity is Villager)) {
             return
         }
@@ -42,6 +44,25 @@ class Events(private val plugin: Plugin) : Listener {
         }
         // ショップGUI(ホーム)
         e.isCancelled = true
+        if (item.type == Material.RED_DYE && item_name == "${ChatColor.YELLOW}村人体力増加") {
+            val maxHPAttribute = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)
+            if (maxHPAttribute != null) {
+                // 現在の最大HPを取得
+                val currentMaxHP = maxHPAttribute.baseValue
+
+                // 最大HPを増やす
+                val increasedMaxHP = currentMaxHP + 10.0
+
+                // 最大HPを設定
+                maxHPAttribute.baseValue = increasedMaxHP
+
+                val itemInHand: ItemStack = player.inventory.itemInMainHand
+                val oneItem: ItemStack = itemInHand.clone()
+                oneItem.amount = 1
+                player.inventory.removeItem(oneItem)
+                return
+            }
+        }
         val shop = Bukkit.createInventory(null, 27, ChatColor.BLUE.toString() + "攻防戦ショップ")
         val point = playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
         guiclass.home(shop, point)
@@ -52,7 +73,9 @@ class Events(private val plugin: Plugin) : Listener {
     fun onInventoryClickEvent(e: InventoryClickEvent) {
         // GUIクリック
         val player = e.whoClicked as Player
+        val teamName = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
         val item = e.currentItem
+        val item_name = item?.itemMeta?.displayName
         val GUIclick = GUIClick()
         val GUI_name = e.view.title
 
@@ -91,9 +114,10 @@ class Events(private val plugin: Plugin) : Listener {
                 playerDataMap[player.uniqueId]?.let { playerData ->
                     playerData.point = point
                 }
-                if (item.type == Material.MAGMA_CREAM) {
+                if (item_name.toString().contains("★")) {
                     val item_name = item.itemMeta?.displayName.toString()
-                    GUIclick.teameffect(player, item_name)
+                    val set_team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
+                    GUIclick.click_invocation(player, item_name, teamName as String)
                     return
                 }
                 val give_item = ItemStack(item)
@@ -220,7 +244,7 @@ class Events(private val plugin: Plugin) : Listener {
     fun onBlockBreakEvent(e: BlockBreakEvent) {
         // ブロックを破壊したとき
         val player = e.player
-        val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
+        val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name as String
         if (team_name == null) {
             return
         }

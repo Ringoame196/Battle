@@ -41,6 +41,19 @@ class GUI {
         itemStack.setItemMeta(potionMeta)
         GUI.setItem(number, itemStack)
     }
+    fun set_enchant_GUIitem(GUI: Inventory, number: Int, lore: String, enchant: Enchantment, level: Int) {
+        // GUIにアイテムを楽にセットする
+        val item = ItemStack(Material.ENCHANTED_BOOK)
+        val itemMeta: ItemMeta? = item.itemMeta
+        if (itemMeta is EnchantmentStorageMeta) {
+            itemMeta.addStoredEnchant(enchant, level, true)
+        }
+        val loreList: MutableList<String> = mutableListOf()
+        loreList.add(lore)
+        itemMeta?.lore = loreList
+        item.itemMeta = itemMeta
+        GUI.setItem(number, item)
+    }
 
     fun no_set(GUI: Inventory, number: Int) {
         set_GUIitem(GUI, number, Material.OAK_SIGN, "${ChatColor.YELLOW}近日公開", "")
@@ -51,6 +64,7 @@ class GUI {
         set_GUIitem(GUI, 1, Material.IRON_PICKAXE, "${ChatColor.YELLOW}ピッケル", "")
         set_GUIitem(GUI, 3, Material.IRON_SWORD, "${ChatColor.YELLOW}武器", "")
         set_GUIitem(GUI, 5, Material.IRON_CHESTPLATE, "${ChatColor.YELLOW}防具", "")
+        set_GUIitem(GUI, 7, Material.TNT, "${ChatColor.YELLOW}お邪魔アイテム", "")
         set_GUIitem(GUI, 9, Material.ANVIL, "${ChatColor.YELLOW}金床", "エンチャント用")
         set_GUIitem(GUI, 10, Material.POTION, "${ChatColor.YELLOW}チーム強化", "")
         set_GUIitem(GUI, 12, Material.VILLAGER_SPAWN_EGG, "${ChatColor.YELLOW}村人強化", "")
@@ -58,7 +72,6 @@ class GUI {
         set_GUIitem(GUI, 16, Material.BEACON, "${ChatColor.YELLOW}その他", "")
         set_GUIitem(GUI, 18, Material.CHEST, "${ChatColor.YELLOW}共通チェスト", "チーム共通")
 
-        no_set(GUI, 7)
         no_set(GUI, 19)
         no_set(GUI, 21)
         no_set(GUI, 23)
@@ -122,12 +135,20 @@ class GUI {
         set_potionGUIitem(GUI, 0, Material.SPLASH_POTION, "20p", PotionEffectType.HEAL, 1, 1)
         set_potionGUIitem(GUI, 1, Material.SPLASH_POTION, "100p", PotionEffectType.REGENERATION, 1, 22)
         dividing_line(GUI, 9)
-        set_GUIitem(GUI, 18, Material.MAGMA_CREAM, "${ChatColor.YELLOW}チーム全員に攻撃力UP(3分)", "100p")
-        set_GUIitem(GUI, 19, Material.MAGMA_CREAM, "${ChatColor.YELLOW}チーム全員に再生UP(3分)", "100p")
-        set_GUIitem(GUI, 20, Material.MAGMA_CREAM, "${ChatColor.YELLOW}チーム全員に採掘速度UP(5分)", "100p")
-        set_GUIitem(GUI, 21, Material.MAGMA_CREAM, "${ChatColor.YELLOW}チーム全員に耐性(3分)", "100p")
-        set_GUIitem(GUI, 22, Material.MAGMA_CREAM, "${ChatColor.YELLOW}チーム全員に移動速度UP(3分)", "100p")
-        set_GUIitem(GUI, 23, Material.MAGMA_CREAM, "${ChatColor.YELLOW}チーム全員に攻撃力UP&再生(1分)", "500p")
+        set_GUIitem(GUI, 18, Material.RED_DYE, "${ChatColor.YELLOW}★チーム全員に攻撃力UP(3分)", "100p")
+        set_GUIitem(GUI, 19, Material.MAGENTA_DYE, "${ChatColor.YELLOW}★チーム全員に再生UP(3分)", "100p")
+        set_GUIitem(GUI, 20, Material.ORANGE_DYE, "${ChatColor.YELLOW}★チーム全員に採掘速度UP(5分)", "100p")
+        set_GUIitem(GUI, 21, Material.GRAY_DYE, "${ChatColor.YELLOW}★チーム全員に耐性(3分)", "100p")
+        set_GUIitem(GUI, 22, Material.LIGHT_BLUE_DYE, "${ChatColor.YELLOW}★チーム全員に移動速度UP(3分)", "100p")
+        set_GUIitem(GUI, 23, Material.NETHER_STAR, "${ChatColor.YELLOW}★チーム全員に攻撃力UP&再生(1分)", "500p")
+        player.openInventory(GUI)
+    }
+    fun villagerlevelup(GUI: Inventory, player: Player) {
+        player.openInventory(GUI)
+
+        set_GUIitem(GUI, 0, Material.GOLDEN_PICKAXE, "${ChatColor.YELLOW}★鉱石復活速度UP", "100p")
+        dividing_line(GUI, 9)
+        set_GUIitem(GUI, 18, Material.RED_DYE, "${ChatColor.YELLOW}★村人体力増加", "150p")
         player.openInventory(GUI)
     }
     fun enchant_anvil(player: Player) {
@@ -140,19 +161,6 @@ class GUI {
 
         set_GUIitem(anvil, 8, Material.COMMAND_BLOCK, "${ChatColor.YELLOW}合成", "")
         player.openInventory(anvil)
-    }
-    fun set_enchant_GUIitem(GUI: Inventory, number: Int, lore: String, enchant: Enchantment, level: Int) {
-        // GUIにアイテムを楽にセットする
-        val item = ItemStack(Material.ENCHANTED_BOOK)
-        val itemMeta: ItemMeta? = item.itemMeta
-        if (itemMeta is EnchantmentStorageMeta) {
-            itemMeta.addStoredEnchant(enchant, level, true)
-        }
-        val loreList: MutableList<String> = mutableListOf()
-        loreList.add(lore)
-        itemMeta?.lore = loreList
-        item.itemMeta = itemMeta
-        GUI.setItem(number, item)
     }
     fun dividing_line(GUI: Inventory, beginning: Int) {
         for (i in beginning..beginning + 8) {

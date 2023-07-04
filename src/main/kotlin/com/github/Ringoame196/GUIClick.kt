@@ -43,6 +43,8 @@ class GUIClick {
             GUI().enchant_anvil(player)
         } else if (item_type == Material.POTION && item_name == "${ChatColor.YELLOW}チーム強化") {
             GUI().potionshop(shop, player)
+        } else if (item_type == Material.VILLAGER_SPAWN_EGG && item_name == "${ChatColor.YELLOW}村人強化") {
+            GUI().villagerlevelup(shop, player)
         }
     }
 
@@ -122,17 +124,19 @@ class GUIClick {
         player.playSound(player, Sound.BLOCK_ANVIL_USE, 1f, 1f)
     }
 
-    fun teameffect(player: Player, item_name: String) {
-        val set_team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name.toString()
+    fun click_invocation(player: Player, item_name: String, set_team_name: String) {
         player.closeInventory()
         var check_name = item_name
         check_name = check_name.replace("${ChatColor.YELLOW}", "")
         check_name = check_name.replace("チーム全員に", "")
+        check_name = check_name.replace("★", "")
 
         var effect: PotionEffectType? = null
         var effect2: PotionEffectType? = null
         var level = 0
         var time = 0
+
+        var set_time = teamDataMap.getOrPut(set_team_name) { Team() }.blockTime
 
         check_name.let {
             when (it) {
@@ -167,16 +171,25 @@ class GUIClick {
                     level = 5
                     time = 60
                 }
+                "鉱石復活速度UP" -> {
+                    val teamDataMap: MutableMap<String, Team> = mutableMapOf()
+                    if (set_time == null) {
+                        return
+                    }
+                    set_time -= 1
+                    teamDataMap[set_team_name]?.blockTime = set_time
+                    level = set_time
+                }
             }
-        }
 
-        for (teamplayer in Bukkit.getServer().onlinePlayers) {
-            val team_name = teamplayer.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
-            if (team_name == set_team_name) {
-                player.sendMessage("${ChatColor.AQUA}[チーム強化]" + player.name + "さんが" + item_name + "${ChatColor.AQUA}を発動しました(レベル" + level.toString() + ")")
-                effect?.let { teamplayer.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
-                effect2?.let { teamplayer.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
-                teamplayer.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+            for (teamplayer in Bukkit.getServer().onlinePlayers) {
+                val team_name = teamplayer.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
+                if (team_name == set_team_name) {
+                    teamplayer.sendMessage("${ChatColor.AQUA}[チーム強化]" + player.name + "さんが" + item_name + "${ChatColor.AQUA}を発動しました(レベル" + level.toString() + ")")
+                    effect?.let { teamplayer.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
+                    effect2?.let { teamplayer.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
+                    teamplayer.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+                }
             }
         }
     }
