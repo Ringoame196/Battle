@@ -32,8 +32,8 @@ class itemClick {
         }
     }
     fun removeitem(player: Player) {
-        val itemInHand: ItemStack = player.inventory.itemInMainHand
-        val oneItem: ItemStack = itemInHand.clone()
+        val itemInHand = player.inventory.itemInMainHand
+        val oneItem = itemInHand.clone()
         oneItem.amount = 1
         player.inventory.removeItem(oneItem)
     }

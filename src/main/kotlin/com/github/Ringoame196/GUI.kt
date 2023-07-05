@@ -143,6 +143,12 @@ class GUI {
         set_GUIitem(GUI, 23, Material.NETHER_STAR, "${ChatColor.YELLOW}★チーム全員に攻撃力UP&再生(1分)", "500p")
         player.openInventory(GUI)
     }
+    fun general_merchandiseshop(GUI: Inventory, player: Player) {
+        player.openInventory(GUI)
+        set_GUIitem(GUI, 0, Material.EMERALD, "${ChatColor.GREEN}10p", "10p")
+        set_GUIitem(GUI, 1, Material.EMERALD, "${ChatColor.GREEN}100p", "100p")
+        player.openInventory(GUI)
+    }
     fun villagerlevelup(GUI: Inventory, player: Player) {
         player.openInventory(GUI)
 

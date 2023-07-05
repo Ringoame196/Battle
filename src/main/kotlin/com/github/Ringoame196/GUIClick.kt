@@ -44,6 +44,8 @@ class GUIClick {
             GUI().potionshop(shop, player)
         } else if (item_type == Material.VILLAGER_SPAWN_EGG && item_name == "${ChatColor.YELLOW}村人強化") {
             GUI().villagerlevelup(shop, player)
+        } else if (item_type == Material.BEACON && item_name == "${ChatColor.YELLOW}その他") {
+            GUI().general_merchandiseshop(shop, player)
         }
     }
 

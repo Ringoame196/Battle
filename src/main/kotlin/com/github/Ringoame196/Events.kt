@@ -224,10 +224,17 @@ class Events(private val plugin: Plugin) : Listener {
         } else if (item_type == Material.EMERALD && item_name == "${ChatColor.GREEN}10p") {
             playerDataMap[player.uniqueId]?.let { playerData ->
                 playerData.point += 10
+                player.sendMessage("${ChatColor.GREEN}+10p(" + playerData.point + "ポイント)")
+                player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
+                itemClick().removeitem(player)
             }
-            player.sendMessage("${ChatColor.GREEN}10pゲットしました")
-
-            itemClick().removeitem(player)
+        } else if (item_type == Material.EMERALD && item_name == "${ChatColor.GREEN}100p") {
+            playerDataMap[player.uniqueId]?.let { playerData ->
+                playerData.point += 100
+                player.sendMessage("${ChatColor.GREEN}+100p(" + playerData.point + "ポイント)")
+                player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
+                itemClick().removeitem(player)
+            }
         }
     }
 
