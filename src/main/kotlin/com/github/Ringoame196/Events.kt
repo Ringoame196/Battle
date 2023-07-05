@@ -24,8 +24,10 @@ import org.bukkit.plugin.Plugin
 import java.util.UUID
 
 class Events(private val plugin: Plugin) : Listener {
+    object DataManager {
+        val teamDataMap: MutableMap<String?, Team> = mutableMapOf()
+    }
     private val playerDataMap: MutableMap<UUID, PlayerData> = mutableMapOf()
-    private val teamDataMap: MutableMap<String, Team> = mutableMapOf()
     val NPC_name = "${ChatColor.GOLD}攻防戦ショップ"
     val guiclass = GUI()
 
@@ -258,7 +260,7 @@ class Events(private val plugin: Plugin) : Listener {
         val block = e.block
         val block_type = block.type
         var point = playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
-        var cooltime = teamDataMap.getOrPut(team_name) { Team() }.blockTime
+        var cooltime = DataManager.teamDataMap.getOrPut(team_name) { Team() }.blockTime
         when (block_type) {
             Material.COAL_ORE -> {
                 point += 1

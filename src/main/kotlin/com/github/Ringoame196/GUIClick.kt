@@ -12,9 +12,6 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
 class GUIClick {
-    companion object {
-        private val teamDataMap: MutableMap<String, Team> = mutableMapOf()
-    }
 
     fun homeshop(player: Player, item: ItemStack) {
         val item_type = item.type
@@ -30,7 +27,7 @@ class GUIClick {
             if (team_name != "red" && team_name != "blue") {
                 return
             }
-            val chest = teamDataMap.getOrPut(team_name) { Team() }.chest
+            val chest = Events.DataManager.teamDataMap.getOrPut(team_name) { Team() }.chest
             player.playSound(player, Sound.BLOCK_CHEST_OPEN, 1f, 1f)
             player.openInventory(chest)
         } else if (item_type == Material.IRON_PICKAXE && item_name == "${ChatColor.YELLOW}ピッケル") {
@@ -57,6 +54,7 @@ class GUIClick {
             player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
             return
         }
+        // 金床
         val enchantitem_name = enchantitem.type.toString()
         var shouldExecute = false
 
@@ -136,8 +134,6 @@ class GUIClick {
         var level = 0
         var time = 0
 
-        var set_time = teamDataMap.getOrPut(set_team_name) { Team() }.blockTime
-
         check_name.let {
             when (it) {
                 "攻撃力UP(3分)" -> {
@@ -172,13 +168,13 @@ class GUIClick {
                     time = 60
                 }
                 "鉱石復活速度UP" -> {
-                    val teamDataMap: MutableMap<String, Team> = mutableMapOf()
+                    var set_time = Events.DataManager.teamDataMap.getOrPut(set_team_name) { Team() }.blockTime
                     if (set_time == null) {
                         return
                     }
                     set_time -= 1
-                    teamDataMap[set_team_name]?.blockTime = set_time
-                    level = set_time
+                    Events.DataManager.teamDataMap[set_team_name]?.blockTime = set_time
+                    level = 6 - set_time
                 }
             }
 

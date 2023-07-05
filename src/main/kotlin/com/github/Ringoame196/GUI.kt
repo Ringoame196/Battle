@@ -146,7 +146,13 @@ class GUI {
     fun villagerlevelup(GUI: Inventory, player: Player) {
         player.openInventory(GUI)
 
-        set_GUIitem(GUI, 0, Material.GOLDEN_PICKAXE, "${ChatColor.YELLOW}★鉱石復活速度UP", "100p")
+        val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
+        val level = 6 - Events.DataManager.teamDataMap.getOrPut(team_name) { Team() }.blockTime
+        var price = level * 100
+        if (level < 5) {
+            set_GUIitem(GUI, 0, Material.GOLDEN_PICKAXE, "${ChatColor.YELLOW}★鉱石復活速度UP", price.toString() + "p")
+        }
+
         dividing_line(GUI, 9)
         set_GUIitem(GUI, 18, Material.RED_DYE, "${ChatColor.YELLOW}★村人体力増加", "150p")
         player.openInventory(GUI)
