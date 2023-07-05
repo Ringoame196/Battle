@@ -36,8 +36,6 @@ class Events(private val plugin: Plugin) : Listener {
         // ショップGUIを開く
         val player = e.player
         val entity = e.rightClicked
-        val item = player.inventory.itemInMainHand
-        val item_name = item.itemMeta?.displayName
         if (!(entity is Villager)) {
             return
         }
@@ -46,27 +44,10 @@ class Events(private val plugin: Plugin) : Listener {
         }
         // ショップGUI(ホーム)
         e.isCancelled = true
-        if (item.type == Material.RED_DYE && item_name == "${ChatColor.YELLOW}村人体力増加") {
-            val maxHPAttribute = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)
-            if (maxHPAttribute != null) {
-                // 現在の最大HPを取得
-                val currentMaxHP = maxHPAttribute.baseValue
-
-                // 最大HPを増やす
-                val increasedMaxHP = currentMaxHP + 10.0
-
-                // 最大HPを設定
-                maxHPAttribute.baseValue = increasedMaxHP
-
-                val itemInHand: ItemStack = player.inventory.itemInMainHand
-                val oneItem: ItemStack = itemInHand.clone()
-                oneItem.amount = 1
-                player.inventory.removeItem(oneItem)
-                return
-            }
-        }
         val shop = Bukkit.createInventory(null, 27, ChatColor.BLUE.toString() + "攻防戦ショップ")
         val point = playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
+        val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
+        DataManager.teamDataMap[team_name]?.entities?.add(entity)
         guiclass.home(shop, point)
         player.openInventory(shop)
     }
@@ -232,6 +213,7 @@ class Events(private val plugin: Plugin) : Listener {
         val itemClick = itemClick()
         val player = e.player
         val item = e.item
+        val item_name = item?.itemMeta?.displayName
         val item_type = item?.type
         if (item_type == Material.SLIME_BALL) { // ゾンビ召喚
             if (player.location.subtract(0.0, 1.0, 0.0).block.type != Material.GLASS) {
@@ -239,6 +221,13 @@ class Events(private val plugin: Plugin) : Listener {
                 return
             }
             itemClick.summonzombie(player, item)
+        } else if (item_type == Material.EMERALD && item_name == "${ChatColor.GREEN}10p") {
+            playerDataMap[player.uniqueId]?.let { playerData ->
+                playerData.point += 10
+            }
+            player.sendMessage("${ChatColor.GREEN}10pゲットしました")
+
+            itemClick().removeitem(player)
         }
     }
 

@@ -151,6 +151,8 @@ class GUI {
         var price = level * 100
         if (level < 5) {
             set_GUIitem(GUI, 0, Material.GOLDEN_PICKAXE, "${ChatColor.YELLOW}★鉱石復活速度UP", price.toString() + "p")
+        } else {
+            set_GUIitem(GUI, 0, Material.AIR, "", "")
         }
 
         dividing_line(GUI, 9)

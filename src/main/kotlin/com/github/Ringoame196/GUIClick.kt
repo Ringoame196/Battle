@@ -4,6 +4,8 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.Sound
+import org.bukkit.attribute.Attribute
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
@@ -123,7 +125,6 @@ class GUIClick {
     }
 
     fun click_invocation(player: Player, item_name: String, set_team_name: String) {
-        player.closeInventory()
         var check_name = item_name
         check_name = check_name.replace("${ChatColor.YELLOW}", "")
         check_name = check_name.replace("チーム全員に", "")
@@ -152,7 +153,7 @@ class GUIClick {
                     time = 300
                 }
                 "耐性(3分)" -> {
-                    effect = PotionEffectType.REGENERATION
+                    effect = PotionEffectType.DAMAGE_RESISTANCE
                     level = 1
                     time = 180
                 }
@@ -174,18 +175,41 @@ class GUIClick {
                     }
                     set_time -= 1
                     Events.DataManager.teamDataMap[set_team_name]?.blockTime = set_time
+                    GUI().villagerlevelup(player.openInventory.topInventory, player)
+
                     level = 6 - set_time
                 }
-            }
+                "村人体力増加" -> {
+                    val entity = Events.DataManager.teamDataMap[set_team_name]?.entities?.lastOrNull()
 
-            for (teamplayer in Bukkit.getServer().onlinePlayers) {
-                val team_name = teamplayer.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
-                if (team_name == set_team_name) {
-                    teamplayer.sendMessage("${ChatColor.AQUA}[チーム強化]" + player.name + "さんが" + item_name + "${ChatColor.AQUA}を発動しました(レベル" + level.toString() + ")")
-                    effect?.let { teamplayer.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
-                    effect2?.let { teamplayer.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
-                    teamplayer.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+                    if (entity is LivingEntity) {
+                        val maxHPAttribute = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)
+                        if (maxHPAttribute != null) {
+                            // 現在の最大HPを取得
+                            val currentMaxHP = maxHPAttribute.baseValue
+
+                            // 最大HPを増やす
+                            val increasedMaxHP = currentMaxHP + 10.0
+
+                            // 最大HPを設定
+                            maxHPAttribute.baseValue = increasedMaxHP
+
+                            entity.health = increasedMaxHP
+
+                            level = increasedMaxHP.toInt()
+                        }
+                    }
                 }
+            }
+        }
+
+        for (teamplayer in Bukkit.getServer().onlinePlayers) {
+            val team_name = teamplayer.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
+            if (team_name == set_team_name) {
+                teamplayer.sendMessage("${ChatColor.AQUA}[チーム強化]" + player.name + "さんが" + item_name + "${ChatColor.AQUA}を発動しました(レベル" + level.toString() + ")")
+                effect?.let { teamplayer.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
+                effect2?.let { teamplayer.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
+                teamplayer.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
             }
         }
     }

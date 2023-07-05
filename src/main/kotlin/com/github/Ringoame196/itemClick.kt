@@ -28,10 +28,13 @@ class itemClick {
         zombieEquipment?.helmet = helmet
 
         if (player.gameMode != GameMode.CREATIVE) {
-            val itemInHand: ItemStack = player.inventory.itemInMainHand
-            val oneItem: ItemStack = itemInHand.clone()
-            oneItem.amount = 1
-            player.inventory.removeItem(oneItem)
+            removeitem(player)
         }
+    }
+    fun removeitem(player: Player) {
+        val itemInHand: ItemStack = player.inventory.itemInMainHand
+        val oneItem: ItemStack = itemInHand.clone()
+        oneItem.amount = 1
+        player.inventory.removeItem(oneItem)
     }
 }

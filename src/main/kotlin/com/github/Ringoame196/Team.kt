@@ -2,12 +2,11 @@ package com.github.Ringoame196
 
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
-import org.bukkit.entity.EntityType
 import org.bukkit.entity.Mob
 import org.bukkit.inventory.Inventory
-import javax.swing.text.html.parser.Entity
 
 data class Team(
     var blockTime: Int = 5,
-    val chest: Inventory = Bukkit.createInventory(null, 27, "${ChatColor.DARK_GREEN}チームチェスト")
+    val chest: Inventory = Bukkit.createInventory(null, 27, "${ChatColor.DARK_GREEN}チームチェスト"),
+    val entities: MutableList<Mob> = mutableListOf()
 )
