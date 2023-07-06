@@ -32,6 +32,7 @@ class GUIClick {
             val chest = Events.DataManager.teamDataMap.getOrPut(team_name) { Team() }.chest
             player.playSound(player, Sound.BLOCK_CHEST_OPEN, 1f, 1f)
             player.openInventory(chest)
+            return
         } else if (item_type == Material.IRON_PICKAXE && item_name == "${ChatColor.YELLOW}ピッケル") {
             GUI().pickaxeshop(shop, player)
         } else if (item_type == Material.IRON_SWORD && item_name == "${ChatColor.YELLOW}武器") {
@@ -46,7 +47,8 @@ class GUIClick {
             GUI().villagerlevelup(shop, player)
         } else if (item_type == Material.BEACON && item_name == "${ChatColor.YELLOW}その他") {
             GUI().general_merchandiseshop(shop, player)
-        }
+        } else { return }
+        player.openInventory(shop)
     }
 
     fun anvil(player: Player, inv: Inventory) {
@@ -199,6 +201,7 @@ class GUIClick {
                             entity.health = increasedMaxHP
 
                             level = increasedMaxHP.toInt()
+                            GUI().villagerlevelup(player.openInventory.topInventory, player)
                         }
                     }
                 }

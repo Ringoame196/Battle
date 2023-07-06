@@ -27,6 +27,7 @@ class Events(private val plugin: Plugin) : Listener {
     object DataManager {
         val teamDataMap: MutableMap<String?, Team> = mutableMapOf()
     }
+
     private val playerDataMap: MutableMap<UUID, PlayerData> = mutableMapOf()
     val NPC_name = "${ChatColor.GOLD}攻防戦ショップ"
     val guiclass = GUI()
@@ -44,10 +45,10 @@ class Events(private val plugin: Plugin) : Listener {
         }
         // ショップGUI(ホーム)
         e.isCancelled = true
-        val shop = Bukkit.createInventory(null, 27, ChatColor.BLUE.toString() + "攻防戦ショップ")
-        val point = playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
         val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
         DataManager.teamDataMap[team_name]?.entities?.add(entity)
+        val shop = Bukkit.createInventory(null, 27, ChatColor.BLUE.toString() + "攻防戦ショップ")
+        val point = playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
         guiclass.home(shop, point)
         player.openInventory(shop)
     }
@@ -85,7 +86,9 @@ class Events(private val plugin: Plugin) : Listener {
                     break
                 }
             }
-            if (price_int == 0) { return }
+            if (price_int == 0) {
+                return
+            }
 
             if (price_int > point) {
                 player.sendMessage("${ChatColor.RED}" + (price_int - point) + "ポイント足りません")
@@ -190,9 +193,11 @@ class Events(private val plugin: Plugin) : Listener {
             Material.RED_WOOL -> {
                 "red"
             }
+
             Material.BLUE_WOOL -> {
                 "blue"
             }
+
             else -> {
                 return
             }
@@ -261,16 +266,20 @@ class Events(private val plugin: Plugin) : Listener {
             Material.COAL_ORE -> {
                 point += 1
             }
+
             Material.IRON_ORE -> {
                 point += 3
             }
+
             Material.GOLD_ORE -> {
                 point += 5
             }
+
             Material.DIAMOND_ORE -> {
                 point += 100
                 cooltime = 7 // ダイヤモンドだけ別時間
             }
+
             else -> {
                 return
             }
@@ -308,22 +317,23 @@ class Events(private val plugin: Plugin) : Listener {
     }
 
     @EventHandler
-    fun onBEntityDeathEvent(e: EntityDeathEvent) {
-        // モブをキルしたときの処理
-        val player = e.entity.killer as Player
-        var point = playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
-        val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
-        if (team_name == null) {
+    fun onEntityDeathEvent(e: EntityDeathEvent) {
+        val killer = e.entity.killer
+        if (killer !is Player) {
             return
         }
-        if (!(e.entity is Player)) {
+
+        val mob = e.entity
+        if (mob is Player) {
             return
         }
-        point += 300
-        player.sendMessage("${ChatColor.AQUA}[現在]$point P")
-        playerDataMap[player.uniqueId]?.let { playerData ->
-            playerData.point = point
-        }
+
+        val point = 300 // 増やすポイントの値（例として300としています）
+        val playerData = playerDataMap.getOrPut(killer.uniqueId) { PlayerData() }
+        playerData.point += point
+
+        killer.sendMessage("${ChatColor.AQUA}[現在] ${playerData.point} P")
+        killer.playSound(killer, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
     }
     @EventHandler
     fun onEntityRegainHealthEvent(e: EntityRegainHealthEvent) {

@@ -3,6 +3,7 @@ package com.github.Ringoame196
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
+import org.bukkit.attribute.Attribute
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -21,6 +22,10 @@ class GUI {
         itemMeta?.setDisplayName(displayname)
         val lore_list: MutableList<String> = mutableListOf()
         lore_list.add(lore)
+        if (displayname.contains("★")) {
+            lore_list.add("")
+            lore_list.add("クリックで発動")
+        }
         itemMeta?.lore = lore_list
         itemMeta?.isUnbreakable = true // 不破壊
         item.setItemMeta(itemMeta)
@@ -88,7 +93,6 @@ class GUI {
         set_enchant_GUIitem(GUI, 20, "300p", Enchantment.DIG_SPEED, 3)
         set_enchant_GUIitem(GUI, 21, "500p", Enchantment.DIG_SPEED, 4)
         set_enchant_GUIitem(GUI, 22, "5000p", Enchantment.DIG_SPEED, 5)
-        player.openInventory(GUI)
     }
     fun weaponshop(GUI: Inventory, player: Player) {
         dividing_line(GUI, 9)
@@ -108,7 +112,6 @@ class GUI {
         set_enchant_GUIitem(GUI, 28, "100p", Enchantment.DAMAGE_UNDEAD, 2)
         set_enchant_GUIitem(GUI, 29, "300p", Enchantment.DAMAGE_UNDEAD, 3)
         set_enchant_GUIitem(GUI, 30, "500p", Enchantment.DAMAGE_UNDEAD, 4)
-        player.openInventory(GUI)
     }
     fun equipmentshop(GUI: Inventory, player: Player) {
         dividing_line(GUI, 18)
@@ -128,7 +131,6 @@ class GUI {
         set_enchant_GUIitem(GUI, 28, "100p", Enchantment.PROTECTION_ENVIRONMENTAL, 2)
         set_enchant_GUIitem(GUI, 29, "300p", Enchantment.PROTECTION_ENVIRONMENTAL, 3)
         set_enchant_GUIitem(GUI, 30, "500p", Enchantment.PROTECTION_ENVIRONMENTAL, 4)
-        player.openInventory(GUI)
     }
     fun potionshop(GUI: Inventory, player: Player) {
         player.openInventory(GUI)
@@ -141,19 +143,25 @@ class GUI {
         set_GUIitem(GUI, 21, Material.GRAY_DYE, "${ChatColor.YELLOW}★チーム全員に耐性(3分)", "100p")
         set_GUIitem(GUI, 22, Material.LIGHT_BLUE_DYE, "${ChatColor.YELLOW}★チーム全員に移動速度UP(3分)", "100p")
         set_GUIitem(GUI, 23, Material.NETHER_STAR, "${ChatColor.YELLOW}★チーム全員に攻撃力UP&再生(1分)", "500p")
-        player.openInventory(GUI)
     }
     fun general_merchandiseshop(GUI: Inventory, player: Player) {
         player.openInventory(GUI)
         set_GUIitem(GUI, 0, Material.EMERALD, "${ChatColor.GREEN}10p", "10p")
         set_GUIitem(GUI, 1, Material.EMERALD, "${ChatColor.GREEN}100p", "100p")
-        player.openInventory(GUI)
     }
     fun villagerlevelup(GUI: Inventory, player: Player) {
         player.openInventory(GUI)
 
         val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
         val level = 6 - Events.DataManager.teamDataMap.getOrPut(team_name) { Team() }.blockTime
+        val shop = Events.DataManager.teamDataMap[team_name]?.entities?.lastOrNull()
+        set_GUIitem(GUI, 18, Material.RED_DYE, "${ChatColor.YELLOW}★村人体力増加", "${ChatColor.RED}エラー 開き直してください")
+        shop?.let { entity ->
+            var maxHealthAttribute = shop?.getAttribute(Attribute.GENERIC_MAX_HEALTH)
+            val maxHealth = maxHealthAttribute?.value?.toInt() ?: 0
+            val modifiedMaxHealth = maxHealth / 10 * 50
+            set_GUIitem(GUI, 18, Material.RED_DYE, "${ChatColor.YELLOW}★村人体力増加", modifiedMaxHealth.toString() + "p")
+        }
         var price = level * 100
         if (level < 5) {
             set_GUIitem(GUI, 0, Material.GOLDEN_PICKAXE, "${ChatColor.YELLOW}★鉱石復活速度UP", price.toString() + "p")
@@ -162,8 +170,6 @@ class GUI {
         }
 
         dividing_line(GUI, 9)
-        set_GUIitem(GUI, 18, Material.RED_DYE, "${ChatColor.YELLOW}★村人体力増加", "150p")
-        player.openInventory(GUI)
     }
     fun enchant_anvil(player: Player) {
         val anvil: Inventory = Bukkit.createInventory(null, 9, "${ChatColor.DARK_GREEN}金床")
