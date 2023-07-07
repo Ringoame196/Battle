@@ -82,7 +82,7 @@ class GUI {
         no_set(GUI, 23)
         no_set(GUI, 25)
     }
-    fun pickaxeshop(GUI: Inventory, player: Player) {
+    fun pickaxeshop(GUI: Inventory) {
         dividing_line(GUI, 9)
         set_GUIitem(GUI, 0, Material.STONE_PICKAXE, "石ピッケル", "5p")
         set_GUIitem(GUI, 1, Material.IRON_PICKAXE, "鉄ピッケル", "20p")
@@ -94,7 +94,7 @@ class GUI {
         set_enchant_GUIitem(GUI, 21, "500p", Enchantment.DIG_SPEED, 4)
         set_enchant_GUIitem(GUI, 22, "5000p", Enchantment.DIG_SPEED, 5)
     }
-    fun weaponshop(GUI: Inventory, player: Player) {
+    fun weaponshop(GUI: Inventory) {
         dividing_line(GUI, 9)
         set_GUIitem(GUI, 0, Material.STONE_SWORD, "石の剣", "5p")
         set_GUIitem(GUI, 1, Material.IRON_SWORD, "鉄の剣", "20p")
@@ -113,7 +113,7 @@ class GUI {
         set_enchant_GUIitem(GUI, 29, "300p", Enchantment.DAMAGE_UNDEAD, 3)
         set_enchant_GUIitem(GUI, 30, "500p", Enchantment.DAMAGE_UNDEAD, 4)
     }
-    fun equipmentshop(GUI: Inventory, player: Player) {
+    fun equipmentshop(GUI: Inventory) {
         dividing_line(GUI, 18)
         set_GUIitem(GUI, 0, Material.GOLDEN_CHESTPLATE, "金のチェストプレート", "100p")
         set_GUIitem(GUI, 1, Material.GOLDEN_LEGGINGS, "金のレギンス", "100p")
@@ -148,6 +148,9 @@ class GUI {
         player.openInventory(GUI)
         set_GUIitem(GUI, 0, Material.EMERALD, "${ChatColor.GREEN}10p", "10p")
         set_GUIitem(GUI, 1, Material.EMERALD, "${ChatColor.GREEN}100p", "100p")
+        dividing_line(GUI, 9)
+        set_GUIitem(GUI, 18, Material.ZOMBIE_HEAD, "${ChatColor.GREEN}敵対されない帽子", "8000p")
+        set_GUIitem(GUI, 19, Material.ENCHANTED_GOLDEN_APPLE, "${ChatColor.GREEN}エンチャント金リンゴ", "300")
     }
     fun villagerlevelup(GUI: Inventory, player: Player) {
         player.openInventory(GUI)
@@ -155,21 +158,23 @@ class GUI {
         val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
         val level = 6 - Events.DataManager.teamDataMap.getOrPut(team_name) { Team() }.blockTime
         val shop = Events.DataManager.teamDataMap[team_name]?.entities?.lastOrNull()
-        set_GUIitem(GUI, 18, Material.RED_DYE, "${ChatColor.YELLOW}★村人体力増加", "${ChatColor.RED}エラー 開き直してください")
+        set_GUIitem(GUI, 1, Material.RED_DYE, "${ChatColor.YELLOW}★村人体力増加", "${ChatColor.RED}エラー 開き直してください")
         shop?.let { entity ->
-            var maxHealthAttribute = shop?.getAttribute(Attribute.GENERIC_MAX_HEALTH)
+            val maxHealthAttribute = shop.getAttribute(Attribute.GENERIC_MAX_HEALTH)
             val maxHealth = maxHealthAttribute?.value?.toInt() ?: 0
             val modifiedMaxHealth = maxHealth / 10 * 50
-            set_GUIitem(GUI, 18, Material.RED_DYE, "${ChatColor.YELLOW}★村人体力増加", modifiedMaxHealth.toString() + "p")
+            set_GUIitem(GUI, 1, Material.RED_DYE, "${ChatColor.YELLOW}★村人体力増加", modifiedMaxHealth.toString() + "p")
         }
-        var price = level * 100
+        val price = level * 100
         if (level < 5) {
             set_GUIitem(GUI, 0, Material.GOLDEN_PICKAXE, "${ChatColor.YELLOW}★鉱石復活速度UP", price.toString() + "p")
         } else {
             set_GUIitem(GUI, 0, Material.AIR, "", "")
         }
-
         dividing_line(GUI, 9)
+        set_GUIitem(GUI, 18, Material.IRON_BLOCK, "${ChatColor.YELLOW}アイアンゴーレム", "500p")
+        set_GUIitem(GUI, 19, Material.GOLD_BLOCK, "${ChatColor.YELLOW}ゴールデンゴーレム", "1500p")
+        set_GUIitem(GUI, 20, Material.DIAMOND_BLOCK, "${ChatColor.YELLOW}ダイヤモンドゴーレム", "8000p")
     }
     fun enchant_anvil(player: Player) {
         val anvil: Inventory = Bukkit.createInventory(null, 9, "${ChatColor.DARK_GREEN}金床")

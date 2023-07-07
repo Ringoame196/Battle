@@ -34,11 +34,11 @@ class GUIClick {
             player.openInventory(chest)
             return
         } else if (item_type == Material.IRON_PICKAXE && item_name == "${ChatColor.YELLOW}ピッケル") {
-            GUI().pickaxeshop(shop, player)
+            GUI().pickaxeshop(shop)
         } else if (item_type == Material.IRON_SWORD && item_name == "${ChatColor.YELLOW}武器") {
-            GUI().weaponshop(shop, player)
+            GUI().weaponshop(shop)
         } else if (item_type == Material.IRON_CHESTPLATE && item_name == "${ChatColor.YELLOW}防具") {
-            GUI().equipmentshop(shop, player)
+            GUI().equipmentshop(shop)
         } else if (item_type == Material.ANVIL && item_name == "${ChatColor.YELLOW}金床") {
             GUI().enchant_anvil(player)
         } else if (item_type == Material.POTION && item_name == "${ChatColor.YELLOW}チーム強化") {
@@ -174,9 +174,6 @@ class GUIClick {
                 }
                 "鉱石復活速度UP" -> {
                     var set_time = Events.DataManager.teamDataMap.getOrPut(set_team_name) { Team() }.blockTime
-                    if (set_time == null) {
-                        return
-                    }
                     set_time -= 1
                     Events.DataManager.teamDataMap[set_team_name]?.blockTime = set_time
                     GUI().villagerlevelup(player.openInventory.topInventory, player)
