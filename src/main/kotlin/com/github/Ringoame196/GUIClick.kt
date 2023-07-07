@@ -20,34 +20,33 @@ class GUIClick {
         val item_name = item.itemMeta?.displayName
         val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
         val shop: Inventory = Bukkit.createInventory(null, 36, "${ChatColor.DARK_GREEN}ショップ")
-        if (item_type == Material.CHEST && item_name == "${ChatColor.YELLOW}共通チェスト") {
-            // 共有チェストの処理
-            if (team_name == null) {
-                return
+        when {
+            item_type == Material.CHEST && item_name == "${ChatColor.YELLOW}共通チェスト" -> {
+                // 共有チェストの処理
+                if (team_name == null) {
+                    return
+                }
+
+                if (team_name != "red" && team_name != "blue") {
+                    return
+                }
+                val chest = Events.DataManager.teamDataMap.getOrPut(team_name) { Team() }.chest
+                player.playSound(player, Sound.BLOCK_CHEST_OPEN, 1f, 1f)
+                player.openInventory(chest)
             }
 
-            if (team_name != "red" && team_name != "blue") {
-                return
-            }
-            val chest = Events.DataManager.teamDataMap.getOrPut(team_name) { Team() }.chest
-            player.playSound(player, Sound.BLOCK_CHEST_OPEN, 1f, 1f)
-            player.openInventory(chest)
-            return
-        } else if (item_type == Material.IRON_PICKAXE && item_name == "${ChatColor.YELLOW}ピッケル") {
-            GUI().pickaxeshop(shop)
-        } else if (item_type == Material.IRON_SWORD && item_name == "${ChatColor.YELLOW}武器") {
-            GUI().weaponshop(shop)
-        } else if (item_type == Material.IRON_CHESTPLATE && item_name == "${ChatColor.YELLOW}防具") {
-            GUI().equipmentshop(shop)
-        } else if (item_type == Material.ANVIL && item_name == "${ChatColor.YELLOW}金床") {
-            GUI().enchant_anvil(player)
-        } else if (item_type == Material.POTION && item_name == "${ChatColor.YELLOW}チーム強化") {
-            GUI().potionshop(shop, player)
-        } else if (item_type == Material.VILLAGER_SPAWN_EGG && item_name == "${ChatColor.YELLOW}村人強化") {
-            GUI().villagerlevelup(shop, player)
-        } else if (item_type == Material.BEACON && item_name == "${ChatColor.YELLOW}その他") {
-            GUI().general_merchandiseshop(shop, player)
-        } else { return }
+            item_type == Material.IRON_PICKAXE && item_name == "${ChatColor.YELLOW}ピッケル" -> GUI().pickaxeshop(shop)
+            item_type == Material.IRON_SWORD && item_name == "${ChatColor.YELLOW}武器" -> GUI().weaponshop(shop)
+            item_type == Material.IRON_CHESTPLATE && item_name == "${ChatColor.YELLOW}防具" -> GUI().equipmentshop(shop)
+            item_type == Material.ANVIL && item_name == "${ChatColor.YELLOW}金床" -> GUI().enchant_anvil(player)
+            item_type == Material.POTION && item_name == "${ChatColor.YELLOW}チーム強化" -> GUI().potionshop(shop, player)
+            item_type == Material.VILLAGER_SPAWN_EGG && item_name == "${ChatColor.YELLOW}村人強化" -> GUI().villagerlevelup(shop, player)
+
+            item_type == Material.BEACON && item_name == "${ChatColor.YELLOW}その他" -> GUI().general_merchandiseshop(shop, player)
+
+            item_type == Material.TNT && item_name == "${ChatColor.YELLOW}お邪魔アイテム" -> GUI().disturbshop(shop, player)
+            else -> return
+        }
         player.openInventory(shop)
     }
 
@@ -128,8 +127,9 @@ class GUIClick {
         player.playSound(player, Sound.BLOCK_ANVIL_USE, 1f, 1f)
     }
 
-    fun click_invocation(player: Player, item_name: String, set_team_name: String) {
+    fun click_invocation(player: Player, item_name: String, team_name: String) {
         var check_name = item_name
+        var player_team_name = team_name
         check_name = check_name.replace("${ChatColor.YELLOW}", "")
         check_name = check_name.replace("チーム全員に", "")
         check_name = check_name.replace("★", "")
@@ -173,45 +173,68 @@ class GUIClick {
                     time = 60
                 }
                 "鉱石復活速度UP" -> {
-                    var set_time = Events.DataManager.teamDataMap.getOrPut(set_team_name) { Team() }.blockTime
+                    var set_time = Events.DataManager.teamDataMap.getOrPut(team_name) { Team() }.blockTime
                     set_time -= 1
-                    Events.DataManager.teamDataMap[set_team_name]?.blockTime = set_time
+                    Events.DataManager.teamDataMap[team_name]?.blockTime = set_time
                     GUI().villagerlevelup(player.openInventory.topInventory, player)
 
                     level = 6 - set_time
                 }
                 "村人体力増加" -> {
-                    val entity = Events.DataManager.teamDataMap[set_team_name]?.entities?.lastOrNull()
+                    val entity = Events.DataManager.teamDataMap[team_name]?.entities?.lastOrNull()
 
-                    if (entity is LivingEntity) {
-                        val maxHPAttribute = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)
-                        if (maxHPAttribute != null) {
-                            // 現在の最大HPを取得
-                            val currentMaxHP = maxHPAttribute.baseValue
-
-                            // 最大HPを増やす
-                            val increasedMaxHP = currentMaxHP + 10.0
-
-                            // 最大HPを設定
-                            maxHPAttribute.baseValue = increasedMaxHP
-
-                            entity.health = increasedMaxHP
-
-                            level = increasedMaxHP.toInt()
-                            GUI().villagerlevelup(player.openInventory.topInventory, player)
-                        }
-                    }
+                    if (!(entity is LivingEntity)) { return }
+                    val maxHPAttribute = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)
+                    if (maxHPAttribute == null) { return }
+                    // 現在の最大HPを取得
+                    val currentMaxHP = maxHPAttribute.baseValue
+                    // 最大HPを増やす
+                    val increasedMaxHP = currentMaxHP + 10.0
+                    // 最大HPを設定
+                    maxHPAttribute.baseValue = increasedMaxHP
+                    entity.health = increasedMaxHP
+                    level = increasedMaxHP.toInt()
+                    GUI().villagerlevelup(player.openInventory.topInventory, player)
+                }
+                "盲目(10秒)[妨害]" -> {
+                    effect = PotionEffectType.BLINDNESS
+                    level = 255
+                    time = 10
+                }
+                "弱体化(10秒)[妨害]" -> {
+                    effect = PotionEffectType.WEAKNESS
+                    level = 1
+                    time = 10
+                }
+                "採掘速度低下(1分)[妨害]" -> {
+                    effect = PotionEffectType.SLOW_DIGGING
+                    level = 1
+                    time = 60
                 }
             }
         }
 
-        for (teamplayer in Bukkit.getServer().onlinePlayers) {
-            val team_name = teamplayer.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
-            if (team_name == set_team_name) {
-                teamplayer.sendMessage("${ChatColor.AQUA}[チーム強化]" + player.name + "さんが" + item_name + "${ChatColor.AQUA}を発動しました(レベル" + level.toString() + ")")
-                effect?.let { teamplayer.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
-                effect2?.let { teamplayer.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
-                teamplayer.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+        var message = "${ChatColor.AQUA}[チーム強化]" + player.name + "さんが" + item_name + "${ChatColor.AQUA}を発動しました(レベル" + level.toString() + ")"
+        if (check_name.contains("[妨害]")) {
+            //反対チーム名にする
+            player_team_name = if (player_team_name == "red") {
+                "blue"
+            } else {
+                "red"
+            }
+            message = "${ChatColor.RED}[妨害]" + player_team_name + "チームが" + item_name + "${ChatColor.RED}を発動しました(レベル" + level.toString() + ")"
+        }
+
+        for (loop_player in Bukkit.getServer().onlinePlayers) {
+            val loop_player_team = loop_player.scoreboard.teams.firstOrNull { it.hasEntry(loop_player.name) }?.name
+            if (loop_player_team == player_team_name) {
+                loop_player.sendMessage(message)
+                effect?.let { loop_player.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
+                effect2?.let { loop_player.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
+                loop_player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+            } else {
+                if (!check_name.contains("[妨害]")) { return}
+                    player.sendMessage("${ChatColor.RED}" + player.name + "が妨害発動しました${ChatColor.YELLOW}(" + item_name + ")")
             }
         }
     }
