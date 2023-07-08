@@ -1,12 +1,11 @@
 package com.github.Ringoame196
 
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.Sound
-import org.bukkit.entity.EntityType
 import org.bukkit.entity.IronGolem
 import org.bukkit.entity.Player
-import org.bukkit.entity.Zombie
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -15,20 +14,14 @@ class itemClick {
     fun summonzombie(player: Player, item: ItemStack?) {
         val item_name = item?.itemMeta?.displayName
         if (item_name?.contains("[召喚]") == false) { return }
-        val summon_name = item_name?.replace("[召喚]", "")
-        if (summon_name == null) { return }
-        // ゾンビのカスタム設定
-        player.sendMessage("${ChatColor.AQUA}" + summon_name + "召喚")
-        val location = player.location.subtract(0.0, 2.0, 0.0) // 召喚する位置を指定
-
-        val zombie = player.world.spawnEntity(location, EntityType.ZOMBIE) as Zombie
-        zombie.customName = summon_name // ゾンビの名前
-        zombie.isCustomNameVisible = true // ゾンビの名前を表示するかどうか
-
-        // 装備
-        val zombieEquipment = zombie.equipment
-        val helmet = ItemStack(Material.ZOMBIE_HEAD)
-        zombieEquipment?.helmet = helmet
+        var summon_name = item_name?.replace("[召喚]", "")
+        summon_name = summon_name?.replace("${ChatColor.YELLOW}", "")
+        var command = "execute as player_name at @s run function akmob:"
+        command = command.replace("player_name", player.name)
+        if (summon_name == "ノーマルゾンビ") {
+            command += "normal"
+        } else { return }
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)
     }
     fun money(player: Player, item_name: String) {
         val point: Int
@@ -41,10 +34,12 @@ class itemClick {
             }
             else -> { return }
         }
+        var pointdata = Events.DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
+        pointdata += point
+        player.sendMessage("${ChatColor.GREEN}+" + point + "p(" + pointdata + "ポイント)")
+        player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
         Events.DataManager.playerDataMap[player.uniqueId]?.let { playerData ->
-            playerData.point += point
-            player.sendMessage("${ChatColor.GREEN}+" + point + "p(" + playerData.point + "ポイント)")
-            player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
+            playerData.point = pointdata
         }
     }
     fun summon_golem(player: Player, type: Material?, name: String) {

@@ -41,10 +41,13 @@ class GUI {
     fun set_enchant_GUIitem(GUI: Inventory, number: Int, lore: String, enchant: Enchantment, level: Int) {
         // GUIにエンチャント本を楽にセットする
         val item = ItemStack(Material.ENCHANTED_BOOK)
-        val itemMeta: ItemMeta = item.itemMeta as EnchantmentStorageMeta
-        itemMeta.addEnchant(enchant, level, true)
-        lore(itemMeta, lore)
-        item.setItemMeta(itemMeta)
+        val itemMeta: ItemMeta = item.itemMeta!!
+        itemMeta.setDisplayName(lore)
+        itemMeta.setLore(listOf(lore))
+        if (itemMeta is EnchantmentStorageMeta) {
+            itemMeta.addStoredEnchant(enchant, level, true)
+        }
+        item.itemMeta = itemMeta
         GUI.setItem(number, item)
     }
 
@@ -142,6 +145,9 @@ class GUI {
         set_GUIitem(GUI, 22, Material.LIGHT_BLUE_DYE, "${ChatColor.YELLOW}★チーム全員に移動速度UP(3分)", "100p")
         set_GUIitem(GUI, 23, Material.NETHER_STAR, "${ChatColor.YELLOW}★チーム全員に攻撃力UP&再生(1分)", "500p")
     }
+    fun zombieshop(GUI: Inventory) {
+        set_GUIitem(GUI, 0, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]ノーマルゾンビ", "5p")
+    }
     fun general_merchandiseshop(GUI: Inventory, player: Player) {
         player.openInventory(GUI)
         set_GUIitem(GUI, 0, Material.EMERALD, "${ChatColor.GREEN}10p", "10p")
@@ -194,5 +200,10 @@ class GUI {
         for (i in beginning..beginning + 8) {
             set_GUIitem(GUI, i, Material.RED_STAINED_GLASS_PANE, "", "")
         }
+    }
+    fun gamesettingGUI(player: Player) {
+        val GUI = Bukkit.createInventory(null, 9, "${ChatColor.DARK_GREEN}設定画面")
+        set_GUIitem(GUI, 0, Material.EMERALD, "ゲームスタート", "")
+        player.openInventory(GUI)
     }
 }

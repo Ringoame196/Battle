@@ -29,6 +29,7 @@ class Events(private val plugin: Plugin) : Listener {
     object DataManager {
         val teamDataMap: MutableMap<String?, Team> = mutableMapOf()
         val playerDataMap: MutableMap<UUID, PlayerData> = mutableMapOf()
+        val gameData = Gamedata()
     }
 
     val NPC_name = "${ChatColor.GOLD}攻防戦ショップ"
@@ -67,61 +68,70 @@ class Events(private val plugin: Plugin) : Listener {
             return
         }
 
-        if (GUI_name == "${ChatColor.BLUE}攻防戦ショップ") {
-            GUIClick().homeshop(player, item)
-            e.isCancelled = true
-            player.playSound(player, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
-        } else if (GUI_name == "${ChatColor.DARK_GREEN}ショップ") {
-            e.isCancelled = true
-            if (item.type == Material.RED_STAINED_GLASS_PANE) {
-                return
+        when (GUI_name) {
+            "${ChatColor.BLUE}攻防戦ショップ" -> {
+                GUIClick().homeshop(player, item)
+                e.isCancelled = true
+                player.playSound(player, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
             }
-            val price = item.itemMeta?.lore?.get(0) // 値段取得
-            var price_int = 0
-            var point = DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
-
-            for (i in 1..10000) {
-                if (price == i.toString() + "p") {
-                    price_int = i
-                    break
-                }
-            }
-            if (price_int == 0) {
-                return
-            }
-
-            if (price_int > point) {
-                player.sendMessage("${ChatColor.RED}" + (price_int - point) + "ポイント足りません")
-                player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
-                player.closeInventory()
-            } else {
-                point -= price_int
-                player.playSound(player, Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f)
-                DataManager.playerDataMap[player.uniqueId]?.let { playerData ->
-                    playerData.point = point
-                }
-                if (item_name.toString().contains("★")) {
-                    GUIClick().click_invocation(player, item_name.toString(), teamName as String)
+            "${ChatColor.DARK_GREEN}ショップ" -> {
+                e.isCancelled = true
+                if (item.type == Material.RED_STAINED_GLASS_PANE) {
                     return
                 }
-                val give_item = ItemStack(item)
-                val meta = item.itemMeta
-                meta?.lore = null
-                give_item.setItemMeta(meta)
-                player.inventory.addItem(give_item)
+                val price = item.itemMeta?.lore?.get(0) // 値段取得
+                var price_int = 0
+                var point = DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
+
+                for (i in 1..10000) {
+                    if (price == i.toString() + "p") {
+                        price_int = i
+                        break
+                    }
+                }
+                if (price_int == 0) {
+                    return
+                }
+
+                if (price_int > point) {
+                    player.sendMessage("${ChatColor.RED}" + (price_int - point) + "ポイント足りません")
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
+                    player.closeInventory()
+                } else {
+                    point -= price_int
+                    player.playSound(player, Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f)
+                    DataManager.playerDataMap[player.uniqueId]?.let { playerData ->
+                        playerData.point = point
+                    }
+                    if (item_name.toString().contains("★")) {
+                        GUIClick().click_invocation(player, item_name.toString(), teamName as String)
+                        return
+                    }
+                    val give_item = ItemStack(item)
+                    val meta = item.itemMeta
+                    meta?.lore = null
+                    give_item.setItemMeta(meta)
+                    player.inventory.addItem(give_item)
+                }
             }
-        } else if (GUI_name == "${ChatColor.DARK_GREEN}金床") {
-            if (item.type == Material.RED_STAINED_GLASS_PANE) {
+            "${ChatColor.DARK_GREEN}金床" -> {
+                if (item.type == Material.RED_STAINED_GLASS_PANE) {
+                    e.isCancelled = true
+                    return
+                }
+                if (item.type != Material.COMMAND_BLOCK) {
+                    return
+                }
                 e.isCancelled = true
-                return
+                GUIClick().anvil(player, e.inventory)
             }
-            if (item.type != Material.COMMAND_BLOCK) {
-                return
+            "${ChatColor.DARK_GREEN}設定画面" -> {
+                e.isCancelled = true
+                if (item_name == "ゲームスタート") {
+                    GameSystem().start(plugin, player)
+                }
             }
-            e.isCancelled = true
-            GUIClick().anvil(player, e.inventory)
-        } else {
-            return
+            else -> return
         }
     }
 
@@ -190,7 +200,6 @@ class Events(private val plugin: Plugin) : Listener {
             Material.RED_WOOL -> {
                 "red"
             }
-
             Material.BLUE_WOOL -> {
                 "blue"
             }
@@ -218,27 +227,36 @@ class Events(private val plugin: Plugin) : Listener {
         val item = e.item
         val item_name = item?.itemMeta?.displayName.toString()
         val item_type = item?.type
-        if (!(e.action == Action.RIGHT_CLICK_AIR)) {
+        if (!(e.action == Action.RIGHT_CLICK_AIR) && !(e.action == Action.RIGHT_CLICK_BLOCK)) {
             return
         }
-        if (item_type == Material.SLIME_BALL) { // ゾンビ召喚
-            if (player.location.subtract(0.0, 1.0, 0.0).block.type != Material.GLASS) {
+        when {
+            item_type == Material.SLIME_BALL && player.location.subtract(0.0, 1.0, 0.0).block.type != Material.GLASS -> {
                 player.sendMessage("${ChatColor.RED}ガラスの上で実行してください")
                 return
             }
-            itemClick.summonzombie(player, item)
-        } else if (item_type == Material.EMERALD) {
-            itemClick().money(player, item_name)
-        } else if (item_name.contains("ゴーレム")) {
-            e.isCancelled = true
-            itemClick().summon_golem(player, item?.type, item_name)
-        } else {
-            return
+            item_type == Material.SLIME_BALL -> {
+                itemClick.summonzombie(player, item)
+            }
+            item_type == Material.EMERALD -> {
+                itemClick.money(player, item_name)
+            }
+            item_name.contains("ゴーレム") -> {
+                e.isCancelled = true
+                itemClick.summon_golem(player, item?.type, item_name)
+            }
+            item_type == Material.COMMAND_BLOCK && item_name == "ゲーム設定" -> {
+                GUI().gamesettingGUI(player)
+                e.isCancelled = true
+            }
+            else -> return
         }
+
         if (player.gameMode == GameMode.CREATIVE) {
             return
         }
-        itemClick().removeitem(player)
+
+        itemClick.removeitem(player)
     }
 
     @EventHandler
@@ -303,14 +321,8 @@ class Events(private val plugin: Plugin) : Listener {
         if (team_name != "red" && team_name != "blue") {
             return
         }
-        if (player.gameMode != GameMode.CREATIVE) {
-            e.isCancelled = true
-        }
-        val mainitem_name = player.inventory.itemInMainHand.itemMeta?.displayName as String
-        if (!mainitem_name.contains("ゴーレム")) {
-            return
-        }
-        player.sendMessage("${ChatColor.RED}ゴーレムを召喚するには ブロックから目線を外してクリック")
+        if (player.gameMode == GameMode.CREATIVE) { return }
+        e.isCancelled = true
     }
 
     @EventHandler

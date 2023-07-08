@@ -41,6 +41,7 @@ class GUIClick {
             item_type == Material.VILLAGER_SPAWN_EGG && item_name == "${ChatColor.YELLOW}村人強化" -> GUI().villagerlevelup(shop, player)
             item_type == Material.BEACON && item_name == "${ChatColor.YELLOW}その他" -> GUI().general_merchandiseshop(shop, player)
             item_type == Material.TNT && item_name == "${ChatColor.YELLOW}お邪魔アイテム" -> GUI().disturbshop(shop)
+            item_type == Material.ZOMBIE_SPAWN_EGG && item_name == "${ChatColor.YELLOW}ゾンビ" -> GUI().zombieshop(shop)
             else -> return
         }
         player.openInventory(shop)
