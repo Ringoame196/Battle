@@ -32,7 +32,6 @@ class Events(private val plugin: Plugin) : Listener {
     }
 
     val NPC_name = "${ChatColor.GOLD}攻防戦ショップ"
-    val guiclass = GUI()
 
     @EventHandler
     fun onPlayerInteractEntity(e: PlayerInteractEntityEvent) {
@@ -51,7 +50,7 @@ class Events(private val plugin: Plugin) : Listener {
         DataManager.teamDataMap[team_name]?.entities?.add(entity)
         val shop = Bukkit.createInventory(null, 27, ChatColor.BLUE.toString() + "攻防戦ショップ")
         val point = DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
-        guiclass.home(shop, point)
+        GUI().home(shop, point)
         player.openInventory(shop)
     }
 
@@ -131,25 +130,28 @@ class Events(private val plugin: Plugin) : Listener {
         // インベントリを閉じたときの処理
         val player = e.player as Player
         val inventory = e.view
-        if (inventory.title == "${ChatColor.DARK_GREEN}チームチェスト") {
+        val title = inventory.title
+        if (title == "${ChatColor.DARK_GREEN}チームチェスト") {
             player.playSound(player, Sound.BLOCK_CHEST_CLOSE, 1f, 1f)
-        } else if (inventory.title == "${ChatColor.DARK_GREEN}金床") {
-            for (i in 0..8) {
-                var shouldExecute = true
-                val item = e.inventory.getItem(i)?.type
+            return
+        }
+        if (title != "${ChatColor.DARK_GREEN}金床") {
+            return
+        }
+        for (i in 0..8) {
+            inventory.getItem(i)?.type?.let { item ->
+                when (item) {
+                    Material.RED_STAINED_GLASS_PANE -> {
+                        // RED_STAINED_GLASS_PANEに関する処理
+                    }
 
-                if (item == Material.RED_STAINED_GLASS_PANE) {
-                    // RED_STAINED_GLASS_PANEに関する処理
-                    shouldExecute = false
-                }
+                    Material.COMMAND_BLOCK -> {
+                        // COMMAND_BLOCKに関する処理
+                    }
 
-                if (item == Material.COMMAND_BLOCK) {
-                    // COMMAND_BLOCKに関する処理
-                    shouldExecute = false
-                }
-
-                if (shouldExecute) {
-                    player.inventory.addItem(e.inventory.getItem(i))
+                    else -> {
+                        player.inventory.addItem(e.inventory.getItem(i))
+                    }
                 }
             }
         }
@@ -164,29 +166,25 @@ class Events(private val plugin: Plugin) : Listener {
         if (!(entity is Villager)) {
             return
         }
-        val villager = entity
-        if (!villager.scoreboardTags.contains("shop")) {
+        if (!entity.scoreboardTags.contains("shop")) {
             return
         }
 
         if (damager is Player) {
             // プレイヤーが殴るのを禁止させる
-            val player = damager
-            if (player.gameMode == GameMode.CREATIVE) {
-                return
+            if (damager.gameMode != GameMode.CREATIVE) {
+                e.isCancelled = true
             }
-
-            e.isCancelled = true
             return
         }
         // ダメージを受けたときにメッセージを出す
-        var health = villager.health - e.damage
+        var health = entity.health - e.damage
         if (health <= 0) {
             health = 0.0
         }
         val message = "${ChatColor.RED}ショップがダメージを食らっています (残りHP" + health + ")"
-        villager.customName = NPC_name + " ${ChatColor.RED}" + health + "HP"
-        val blockBelow = villager.location.subtract(0.0, 1.0, 0.0).block.type
+        entity.customName = NPC_name + " ${ChatColor.RED}" + health + "HP"
+        val blockBelow = entity.location.subtract(0.0, 1.0, 0.0).block.type
         val set_team_name: String
         set_team_name = when (blockBelow) {
             Material.RED_WOOL -> {
@@ -204,10 +202,11 @@ class Events(private val plugin: Plugin) : Listener {
 
         for (player in Bukkit.getServer().onlinePlayers) {
             val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
-            if (team_name == set_team_name) {
-                player.sendMessage(message)
-                player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 1.0f)
+            if (team_name != set_team_name) {
+                continue
             }
+            player.sendMessage(message)
+            player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 1.0f)
         }
     }
 
@@ -219,7 +218,9 @@ class Events(private val plugin: Plugin) : Listener {
         val item = e.item
         val item_name = item?.itemMeta?.displayName.toString()
         val item_type = item?.type
-        if (!(e.action == Action.RIGHT_CLICK_AIR)) { return }
+        if (!(e.action == Action.RIGHT_CLICK_AIR)) {
+            return
+        }
         if (item_type == Material.SLIME_BALL) { // ゾンビ召喚
             if (player.location.subtract(0.0, 1.0, 0.0).block.type != Material.GLASS) {
                 player.sendMessage("${ChatColor.RED}ガラスの上で実行してください")
@@ -231,7 +232,13 @@ class Events(private val plugin: Plugin) : Listener {
         } else if (item_name.contains("ゴーレム")) {
             e.isCancelled = true
             itemClick().summon_golem(player, item?.type, item_name)
+        } else {
+            return
         }
+        if (player.gameMode == GameMode.CREATIVE) {
+            return
+        }
+        itemClick().removeitem(player)
     }
 
     @EventHandler
@@ -293,9 +300,6 @@ class Events(private val plugin: Plugin) : Listener {
         // ブロック設置阻止
         val player = e.player
         val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
-        if (team_name == null) {
-            return
-        }
         if (team_name != "red" && team_name != "blue") {
             return
         }
@@ -303,9 +307,10 @@ class Events(private val plugin: Plugin) : Listener {
             e.isCancelled = true
         }
         val mainitem_name = player.inventory.itemInMainHand.itemMeta?.displayName as String
-        if (mainitem_name.contains("ゴーレム")) {
-            player.sendMessage("${ChatColor.RED}ゴーレムを召喚するには ブロックから目線を外してクリック")
+        if (!mainitem_name.contains("ゴーレム")) {
+            return
         }
+        player.sendMessage("${ChatColor.RED}ゴーレムを召喚するには ブロックから目線を外してクリック")
     }
 
     @EventHandler
@@ -321,13 +326,14 @@ class Events(private val plugin: Plugin) : Listener {
             return
         }
 
-        val point = 300 // 増やすポイントの値（例として300としています）
+        val point = 300
         val playerData = DataManager.playerDataMap.getOrPut(killer.uniqueId) { PlayerData() }
         playerData.point += point
 
         killer.sendMessage("${ChatColor.AQUA}[現在] ${playerData.point} P")
         killer.playSound(killer, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
     }
+
     @EventHandler
     fun onEntityRegainHealthEvent(e: EntityRegainHealthEvent) {
         // ショップが回復したときにHP反映させる
@@ -336,20 +342,27 @@ class Events(private val plugin: Plugin) : Listener {
             return
         }
 
-        if (!shop.scoreboardTags.contains("shop")) { return }
+        if (!shop.scoreboardTags.contains("shop")) {
+            return
+        }
         val maxHP = shop.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value
         val currentHP = shop.health + e.amount
         val newHP = maxHP?.let { if (currentHP >= it) it else currentHP }
 
         shop.customName = "$NPC_name ${ChatColor.RED}${newHP}HP"
     }
+
     @EventHandler
     fun onZombieAggro(e: EntityTargetEvent) {
         // 敵対されない帽子
         val player = e.target as Player
         val helmet = player.inventory.helmet
-        if (helmet?.type != Material.ZOMBIE_HEAD) { return }
-        if (helmet.itemMeta?.displayName != "${ChatColor.GREEN}敵対されない帽子") { return }
+        if (helmet?.type != Material.ZOMBIE_HEAD) {
+            return
+        }
+        if (helmet.itemMeta?.displayName != "${ChatColor.GREEN}敵対されない帽子") {
+            return
+        }
         e.isCancelled = true
     }
 }

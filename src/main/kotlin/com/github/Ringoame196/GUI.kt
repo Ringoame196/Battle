@@ -20,24 +20,16 @@ class GUI {
         val item = ItemStack(set_item)
         val itemMeta: ItemMeta? = item.itemMeta
         itemMeta?.setDisplayName(displayname)
-        val lore_list: MutableList<String> = mutableListOf()
-        lore_list.add(lore)
-        if (displayname.contains("★")) {
-            lore_list.add("")
-            lore_list.add("クリックで発動")
-        }
-        itemMeta?.lore = lore_list
+        lore(itemMeta, lore)
         itemMeta?.isUnbreakable = true // 不破壊
         item.setItemMeta(itemMeta)
         GUI.setItem(number, item)
     }
     fun set_potionGUIitem(GUI: Inventory, number: Int, item: Material, lore: String, typePotion: PotionEffectType, level: Int, time: Int) {
-        // GUIにアイテムを楽にセットする
+        // GUIにポーションを楽にセットする
         val itemStack = ItemStack(item)
         val potionMeta = itemStack.itemMeta as PotionMeta
-        val loreList: MutableList<String> = mutableListOf()
-        loreList.add(lore)
-        potionMeta.lore = loreList
+        lore(potionMeta, lore)
 
         // 既存のカスタムエフェクトをクリア
         potionMeta.clearCustomEffects()
@@ -47,17 +39,23 @@ class GUI {
         GUI.setItem(number, itemStack)
     }
     fun set_enchant_GUIitem(GUI: Inventory, number: Int, lore: String, enchant: Enchantment, level: Int) {
-        // GUIにアイテムを楽にセットする
+        // GUIにエンチャント本を楽にセットする
         val item = ItemStack(Material.ENCHANTED_BOOK)
-        val itemMeta: ItemMeta? = item.itemMeta
-        if (itemMeta is EnchantmentStorageMeta) {
-            itemMeta.addStoredEnchant(enchant, level, true)
-        }
+        val itemMeta: ItemMeta = item.itemMeta as EnchantmentStorageMeta
+        itemMeta.addEnchant(enchant, level, true)
+        lore(itemMeta, lore)
+        item.setItemMeta(itemMeta)
+        GUI.setItem(number, item)
+    }
+
+    fun lore(meta: ItemMeta?, lore: String) {
         val loreList: MutableList<String> = mutableListOf()
         loreList.add(lore)
-        itemMeta?.lore = loreList
-        item.itemMeta = itemMeta
-        GUI.setItem(number, item)
+        if (meta?.displayName?.contains("★") == true) {
+            loreList.add("")
+            loreList.add("クリックで発動")
+        }
+        meta?.lore = loreList
     }
 
     fun no_set(GUI: Inventory, number: Int) {

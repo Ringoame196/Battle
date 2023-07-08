@@ -14,7 +14,6 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
 class GUIClick {
-
     fun homeshop(player: Player, item: ItemStack) {
         val item_type = item.type
         val item_name = item.itemMeta?.displayName
@@ -103,10 +102,9 @@ class GUIClick {
             }
         } else {
             val enchants = meta?.enchants
-            if (enchants != null) {
-                for ((enchantment, level) in enchants) {
-                    itemToEnchant?.addUnsafeEnchantment(enchantment, level)
-                }
+            if (enchants == null) { return }
+            for ((enchantment, level) in enchants) {
+                itemToEnchant?.addUnsafeEnchantment(enchantment, level)
             }
         }
         val newBookItem = ItemStack(Material.AIR)

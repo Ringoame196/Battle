@@ -1,7 +1,6 @@
 package com.github.Ringoame196
 
 import org.bukkit.ChatColor
-import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.EntityType
@@ -30,10 +29,6 @@ class itemClick {
         val zombieEquipment = zombie.equipment
         val helmet = ItemStack(Material.ZOMBIE_HEAD)
         zombieEquipment?.helmet = helmet
-
-        if (player.gameMode != GameMode.CREATIVE) {
-            removeitem(player)
-        }
     }
     fun money(player: Player, item_name: String) {
         val point: Int
@@ -50,26 +45,29 @@ class itemClick {
             playerData.point += point
             player.sendMessage("${ChatColor.GREEN}+" + point + "p(" + playerData.point + "ポイント)")
             player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
-            itemClick().removeitem(player)
         }
     }
     fun summon_golem(player: Player, type: Material?, name: String) {
-        val golem: IronGolem
         val location = player.location
+        val golem = location.world?.spawn(location, IronGolem::class.java) ?: return
 
-        golem = location.world?.spawn(location, IronGolem::class.java) ?: return
         golem.customName = name
         golem.isCustomNameVisible = true
         golem.isPlayerCreated = true
-        if (type == Material.GOLD_BLOCK) {
-            golem.health = 1.0
-            golem.customName = "${ChatColor.RED}ゴールデンゴーレム"
-            golem.addPotionEffect(PotionEffect(PotionEffectType.WEAKNESS, 9999999, 255))
-        } else if (type == Material.DIAMOND_BLOCK) {
-            golem.health = 500.0
-            golem.damage(10.0)
+
+        when (type) {
+            Material.GOLD_BLOCK -> {
+                golem.health = 5.0
+                golem.customName = "${ChatColor.RED}ゴールデンゴーレム"
+                golem.addPotionEffect(PotionEffect(PotionEffectType.WEAKNESS, Int.MAX_VALUE, 255))
+            }
+            Material.DIAMOND_BLOCK -> {
+                golem.health = 500.0
+                golem.damage(10.0)
+            }
+            else -> return
         }
-        removeitem(player)
+        player.sendMessage("${ChatColor.YELLOW}ゴーレム召喚")
     }
     fun removeitem(player: Player) {
         val itemInHand = player.inventory.itemInMainHand
