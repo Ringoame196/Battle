@@ -150,7 +150,7 @@ class GUI {
         set_GUIitem(GUI, 1, Material.EMERALD, "${ChatColor.GREEN}100p", "100p")
         dividing_line(GUI, 9)
         set_GUIitem(GUI, 18, Material.ZOMBIE_HEAD, "${ChatColor.GREEN}敵対されない帽子", "8000p")
-        set_GUIitem(GUI, 19, Material.ENCHANTED_GOLDEN_APPLE, "${ChatColor.GREEN}エンチャント金リンゴ", "300")
+        set_GUIitem(GUI, 19, Material.ENCHANTED_GOLDEN_APPLE, "エンチャント金リンゴ", "300")
     }
     fun villagerlevelup(GUI: Inventory, player: Player) {
         player.openInventory(GUI)
@@ -176,7 +176,7 @@ class GUI {
         set_GUIitem(GUI, 19, Material.GOLD_BLOCK, "${ChatColor.YELLOW}ゴールデンゴーレム", "1500p")
         set_GUIitem(GUI, 20, Material.DIAMOND_BLOCK, "${ChatColor.YELLOW}ダイヤモンドゴーレム", "8000p")
     }
-    fun disturbshop(GUI: Inventory, player: Player) {
+    fun disturbshop(GUI: Inventory) {
         set_GUIitem(GUI, 0, Material.BLACK_CANDLE, "${ChatColor.YELLOW}★盲目(10秒)[妨害]", "300p")
         set_GUIitem(GUI, 1, Material.LIGHT_GRAY_CANDLE, "${ChatColor.YELLOW}★弱体化(10秒)[妨害]", "300p")
         set_GUIitem(GUI, 2, Material.BROWN_CANDLE, "${ChatColor.YELLOW}★採掘速度低下(1分)[妨害]", "300p")

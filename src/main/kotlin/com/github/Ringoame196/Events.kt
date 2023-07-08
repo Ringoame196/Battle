@@ -62,7 +62,6 @@ class Events(private val plugin: Plugin) : Listener {
         val teamName = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
         val item = e.currentItem
         val item_name = item?.itemMeta?.displayName
-        val GUIclick = GUIClick()
         val GUI_name = e.view.title
 
         if (item == null) {
@@ -70,7 +69,7 @@ class Events(private val plugin: Plugin) : Listener {
         }
 
         if (GUI_name == "${ChatColor.BLUE}攻防戦ショップ") {
-            GUIclick.homeshop(player, item)
+            GUIClick().homeshop(player, item)
             e.isCancelled = true
             player.playSound(player, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
         } else if (GUI_name == "${ChatColor.DARK_GREEN}ショップ") {
@@ -103,8 +102,7 @@ class Events(private val plugin: Plugin) : Listener {
                     playerData.point = point
                 }
                 if (item_name.toString().contains("★")) {
-                    val item_name = item.itemMeta?.displayName.toString()
-                    GUIclick.click_invocation(player, item_name, teamName as String)
+                    GUIClick().click_invocation(player, item_name.toString(), teamName as String)
                     return
                 }
                 val give_item = ItemStack(item)
@@ -122,7 +120,7 @@ class Events(private val plugin: Plugin) : Listener {
                 return
             }
             e.isCancelled = true
-            GUIclick.anvil(player, e.inventory)
+            GUIClick().anvil(player, e.inventory)
         } else {
             return
         }
