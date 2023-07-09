@@ -12,6 +12,10 @@ import org.bukkit.potion.PotionEffectType
 
 class itemClick {
     fun summonzombie(player: Player, item: ItemStack?) {
+        if (player.location.subtract(0.0, 1.0, 0.0).block.type != Material.GLASS) {
+            player.sendMessage("${ChatColor.RED}ガラスの上で実行してください")
+            return
+        }
         val item_name = item?.itemMeta?.displayName
         if (item_name?.contains("[召喚]") == false) { return }
         var summon_name = item_name?.replace("[召喚]", "")

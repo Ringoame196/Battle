@@ -11,7 +11,7 @@ class GameSystem {
             player.sendMessage("${ChatColor.RED}既にゲームはスタートしています")
             return
         }
-        Bukkit.broadcastMessage("攻防戦ゲームスタート！！")
+        Bukkit.broadcastMessage("${ChatColor.GREEN}攻防戦ゲームスタート！！")
         Events.DataManager.gameData.status = true
         Bukkit.getScheduler().runTaskTimer(
             plugin,

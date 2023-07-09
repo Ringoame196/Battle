@@ -65,7 +65,9 @@ class GUI {
         set_GUIitem(GUI, number, Material.OAK_SIGN, "${ChatColor.YELLOW}近日公開", "")
     }
 
-    fun home(GUI: Inventory, point: Int) {
+    fun home(player: Player) {
+        val GUI = Bukkit.createInventory(null, 27, ChatColor.BLUE.toString() + "攻防戦ショップ")
+        val point = Events.DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
         set_GUIitem(GUI, 0, Material.EMERALD, "${ChatColor.GREEN}所持ポイント:" + point + "p", "")
         set_GUIitem(GUI, 1, Material.IRON_PICKAXE, "${ChatColor.YELLOW}ピッケル", "")
         set_GUIitem(GUI, 3, Material.IRON_SWORD, "${ChatColor.YELLOW}武器", "")
@@ -82,6 +84,8 @@ class GUI {
         no_set(GUI, 21)
         no_set(GUI, 23)
         no_set(GUI, 25)
+
+        player.openInventory(GUI)
     }
     fun pickaxeshop(GUI: Inventory) {
         dividing_line(GUI, 9)

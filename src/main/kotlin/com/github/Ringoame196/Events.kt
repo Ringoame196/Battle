@@ -21,7 +21,6 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 import java.util.UUID
 
@@ -33,33 +32,24 @@ class Events(private val plugin: Plugin) : Listener {
     }
 
     val NPC_name = "${ChatColor.GOLD}攻防戦ショップ"
-
     @EventHandler
     fun onPlayerInteractEntity(e: PlayerInteractEntityEvent) {
         // ショップGUIを開く
         val player = e.player
         val entity = e.rightClicked
-        if (!(entity is Villager)) {
-            return
+        if (entity is Villager && entity.scoreboardTags.contains("shop")) {
+            // ショップGUI(ホーム)
+            e.isCancelled = true
+            val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
+            DataManager.teamDataMap[team_name]?.entities?.add(entity)
+            GUI().home(player)
         }
-        if (!entity.scoreboardTags.contains("shop")) {
-            return
-        }
-        // ショップGUI(ホーム)
-        e.isCancelled = true
-        val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
-        DataManager.teamDataMap[team_name]?.entities?.add(entity)
-        val shop = Bukkit.createInventory(null, 27, ChatColor.BLUE.toString() + "攻防戦ショップ")
-        val point = DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
-        GUI().home(shop, point)
-        player.openInventory(shop)
     }
 
     @EventHandler
     fun onInventoryClickEvent(e: InventoryClickEvent) {
         // GUIクリック
         val player = e.whoClicked as Player
-        val teamName = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
         val item = e.currentItem
         val item_name = item?.itemMeta?.displayName
         val GUI_name = e.view.title
@@ -72,46 +62,12 @@ class Events(private val plugin: Plugin) : Listener {
             "${ChatColor.BLUE}攻防戦ショップ" -> {
                 GUIClick().homeshop(player, item)
                 e.isCancelled = true
-                player.playSound(player, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
+                PlayerSend().playsound(player, Sound.UI_BUTTON_CLICK)
             }
             "${ChatColor.DARK_GREEN}ショップ" -> {
                 e.isCancelled = true
                 if (item.type == Material.RED_STAINED_GLASS_PANE) {
                     return
-                }
-                val price = item.itemMeta?.lore?.get(0) // 値段取得
-                var price_int = 0
-                var point = DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
-
-                for (i in 1..10000) {
-                    if (price == i.toString() + "p") {
-                        price_int = i
-                        break
-                    }
-                }
-                if (price_int == 0) {
-                    return
-                }
-
-                if (price_int > point) {
-                    player.sendMessage("${ChatColor.RED}" + (price_int - point) + "ポイント足りません")
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
-                    player.closeInventory()
-                } else {
-                    point -= price_int
-                    player.playSound(player, Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f)
-                    DataManager.playerDataMap[player.uniqueId]?.let { playerData ->
-                        playerData.point = point
-                    }
-                    if (item_name.toString().contains("★")) {
-                        GUIClick().click_invocation(player, item_name.toString(), teamName as String)
-                        return
-                    }
-                    val give_item = ItemStack(item)
-                    val meta = item.itemMeta
-                    meta?.lore = null
-                    give_item.setItemMeta(meta)
-                    player.inventory.addItem(give_item)
                 }
             }
             "${ChatColor.DARK_GREEN}金床" -> {
@@ -137,33 +93,24 @@ class Events(private val plugin: Plugin) : Listener {
 
     @EventHandler
     fun onInventoryCloseEvent(e: InventoryCloseEvent) {
-        // インベントリを閉じたときの処理
         val player = e.player as Player
-        val inventory = e.view
-        val title = inventory.title
+        val title = e.view.title
+
         if (title == "${ChatColor.DARK_GREEN}チームチェスト") {
-            player.playSound(player, Sound.BLOCK_CHEST_CLOSE, 1f, 1f)
+            PlayerSend().playsound(player, Sound.BLOCK_CHEST_CLOSE)
             return
         }
+
         if (title != "${ChatColor.DARK_GREEN}金床") {
             return
         }
-        for (i in 0..8) {
-            inventory.getItem(i)?.type?.let { item ->
-                when (item) {
-                    Material.RED_STAINED_GLASS_PANE -> {
-                        // RED_STAINED_GLASS_PANEに関する処理
-                    }
 
-                    Material.COMMAND_BLOCK -> {
-                        // COMMAND_BLOCKに関する処理
-                    }
-
-                    else -> {
-                        player.inventory.addItem(e.inventory.getItem(i))
-                    }
-                }
+        for (i in 0 until 8) {
+            val item = e.inventory.getItem(i)
+            if (item?.type == Material.RED_STAINED_GLASS_PANE) {
+                continue
             }
+            player.inventory.addItem(item)
         }
     }
 
@@ -215,7 +162,7 @@ class Events(private val plugin: Plugin) : Listener {
                 continue
             }
             player.sendMessage(message)
-            player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 1.0f)
+            PlayerSend().playsound(player, Sound.BLOCK_NOTE_BLOCK_BELL)
         }
     }
 
@@ -227,14 +174,11 @@ class Events(private val plugin: Plugin) : Listener {
         val item = e.item
         val item_name = item?.itemMeta?.displayName.toString()
         val item_type = item?.type
-        if (!(e.action == Action.RIGHT_CLICK_AIR) && !(e.action == Action.RIGHT_CLICK_BLOCK)) {
+        val action = e.action
+        if (!(action == Action.RIGHT_CLICK_AIR) && !(action == Action.RIGHT_CLICK_BLOCK)) {
             return
         }
         when {
-            item_type == Material.SLIME_BALL && player.location.subtract(0.0, 1.0, 0.0).block.type != Material.GLASS -> {
-                player.sendMessage("${ChatColor.RED}ガラスの上で実行してください")
-                return
-            }
             item_type == Material.SLIME_BALL -> {
                 itemClick.summonzombie(player, item)
             }
@@ -252,11 +196,9 @@ class Events(private val plugin: Plugin) : Listener {
             else -> return
         }
 
-        if (player.gameMode == GameMode.CREATIVE) {
-            return
+        if (player.gameMode != GameMode.CREATIVE) {
+            itemClick.removeitem(player)
         }
-
-        itemClick.removeitem(player)
     }
 
     @EventHandler
@@ -266,9 +208,6 @@ class Events(private val plugin: Plugin) : Listener {
         val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name as String
         if (team_name != "red" && team_name != "blue") {
             return
-        }
-        if (player.gameMode != GameMode.CREATIVE) {
-            e.isCancelled = true
         }
 
         val block = e.block
@@ -350,18 +289,12 @@ class Events(private val plugin: Plugin) : Listener {
     fun onEntityRegainHealthEvent(e: EntityRegainHealthEvent) {
         // ショップが回復したときにHP反映させる
         val shop = e.entity
-        if (!(shop is Villager)) {
-            return
+        if (shop is Villager && shop.scoreboardTags.contains("shop")) {
+            val maxHP = shop.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value
+            val currentHP = shop.health + e.amount
+            val newHP = maxHP?.let { if (currentHP >= it) it else currentHP }
+            shop.customName = "$NPC_name ${ChatColor.RED}${newHP}HP"
         }
-
-        if (!shop.scoreboardTags.contains("shop")) {
-            return
-        }
-        val maxHP = shop.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value
-        val currentHP = shop.health + e.amount
-        val newHP = maxHP?.let { if (currentHP >= it) it else currentHP }
-
-        shop.customName = "$NPC_name ${ChatColor.RED}${newHP}HP"
     }
 
     @EventHandler
@@ -369,12 +302,8 @@ class Events(private val plugin: Plugin) : Listener {
         // 敵対されない帽子
         val player = e.target as Player
         val helmet = player.inventory.helmet
-        if (helmet?.type != Material.ZOMBIE_HEAD) {
-            return
+        if (helmet?.type == Material.ZOMBIE_HEAD && helmet.itemMeta?.displayName == "${ChatColor.GREEN}敵対されない帽子") {
+            e.isCancelled = true
         }
-        if (helmet.itemMeta?.displayName != "${ChatColor.GREEN}敵対されない帽子") {
-            return
-        }
-        e.isCancelled = true
     }
 }
