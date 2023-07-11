@@ -79,7 +79,6 @@ class GUI {
         set_GUIitem(GUI, 14, Material.ZOMBIE_SPAWN_EGG, "${ChatColor.YELLOW}ゾンビ", "")
         set_GUIitem(GUI, 16, Material.BEACON, "${ChatColor.YELLOW}その他", "")
         set_GUIitem(GUI, 18, Material.CHEST, "${ChatColor.YELLOW}共通チェスト", "チーム共通")
-
         no_set(GUI, 19)
         no_set(GUI, 21)
         no_set(GUI, 23)
@@ -207,7 +206,8 @@ class GUI {
     }
     fun gamesettingGUI(player: Player) {
         val GUI = Bukkit.createInventory(null, 9, "${ChatColor.DARK_GREEN}設定画面")
-        set_GUIitem(GUI, 0, Material.EMERALD, "ゲームスタート", "")
+        set_GUIitem(GUI, 0, Material.EMERALD, "${ChatColor.AQUA}ゲームスタート", "")
+        set_GUIitem(GUI, 1, Material.BARRIER, "${ChatColor.RED}終了", "")
         player.openInventory(GUI)
     }
 }
