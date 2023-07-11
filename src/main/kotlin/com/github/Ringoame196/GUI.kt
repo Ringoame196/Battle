@@ -42,7 +42,6 @@ class GUI {
         // GUIにエンチャント本を楽にセットする
         val item = ItemStack(Material.ENCHANTED_BOOK)
         val itemMeta: ItemMeta = item.itemMeta!!
-        itemMeta.setDisplayName(lore)
         itemMeta.setLore(listOf(lore))
         if (itemMeta is EnchantmentStorageMeta) {
             itemMeta.addStoredEnchant(enchant, level, true)
@@ -65,27 +64,6 @@ class GUI {
         set_GUIitem(GUI, number, Material.OAK_SIGN, "${ChatColor.YELLOW}近日公開", "")
     }
 
-    fun home(player: Player) {
-        val GUI = Bukkit.createInventory(null, 27, ChatColor.BLUE.toString() + "攻防戦ショップ")
-        val point = Events.DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
-        set_GUIitem(GUI, 0, Material.EMERALD, "${ChatColor.GREEN}所持ポイント:" + point + "p", "")
-        set_GUIitem(GUI, 1, Material.IRON_PICKAXE, "${ChatColor.YELLOW}ピッケル", "")
-        set_GUIitem(GUI, 3, Material.IRON_SWORD, "${ChatColor.YELLOW}武器", "")
-        set_GUIitem(GUI, 5, Material.IRON_CHESTPLATE, "${ChatColor.YELLOW}防具", "")
-        set_GUIitem(GUI, 7, Material.TNT, "${ChatColor.YELLOW}お邪魔アイテム", "")
-        set_GUIitem(GUI, 9, Material.ANVIL, "${ChatColor.YELLOW}金床", "エンチャント用")
-        set_GUIitem(GUI, 10, Material.POTION, "${ChatColor.YELLOW}チーム強化", "")
-        set_GUIitem(GUI, 12, Material.VILLAGER_SPAWN_EGG, "${ChatColor.YELLOW}村人強化", "")
-        set_GUIitem(GUI, 14, Material.ZOMBIE_SPAWN_EGG, "${ChatColor.YELLOW}ゾンビ", "")
-        set_GUIitem(GUI, 16, Material.BEACON, "${ChatColor.YELLOW}その他", "")
-        set_GUIitem(GUI, 18, Material.CHEST, "${ChatColor.YELLOW}共通チェスト", "チーム共通")
-        no_set(GUI, 19)
-        no_set(GUI, 21)
-        no_set(GUI, 23)
-        no_set(GUI, 25)
-
-        player.openInventory(GUI)
-    }
     fun pickaxeshop(GUI: Inventory) {
         dividing_line(GUI, 9)
         set_GUIitem(GUI, 0, Material.STONE_PICKAXE, "石ピッケル", "5p")

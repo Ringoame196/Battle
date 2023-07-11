@@ -45,5 +45,9 @@ class GameSystem {
         gameTask = null
     }
     fun gameend() {
+        Bukkit.broadcastMessage("${ChatColor.RED}攻防戦ゲーム終了！！")
+        Events.DataManager.gameData.status = false
+        gameTask?.cancel()
+        gameTask = null
     }
 }

@@ -38,12 +38,10 @@ class Events(private val plugin: Plugin) : Listener {
         // ショップGUIを開く
         val player = e.player
         val entity = e.rightClicked
+        val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name as String
         if (entity is Villager && entity.scoreboardTags.contains("shop")) {
             // ショップGUI(ホーム)
-            e.isCancelled = true
-            val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
-            DataManager.teamDataMap[team_name]?.entities?.add(entity)
-            GUI().home(player)
+            shop().open(e, player, entity, team_name)
         }
     }
 
@@ -103,11 +101,11 @@ class Events(private val plugin: Plugin) : Listener {
                 }
             }
             "${ChatColor.DARK_GREEN}金床" -> {
-                if (item?.type == Material.RED_STAINED_GLASS_PANE) {
+                if (item.type == Material.RED_STAINED_GLASS_PANE) {
                     e.isCancelled = true
                     return
                 }
-                if (item?.type != Material.COMMAND_BLOCK) {
+                if (item.type != Material.COMMAND_BLOCK) {
                     return
                 }
                 e.isCancelled = true
