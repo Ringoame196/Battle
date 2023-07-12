@@ -3,6 +3,7 @@ package com.github.Ringoame196
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -141,8 +142,8 @@ class GUI {
         player.openInventory(GUI)
 
         val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
-        val level = 6 - Events.DataManager.teamDataMap.getOrPut(team_name) { Team() }.blockTime
-        val shop = Events.DataManager.teamDataMap[team_name]?.entities?.lastOrNull()
+        val level = 6 - Data.DataManager.teamDataMap.getOrPut(team_name) { Team() }.blockTime
+        val shop = Data.DataManager.teamDataMap[team_name]?.entities?.lastOrNull()
         set_GUIitem(GUI, 1, Material.RED_DYE, "${ChatColor.YELLOW}★村人体力増加", "${ChatColor.RED}エラー 開き直してください")
         shop?.let { entity ->
             val maxHealthAttribute = shop.getAttribute(Attribute.GENERIC_MAX_HEALTH)
@@ -166,17 +167,7 @@ class GUI {
         set_GUIitem(GUI, 1, Material.LIGHT_GRAY_CANDLE, "${ChatColor.YELLOW}★弱体化(10秒)[妨害]", "300p")
         set_GUIitem(GUI, 2, Material.BROWN_CANDLE, "${ChatColor.YELLOW}★採掘速度低下(1分)[妨害]", "300p")
     }
-    fun enchant_anvil(player: Player) {
-        val anvil: Inventory = Bukkit.createInventory(null, 9, "${ChatColor.DARK_GREEN}金床")
-        for (i in 0..7) {
-            set_GUIitem(anvil, i, Material.RED_STAINED_GLASS_PANE, " ", "")
-        }
-        set_GUIitem(anvil, 3, Material.AIR, "", "")
-        set_GUIitem(anvil, 5, Material.AIR, "", "")
 
-        set_GUIitem(anvil, 8, Material.COMMAND_BLOCK, "${ChatColor.YELLOW}合成", "")
-        player.openInventory(anvil)
-    }
     fun dividing_line(GUI: Inventory, beginning: Int) {
         for (i in beginning..beginning + 8) {
             set_GUIitem(GUI, i, Material.RED_STAINED_GLASS_PANE, "", "")
@@ -187,5 +178,16 @@ class GUI {
         set_GUIitem(GUI, 0, Material.EMERALD, "${ChatColor.AQUA}ゲームスタート", "")
         set_GUIitem(GUI, 1, Material.BARRIER, "${ChatColor.RED}終了", "")
         player.openInventory(GUI)
+    }
+    fun close(title: String, player: Player, inventory: Inventory) {
+        if (title == "${ChatColor.DARK_GREEN}チームチェスト") {
+            PlayerSend().playsound(player, Sound.BLOCK_CHEST_CLOSE)
+            return
+        }
+
+        if (title == "${ChatColor.DARK_GREEN}金床") {
+            anvil().close(player, inventory)
+            return
+        }
     }
 }

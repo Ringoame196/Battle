@@ -7,13 +7,82 @@ import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
+import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
 class GUIClick {
+    fun system(plugin: Plugin, e: InventoryClickEvent, player: Player, GUI_name: String, item: ItemStack) {
+        val item_name = item.itemMeta?.displayName as String
+        when (GUI_name) {
+            "${ChatColor.BLUE}攻防戦ショップ" -> {
+                GUIClick().homeshop(player, item)
+                e.isCancelled = true
+                PlayerSend().playsound(player, Sound.UI_BUTTON_CLICK)
+            }
+            "${ChatColor.DARK_GREEN}ショップ" -> {
+                e.isCancelled = true
+                if (item.type == Material.RED_STAINED_GLASS_PANE) {
+                    return
+                }
+                val price = item.itemMeta?.lore?.get(0) // 値段取得
+                var price_int = 0
+                var point = Data.DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
+
+                for (i in 1..10000) {
+                    if (price == i.toString() + "p") {
+                        price_int = i
+                        break
+                    }
+                }
+                if (price_int == 0) {
+                    return
+                }
+                if (price_int > point) {
+                    player.sendMessage("${ChatColor.RED}" + (price_int - point) + "ポイント足りません")
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
+                    player.closeInventory()
+                } else {
+                    point -= price_int
+                    player.playSound(player, Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f)
+                    Data.DataManager.playerDataMap[player.uniqueId]?.let { playerData ->
+                        playerData.point = point
+                    }
+                    if (item_name.contains("★")) {
+                        val item_name = item.itemMeta?.displayName.toString()
+                        val set_team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
+                        GUIClick().click_invocation(player, item_name, set_team_name as String)
+                        return
+                    }
+                    val give_item = ItemStack(item)
+                    val meta = item.itemMeta
+                    meta?.lore = null
+                    give_item.setItemMeta(meta)
+                    player.inventory.addItem(give_item)
+                }
+            }
+            "${ChatColor.DARK_GREEN}金床" -> {
+                if (item.type == Material.RED_STAINED_GLASS_PANE) {
+                    e.isCancelled = true
+                    return
+                }
+                if (item.type != Material.COMMAND_BLOCK) {
+                    return
+                }
+                e.isCancelled = true
+                GUIClick().anvil(player, e.inventory)
+            }
+            "${ChatColor.DARK_GREEN}設定画面" -> {
+                e.isCancelled = true
+                GameSystem().system(plugin, player, item_name)
+            }
+        }
+    }
+
     fun homeshop(player: Player, item: ItemStack) {
         val item_type = item.type
         val item_name = item.itemMeta?.displayName
@@ -25,7 +94,7 @@ class GUIClick {
                 if (team_name == null || (team_name != "red" && team_name != "blue")) {
                     return
                 }
-                val chest = Events.DataManager.teamDataMap.getOrPut(team_name) { Team() }.chest
+                val chest = Data.DataManager.teamDataMap.getOrPut(team_name) { Team() }.chest
                 player.playSound(player, Sound.BLOCK_CHEST_OPEN, 1f, 1f)
                 player.openInventory(chest)
                 return
@@ -34,7 +103,7 @@ class GUIClick {
             item_type == Material.IRON_SWORD && item_name == "${ChatColor.YELLOW}武器" -> GUI().weaponshop(shop)
             item_type == Material.IRON_CHESTPLATE && item_name == "${ChatColor.YELLOW}防具" -> GUI().equipmentshop(shop)
             item_type == Material.ANVIL && item_name == "${ChatColor.YELLOW}金床" -> {
-                GUI().enchant_anvil(player)
+                anvil().set(player)
                 return
             }
             item_type == Material.POTION && item_name == "${ChatColor.YELLOW}チーム強化" -> GUI().potionshop(shop, player)
@@ -159,15 +228,15 @@ class GUIClick {
                     time = 60
                 }
                 "鉱石復活速度UP" -> {
-                    var set_time = Events.DataManager.teamDataMap.getOrPut(team_name) { Team() }.blockTime
+                    var set_time = Data.DataManager.teamDataMap.getOrPut(team_name) { Team() }.blockTime
                     set_time -= 1
-                    Events.DataManager.teamDataMap[team_name]?.blockTime = set_time
+                    Data.DataManager.teamDataMap[team_name]?.blockTime = set_time
                     GUI().villagerlevelup(player.openInventory.topInventory, player)
 
                     level = 6 - set_time
                 }
                 "村人体力増加" -> {
-                    val entity = Events.DataManager.teamDataMap[team_name]?.entities?.lastOrNull()
+                    val entity = Data.DataManager.teamDataMap[team_name]?.entities?.lastOrNull()
 
                     if (!(entity is LivingEntity)) { return }
                     val maxHPAttribute = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)

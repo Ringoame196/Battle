@@ -2,10 +2,12 @@ package com.github.Ringoame196
 
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.IronGolem
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -38,11 +40,11 @@ class itemClick {
             }
             else -> { return }
         }
-        var pointdata = Events.DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
+        var pointdata = Data.DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
         pointdata += point
         player.sendMessage("${ChatColor.GREEN}+" + point + "p(" + pointdata + "ポイント)")
         player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
-        Events.DataManager.playerDataMap[player.uniqueId]?.let { playerData ->
+        Data.DataManager.playerDataMap[player.uniqueId]?.let { playerData ->
             playerData.point = pointdata
         }
     }
@@ -69,9 +71,32 @@ class itemClick {
         player.sendMessage("${ChatColor.YELLOW}ゴーレム召喚")
     }
     fun removeitem(player: Player) {
+        if (player.gameMode == GameMode.CREATIVE) { return }
         val itemInHand = player.inventory.itemInMainHand
         val oneItem = itemInHand.clone()
         oneItem.amount = 1
         player.inventory.removeItem(oneItem)
+    }
+    fun system(player: Player, item: ItemStack, e: PlayerInteractEvent) {
+        val item_name = item.itemMeta?.displayName.toString()
+        val item_type = item.type
+        when {
+            item_type == Material.SLIME_BALL -> {
+                summonzombie(player, item)
+            }
+            item_type == Material.EMERALD -> {
+                money(player, item_name)
+            }
+            item_name.contains("ゴーレム") -> {
+                e.isCancelled = true
+                summon_golem(player, item.type, item_name)
+            }
+            item_type == Material.COMMAND_BLOCK && item_name == "ゲーム設定" -> {
+                e.isCancelled = true
+                GUI().gamesettingGUI(player)
+            }
+            else -> return
+        }
+        removeitem(player)
     }
 }
