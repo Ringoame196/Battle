@@ -81,6 +81,7 @@ class GUIClick {
                 e.isCancelled = true
                 if (item_name != null) {
                     GameSystem().system(plugin, player, item_name)
+                    player.closeInventory()
                 }
             }
         }
