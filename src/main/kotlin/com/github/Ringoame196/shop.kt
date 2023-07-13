@@ -56,6 +56,7 @@ class shop {
         if (damager is Player) {
             // プレイヤーが殴るのを禁止させる
             GameSystem().adventure(e, damager)
+            return
         }
         // ダメージを受けたときにメッセージを出す
         val health = shop.health - e.damage

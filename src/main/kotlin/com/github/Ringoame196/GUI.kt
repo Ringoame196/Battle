@@ -129,6 +129,7 @@ class GUI {
     }
     fun zombieshop(GUI: Inventory) {
         set_GUIitem(GUI, 0, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]ノーマルゾンビ", "5p")
+        set_GUIitem(GUI, 1, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]チビゾンビ", "10p")
     }
     fun general_merchandiseshop(GUI: Inventory, player: Player) {
         player.openInventory(GUI)

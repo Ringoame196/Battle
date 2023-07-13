@@ -26,6 +26,8 @@ class itemClick {
         command = command.replace("player_name", player.name)
         if (summon_name == "ノーマルゾンビ") {
             command += "normal"
+        } else if (summon_name == "チビゾンビ") {
+            command += "chibi"
         } else { return }
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)
     }
