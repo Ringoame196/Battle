@@ -55,7 +55,7 @@ class GUIClick {
                     }
                     if (item_name?.contains("★") == true) { // null対策
                         val item_name = item.itemMeta?.displayName.toString()
-                        val set_team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
+                        val set_team_name = GET().getTeamName(player) ?: return
                         GUIClick().click_invocation(player, item_name, set_team_name as String)
                         return
                     }
@@ -90,12 +90,12 @@ class GUIClick {
     fun homeshop(player: Player, item: ItemStack) {
         val item_type = item.type
         val item_name = item.itemMeta?.displayName
-        val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
+        val team_name = GET().getTeamName(player) ?: return
         val shop: Inventory = Bukkit.createInventory(null, 36, "${ChatColor.DARK_GREEN}ショップ")
         when {
             item_type == Material.CHEST && item_name == "${ChatColor.YELLOW}共通チェスト" -> {
                 // 共有チェストの処理
-                if (team_name == null || (team_name != "red" && team_name != "blue")) {
+                if ((team_name != "red" && team_name != "blue")) {
                     return
                 }
                 val chest = Data.DataManager.teamDataMap.getOrPut(team_name) { Team() }.chest
@@ -111,7 +111,10 @@ class GUIClick {
                 return
             }
             item_type == Material.POTION && item_name == "${ChatColor.YELLOW}チーム強化" -> GUI().potionshop(shop, player)
-            item_type == Material.VILLAGER_SPAWN_EGG && item_name == "${ChatColor.YELLOW}村人強化" -> GUI().villagerlevelup(shop, player)
+            item_type == Material.VILLAGER_SPAWN_EGG && item_name == "${ChatColor.YELLOW}村人強化" -> {
+                GUI().villagerlevelup(shop, player)
+                return
+            }
             item_type == Material.BEACON && item_name == "${ChatColor.YELLOW}その他" -> GUI().general_merchandiseshop(shop, player)
             item_type == Material.TNT && item_name == "${ChatColor.YELLOW}お邪魔アイテム" -> GUI().disturbshop(shop)
             item_type == Material.ZOMBIE_SPAWN_EGG && item_name == "${ChatColor.YELLOW}ゾンビ" -> GUI().zombieshop(shop)

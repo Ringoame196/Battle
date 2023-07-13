@@ -15,7 +15,9 @@ import org.bukkit.event.player.PlayerInteractEntityEvent
 class shop {
     fun open(e: PlayerInteractEntityEvent, player: Player, entity: Mob, team: String) {
         e.isCancelled = true
-        Data.DataManager.teamDataMap[team]?.entities?.add(entity)
+        Data.DataManager.teamDataMap[team]?.let { entities ->
+            Data.DataManager.teamDataMap[team]?.entities?.add(entity)
+        }
         GUI(player)
     }
     fun GUI(player: Player) {
@@ -38,6 +40,11 @@ class shop {
         GUIclass.no_set(GUI, 21)
         GUIclass.no_set(GUI, 23)
         GUIclass.no_set(GUI, 25)
+
+        val time = Data.DataManager.gameData.time
+        if (Data.DataManager.gameData.status == true && time <= 30) {
+            GUIclass.set_GUIitem(GUI, 14, Material.BARRIER, "${ChatColor.RED}選択不可", "")
+        }
 
         player.openInventory(GUI)
     }
@@ -72,7 +79,7 @@ class shop {
         }
 
         for (player in Bukkit.getServer().onlinePlayers) {
-            val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
+            val team_name = GET().getTeamName(player)
             if (team_name != set_team_name) {
                 continue
             }

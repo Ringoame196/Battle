@@ -26,7 +26,7 @@ class Events(private val plugin: Plugin) : Listener {
         // ショップGUIを開く
         val player = e.player
         val entity = e.rightClicked
-        val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name as String
+        val team_name = GET().getTeamName(player) ?: return
         if (entity is Villager && entity.scoreboardTags.contains("shop")) {
             shop().open(e, player, entity, team_name)
         }
@@ -76,7 +76,7 @@ class Events(private val plugin: Plugin) : Listener {
     fun onBlockBreakEvent(e: BlockBreakEvent) {
         // ブロックを破壊したとき
         val player = e.player
-        val team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name as String
+        val team_name = GET().getTeamName(player) ?: return
         val block = e.block
         point().ore(e, player, block, team_name, plugin)
     }
