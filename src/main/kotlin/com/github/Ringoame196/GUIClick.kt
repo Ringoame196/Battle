@@ -17,7 +17,8 @@ import org.bukkit.potion.PotionEffectType
 
 class GUIClick {
     fun system(plugin: Plugin, e: InventoryClickEvent, player: Player, GUI_name: String, item: ItemStack) {
-        val item_name = item.itemMeta?.displayName as String
+        val item_name = item.itemMeta?.displayName as? String // null対策
+
         when (GUI_name) {
             "${ChatColor.BLUE}攻防戦ショップ" -> {
                 GUIClick().homeshop(player, item)
@@ -52,7 +53,7 @@ class GUIClick {
                     Data.DataManager.playerDataMap[player.uniqueId]?.let { playerData ->
                         playerData.point = point
                     }
-                    if (item_name.contains("★")) {
+                    if (item_name?.contains("★") == true) { // null対策
                         val item_name = item.itemMeta?.displayName.toString()
                         val set_team_name = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
                         GUIClick().click_invocation(player, item_name, set_team_name as String)
@@ -78,7 +79,9 @@ class GUIClick {
             }
             "${ChatColor.DARK_GREEN}設定画面" -> {
                 e.isCancelled = true
-                GameSystem().system(plugin, player, item_name)
+                if (item_name != null) {
+                    GameSystem().system(plugin, player, item_name)
+                }
             }
         }
     }

@@ -36,9 +36,9 @@ class Events(private val plugin: Plugin) : Listener {
     fun onInventoryClickEvent(e: InventoryClickEvent) {
         // GUIクリック
         val player = e.whoClicked as Player
-        val item = e.currentItem
+        val item = e.currentItem ?: return
         val GUI_name = e.view.title
-        GUIClick().system(plugin, e, player, GUI_name, item!!)
+        GUIClick().system(plugin, e, player, GUI_name, item)
     }
 
     @EventHandler
@@ -65,10 +65,10 @@ class Events(private val plugin: Plugin) : Listener {
     fun onPlayerInteractEvent(e: PlayerInteractEvent) {
         // インベントリアイテムクリック
         val player = e.player
-        val item = e.item
+        val item = e.item ?: return
         val action = e.action
         if ((action == Action.RIGHT_CLICK_AIR) || (action == Action.RIGHT_CLICK_BLOCK)) {
-            itemClick().system(player, item!!, e)
+            itemClick().system(player, item, e)
         }
     }
 
