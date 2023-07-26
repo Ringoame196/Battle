@@ -27,8 +27,8 @@ class Events(private val plugin: Plugin) : Listener {
         val player = e.player
         val entity = e.rightClicked
         val team_name = GET().getTeamName(player) ?: return
-        if (entity is Villager && entity.scoreboardTags.contains("shop")) {
-            shop().open(e, player, entity, team_name)
+        if (entity.scoreboardTags.contains("shop")) {
+            shop().open(e, player, entity as Villager, team_name)
         }
     }
 
@@ -96,6 +96,7 @@ class Events(private val plugin: Plugin) : Listener {
         if (killer is Player && mob is Player) {
             player().kill(killer)
         } else if (mob.scoreboardTags.contains("shop")) {
+            if (!Data.DataManager.gameData.status) { return }
             GameSystem().gameend()
         }
     }
@@ -103,9 +104,10 @@ class Events(private val plugin: Plugin) : Listener {
     @EventHandler
     fun onEntityRegainHealthEvent(e: EntityRegainHealthEvent) {
         // ショップが回復したときにHP反映させる
-        val shop = e.entity
+        if (e.entity !is Villager) { return }
+        val shop = e.entity as Villager
         val amout = e.amount
-        if (shop is Villager && shop.scoreboardTags.contains("shop")) {
+        if (shop.scoreboardTags.contains("shop")) {
             shop().recovery(shop, amout)
         }
     }

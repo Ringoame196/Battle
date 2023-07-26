@@ -137,7 +137,7 @@ class GUI {
         set_GUIitem(GUI, 1, Material.EMERALD, "${ChatColor.GREEN}100p", "100p")
         dividing_line(GUI, 9)
         set_GUIitem(GUI, 18, Material.ZOMBIE_HEAD, "${ChatColor.GREEN}敵対されない帽子", "8000p")
-        set_GUIitem(GUI, 19, Material.ENCHANTED_GOLDEN_APPLE, "エンチャント金リンゴ", "300")
+        set_GUIitem(GUI, 19, Material.ENCHANTED_GOLDEN_APPLE, "エンチャント金リンゴ", "300p")
     }
     fun villagerlevelup(GUI: Inventory, player: Player) {
         val team_name = GET().getTeamName(player) ?: return

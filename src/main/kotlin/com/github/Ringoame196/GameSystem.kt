@@ -8,10 +8,8 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
 import org.bukkit.plugin.Plugin
-import org.bukkit.scheduler.BukkitTask
 
 class GameSystem {
-    private var gameTask: BukkitTask? = null
 
     fun system(plugin: Plugin, player: Player, item_name: String) {
         PlayerSend().playsound(player, Sound.UI_BUTTON_CLICK)
@@ -28,7 +26,7 @@ class GameSystem {
         }
         Bukkit.broadcastMessage("${ChatColor.GREEN}攻防戦ゲームスタート！！")
         Data.DataManager.gameData.status = true
-        gameTask = Bukkit.getScheduler().runTaskTimer(
+        Bukkit.getScheduler().runTaskTimer(
             plugin,
             Runnable {
                 if (Data.DataManager.gameData.status == false) { return@Runnable }
@@ -44,15 +42,15 @@ class GameSystem {
             player.sendMessage("${ChatColor.RED}ゲームは開始していません")
             return
         }
-        Bukkit.broadcastMessage("${ChatColor.RED}攻防戦ゲーム強制終了！！")
-        Data.DataManager.gameData.status = false
+        gameendSystem("${ChatColor.RED}攻防戦ゲーム強制終了！！")
     }
 
     fun gameend() {
-        Bukkit.broadcastMessage("${ChatColor.RED}攻防戦ゲーム終了！！")
+        gameendSystem("${ChatColor.RED}攻防戦ゲーム終了！！")
+    }
+    fun gameendSystem(message: String) {
+        Bukkit.broadcastMessage(message)
         Data.DataManager.gameData.status = false
-        gameTask?.cancel()
-        gameTask = null
     }
 
     fun adventure(e: org.bukkit.event.Event, player: Player) {

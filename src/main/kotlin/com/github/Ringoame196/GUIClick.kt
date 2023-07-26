@@ -56,7 +56,7 @@ class GUIClick {
                     if (item_name?.contains("★") == true) { // null対策
                         val item_name = item.itemMeta?.displayName.toString()
                         val set_team_name = GET().getTeamName(player) ?: return
-                        GUIClick().click_invocation(player, item_name, set_team_name as String)
+                        GUIClick().click_invocation(player, item_name, set_team_name)
                         return
                     }
                     val give_item = ItemStack(item)

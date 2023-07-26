@@ -15,9 +15,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent
 class shop {
     fun open(e: PlayerInteractEntityEvent, player: Player, entity: Mob, team: String) {
         e.isCancelled = true
-        Data.DataManager.teamDataMap[team]?.let { entities ->
-            Data.DataManager.teamDataMap[team]?.entities?.add(entity)
-        }
+        Data.DataManager.teamDataMap[team]?.entities?.add(entity)
         GUI(player)
     }
     fun GUI(player: Player) {
@@ -53,10 +51,10 @@ class shop {
         val currentHP = shop.health + amount
         val newHP = maxHP?.let { if (currentHP >= it) it else currentHP }?.toString()
         if (newHP != null) {
-            shop.customName = "${ChatColor.GOLD}攻防戦ショップ" + " ${ChatColor.RED}" + newHP + "HP"
+            name(shop, newHP.toString() + "HP/" + maxHP + "HP")
         }
     }
-    fun name(shop: Entity, name: String) {
+    fun name(shop: Villager, name: String) {
         shop.customName = "${ChatColor.GOLD}攻防戦ショップ${ChatColor.RED}$name"
     }
     fun attack(e: EntityDamageByEntityEvent, damager: Entity, shop: Villager) {
@@ -71,7 +69,8 @@ class shop {
             return
         }
         val message = "${ChatColor.RED}ショップがダメージを食らっています (残りHP" + health + ")"
-        shop().name(shop, health.toString() + "HP")
+        val maxHP = GET().getMaxHP(shop)
+        name(shop, health.toString() + "HP/" + maxHP + "HP")
         val blockBelow = shop.location.subtract(0.0, 1.0, 0.0).block.type
         var set_team_name = "red"
         if (blockBelow == Material.BLUE_WOOL) {
