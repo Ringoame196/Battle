@@ -89,12 +89,18 @@ class shop {
         }
     }
     fun summon(location: Location) {
+        val Initial_HP = 100.0
         val world = location.world
         val villager: Villager = world!!.spawn(location, Villager::class.java)
-        villager.customName = "${ChatColor.RED}20HP/20HP"
+        villager.customName = "${ChatColor.RED}${Initial_HP}HP/${Initial_HP}HP"
         villager.isCustomNameVisible = true
         villager.scoreboardTags.add("shop")
         villager.setAI(false)
+
+        val maxHPAttribute = villager.getAttribute(Attribute.GENERIC_MAX_HEALTH)
+        maxHPAttribute?.baseValue = Initial_HP
+        villager.health = Initial_HP
+        villager.customName = "${ChatColor.RED}${villager.health}HP/${Initial_HP}HP" // カスタムネームの表示を更新
 
         // アーマースタンドを召喚
         location.add(0.0, 1.3, 0.0)
@@ -103,6 +109,7 @@ class shop {
         // アーマースタンドの設定
         armorStand.isVisible = false // 可視化するかどうか
         armorStand.isSmall = true // サイズを小さくするかどうか
+        armorStand.isInvulnerable = true
         armorStand.customName = "${ChatColor.GOLD}攻防戦ショップ"
         armorStand.isCustomNameVisible = true
         armorStand.setGravity(false)

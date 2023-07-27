@@ -53,7 +53,8 @@ class Events(private val plugin: Plugin) : Listener {
     @EventHandler
     fun onEntityDamageByEntityEvent(e: EntityDamageByEntityEvent) {
         // ショップがダメージを受けたときの処理
-        val entity = e.entity as Villager
+        val entity = e.entity
+        if (entity !is Villager) { return }
         val damager = e.damager
 
         if (entity.scoreboardTags.contains("shop")) {
@@ -116,7 +117,8 @@ class Events(private val plugin: Plugin) : Listener {
     @EventHandler
     fun onZombieAggro(e: EntityTargetEvent) {
         // 敵対されない帽子
-        val player = e.target as Player
+        val player = e.target
+        if (player !is Player) { return }
         val helmet = player.inventory.helmet
         val displayname = helmet?.itemMeta?.displayName
         if (helmet?.type == Material.ZOMBIE_HEAD && displayname == "${ChatColor.GREEN}敵対されない帽子") {
