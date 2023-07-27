@@ -15,6 +15,7 @@ class GET {
     }
     fun getHP(shop: Villager): Double {
         val HP = shop.health
-        return HP
+        val formattedHP = String.format("%.1f", HP).toDouble()
+        return formattedHP
     }
 }

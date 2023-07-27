@@ -68,7 +68,7 @@ class shop {
         if (health <= 0) {
             return
         }
-        val message = "${ChatColor.RED}ショップがダメージを食らっています (残りHP" + health + ")"
+        val message = "${ChatColor.RED}ショップがダメージを食らっています (残りHP $health)"
         val maxHP = GET().getMaxHP(shop)
         name(shop, health.toString() + "HP/" + maxHP + "HP")
         val blockBelow = shop.location.subtract(0.0, 1.0, 0.0).block.type

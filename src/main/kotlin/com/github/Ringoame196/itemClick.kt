@@ -18,17 +18,20 @@ class itemClick {
             player.sendMessage("${ChatColor.RED}ガラスの上で実行してください")
             return
         }
+
         val item_name = item?.itemMeta?.displayName
         if (item_name?.contains("[召喚]") == false) { return }
+
         var summon_name = item_name?.replace("[召喚]", "")
         summon_name = summon_name?.replace("${ChatColor.YELLOW}", "")
-        var command = "execute as player_name at @s run function akmob:"
-        command = command.replace("player_name", player.name)
-        if (summon_name == "ノーマルゾンビ") {
-            command += "normal"
-        } else if (summon_name == "チビゾンビ") {
-            command += "chibi"
-        } else { return }
+
+        var command = "execute as ${player.name} at @s run function akmob:"
+        command += when (summon_name) {
+            "ノーマルゾンビ" -> "normal"
+            "チビゾンビ" -> "chibi"
+            else -> return // 不明な召喚名の場合は何もせずに処理が終了します
+        }
+
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)
     }
     fun money(player: Player, item_name: String) {
