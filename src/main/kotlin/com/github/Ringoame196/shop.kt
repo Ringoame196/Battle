@@ -2,6 +2,7 @@ package com.github.Ringoame196
 
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -52,25 +53,25 @@ class shop {
         val maxHP = GET().getMaxHP(shop)
         val currentHP = shop.health + amount
         val newHP = maxHP?.let { if (currentHP >= it) it else currentHP }?.toString() ?: return
-        name(shop, newHP + "HP/" + maxHP + "HP")
+        name(shop, newHP, maxHP.toString())
     }
-    fun name(shop: Villager, name: String) {
-        shop.customName = "${ChatColor.RED}$name"
+    fun name(shop: Villager, HP: String, maxHP: String) {
+        shop.customName = "${ChatColor.RED}${HP}HP/${maxHP}HP"
     }
     fun attack(e: EntityDamageByEntityEvent, damager: Entity, shop: Villager) {
         if (damager is Player) {
             // プレイヤーが殴るのを禁止させる
             GameSystem().adventure(e, damager)
-            return
+            if (damager.gameMode != GameMode.CREATIVE) { return }
         }
         // ダメージを受けたときにメッセージを出す
-        val health = shop.health - e.damage
+        val health = String.format("%.1f", shop.health - e.damage).toDouble()
         if (health <= 0) {
             return
         }
         val message = "${ChatColor.RED}ショップがダメージを食らっています (残りHP $health)"
         val maxHP = GET().getMaxHP(shop)
-        name(shop, health.toString() + "HP/" + maxHP + "HP")
+        name(shop, health.toString(), maxHP.toString())
         val blockBelow = shop.location.subtract(0.0, 1.0, 0.0).block.type
         var set_team_name = "red"
         if (blockBelow == Material.BLUE_WOOL) {

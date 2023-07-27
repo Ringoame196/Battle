@@ -209,7 +209,7 @@ class GUIClick {
                     time = 180
                 }
                 "再生UP(3分)" -> {
-                    effect = PotionEffectType.INCREASE_DAMAGE
+                    effect = PotionEffectType.REGENERATION
                     level = 2
                     time = 180
                 }
@@ -256,7 +256,7 @@ class GUIClick {
                             maxHPAttribute.baseValue = increasedMaxHP
 
                             // 村人の名前を更新（HP表示を変更する場合）
-                            shop().name(entity as Villager, "${GET().getHP(entity)}/${increasedMaxHP}HP")
+                            shop().name(entity as Villager, GET().getHP(entity).toString(), increasedMaxHP.toString())
                         }
                     }
                 }
