@@ -181,6 +181,7 @@ class GUI {
         val GUI = Bukkit.createInventory(null, 9, "${ChatColor.DARK_GREEN}設定画面")
         set_GUIitem(GUI, 0, Material.EMERALD, "${ChatColor.AQUA}ゲームスタート", "")
         set_GUIitem(GUI, 1, Material.BARRIER, "${ChatColor.RED}終了", "")
+        set_GUIitem(GUI, 2, Material.VILLAGER_SPAWN_EGG, "${ChatColor.YELLOW}ショップ召喚", "")
         player.openInventory(GUI)
     }
     fun close(title: String, player: Player, inventory: Inventory) {

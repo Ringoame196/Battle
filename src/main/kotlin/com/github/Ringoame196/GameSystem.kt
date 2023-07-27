@@ -16,6 +16,7 @@ class GameSystem {
         when (item_name) {
             "${ChatColor.AQUA}ゲームスタート" -> start(plugin, player)
             "${ChatColor.RED}終了" -> stop(plugin, player)
+            "${ChatColor.YELLOW}ショップ召喚" -> shop().summon(player.location)
         }
     }
 

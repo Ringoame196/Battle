@@ -2,9 +2,11 @@ package com.github.Ringoame196
 
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
+import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Mob
 import org.bukkit.entity.Player
@@ -55,7 +57,7 @@ class shop {
         }
     }
     fun name(shop: Villager, name: String) {
-        shop.customName = "${ChatColor.GOLD}攻防戦ショップ${ChatColor.RED}$name"
+        shop.customName = "${ChatColor.RED}$name"
     }
     fun attack(e: EntityDamageByEntityEvent, damager: Entity, shop: Villager) {
         if (damager is Player) {
@@ -84,6 +86,33 @@ class shop {
             }
             player.sendMessage(message)
             PlayerSend().playsound(player, Sound.BLOCK_NOTE_BLOCK_BELL)
+        }
+    }
+    fun summon(location: Location) {
+        val world = location.world
+        val villager: Villager = world!!.spawn(location, Villager::class.java)
+        villager.customName = "${ChatColor.RED}20HP/20HP"
+        villager.isCustomNameVisible = true
+        villager.scoreboardTags.add("shop")
+        villager.setAI(false)
+
+        // アーマースタンドを召喚
+        location.add(0.0, 1.3, 0.0)
+        val armorStand: ArmorStand = world.spawn(location, ArmorStand::class.java)
+
+        // アーマースタンドの設定
+        armorStand.isVisible = false // 可視化するかどうか
+        armorStand.isSmall = true // サイズを小さくするかどうか
+        armorStand.customName = "${ChatColor.GOLD}攻防戦ショップ"
+        armorStand.isCustomNameVisible = true
+        armorStand.setGravity(false)
+    }
+    fun delete_name(location: Location) {
+        val world = location.world
+        val nearbyEntities = world!!.getNearbyEntities(location, 0.0, 2.0, 0.0)
+        for (armorStand in nearbyEntities.filterIsInstance<ArmorStand>()) {
+            armorStand.remove()
+            return
         }
     }
 }

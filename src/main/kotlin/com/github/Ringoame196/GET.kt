@@ -13,4 +13,8 @@ class GET {
         val maxHP = shop.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value
         return maxHP
     }
+    fun getHP(shop: Villager): Double {
+        val HP = shop.health
+        return HP
+    }
 }

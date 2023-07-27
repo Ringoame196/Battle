@@ -96,6 +96,7 @@ class Events(private val plugin: Plugin) : Listener {
         if (killer is Player && mob is Player) {
             player().kill(killer)
         } else if (mob.scoreboardTags.contains("shop")) {
+            shop().delete_name(mob.location)
             if (!Data.DataManager.gameData.status) { return }
             GameSystem().gameend()
         }

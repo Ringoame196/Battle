@@ -7,6 +7,7 @@ import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.entity.Villager
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
@@ -17,7 +18,7 @@ import org.bukkit.potion.PotionEffectType
 
 class GUIClick {
     fun system(plugin: Plugin, e: InventoryClickEvent, player: Player, GUI_name: String, item: ItemStack) {
-        val item_name = item.itemMeta?.displayName as? String // null対策
+        val item_name = item.itemMeta?.displayName
 
         when (GUI_name) {
             "${ChatColor.BLUE}攻防戦ショップ" -> {
@@ -54,9 +55,8 @@ class GUIClick {
                         playerData.point = point
                     }
                     if (item_name?.contains("★") == true) { // null対策
-                        val item_name = item.itemMeta?.displayName.toString()
                         val set_team_name = GET().getTeamName(player) ?: return
-                        GUIClick().click_invocation(player, item_name, set_team_name)
+                        click_invocation(player, item_name, set_team_name)
                         return
                     }
                     val give_item = ItemStack(item)
@@ -245,18 +245,20 @@ class GUIClick {
                 "村人体力増加" -> {
                     val entity = Data.DataManager.teamDataMap[team_name]?.entities?.lastOrNull()
 
-                    if (!(entity is LivingEntity)) { return }
-                    val maxHPAttribute = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)
-                    if (maxHPAttribute == null) { return }
-                    // 現在の最大HPを取得
-                    val currentMaxHP = maxHPAttribute.baseValue
-                    // 最大HPを増やす
-                    val increasedMaxHP = currentMaxHP + 10.0
-                    // 最大HPを設定
-                    maxHPAttribute.baseValue = increasedMaxHP
-                    entity.health = increasedMaxHP
-                    level = increasedMaxHP.toInt()
-                    GUI().villagerlevelup(player.openInventory.topInventory, player)
+                    if (entity is LivingEntity) {
+                        val maxHPAttribute = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)
+                        if (maxHPAttribute != null) {
+                            // 現在の最大HPを取得
+                            val currentMaxHP = maxHPAttribute.baseValue
+                            // 最大HPを増やす
+                            val increasedMaxHP = currentMaxHP + 10.0
+                            // 最大HPを設定
+                            maxHPAttribute.baseValue = increasedMaxHP
+
+                            // 村人の名前を更新（HP表示を変更する場合）
+                            shop().name(entity as Villager, "${GET().getHP(entity)}/${increasedMaxHP}HP")
+                        }
+                    }
                 }
                 "盲目(10秒)[妨害]" -> {
                     effect = PotionEffectType.BLINDNESS
