@@ -27,7 +27,7 @@ class Events(private val plugin: Plugin) : Listener {
         val player = e.player
         val entity = e.rightClicked
         val team_name = GET().getTeamName(player) ?: return
-        if (entity.scoreboardTags.contains("shop")) {
+        if (inspection().shop(entity)) {
             shop().open(e, player, entity as Villager, team_name)
         }
     }
@@ -57,7 +57,7 @@ class Events(private val plugin: Plugin) : Listener {
         if (entity !is Villager) { return }
         val damager = e.damager
 
-        if (entity.scoreboardTags.contains("shop")) {
+        if (inspection().shop(entity)) {
             shop().attack(e, damager, entity)
         }
     }
@@ -96,7 +96,7 @@ class Events(private val plugin: Plugin) : Listener {
         val mob = e.entity
         if (killer is Player && mob is Player) {
             player().kill(killer)
-        } else if (mob.scoreboardTags.contains("shop")) {
+        } else if (inspection().shop(mob)) {
             shop().delete_name(mob.location)
             if (!Data.DataManager.gameData.status) { return }
             GameSystem().gameend()
@@ -109,7 +109,7 @@ class Events(private val plugin: Plugin) : Listener {
         if (e.entity !is Villager) { return }
         val shop = e.entity as Villager
         val amout = e.amount
-        if (shop.scoreboardTags.contains("shop")) {
+        if (inspection().shop(shop)) {
             shop().recovery(shop, amout)
         }
     }

@@ -42,19 +42,17 @@ class shop {
         GUIclass.no_set(GUI, 25)
 
         val time = Data.DataManager.gameData.time
-        if (Data.DataManager.gameData.status == true && time <= 30) {
+        if (Data.DataManager.gameData.status && time <= 30) {
             GUIclass.set_GUIitem(GUI, 14, Material.BARRIER, "${ChatColor.RED}選択不可", "")
         }
 
         player.openInventory(GUI)
     }
     fun recovery(shop: Villager, amount: Double) {
-        val maxHP = shop.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value
+        val maxHP = GET().getMaxHP(shop)
         val currentHP = shop.health + amount
-        val newHP = maxHP?.let { if (currentHP >= it) it else currentHP }?.toString()
-        if (newHP != null) {
-            name(shop, newHP.toString() + "HP/" + maxHP + "HP")
-        }
+        val newHP = maxHP?.let { if (currentHP >= it) it else currentHP }?.toString() ?: return
+        name(shop, newHP + "HP/" + maxHP + "HP")
     }
     fun name(shop: Villager, name: String) {
         shop.customName = "${ChatColor.RED}$name"
