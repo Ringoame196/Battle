@@ -1,6 +1,5 @@
 package com.github.Ringoame196
 
-import jdk.jfr.Event
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -11,10 +10,18 @@ import org.bukkit.plugin.Plugin
 
 class point {
     fun add(player: Player, addpoint: Int) {
-        player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
-        var point = Data.DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
+        player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f)
+        var point = GET().getpoint(player)
         point += addpoint
         player.sendMessage("${ChatColor.GREEN}+$addpoint (${point}ポイント)")
+        Data.DataManager.playerDataMap[player.uniqueId]?.let { playerData ->
+            playerData.point = point
+        }
+    }
+    fun remove(player: Player, removepoint: Int) {
+        player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
+        var point = GET().getpoint(player)
+        point -= removepoint
         Data.DataManager.playerDataMap[player.uniqueId]?.let { playerData ->
             playerData.point = point
         }
@@ -47,5 +54,20 @@ class point {
             plugin,
             Runnable { block.setType(block_type) }, cooltime.toLong() * 20 // クールダウン時間をtick単位に変換
         )
+    }
+    fun purchase(player: Player, price: Int): Boolean {
+        var possible = false
+        val point = GET().getpoint(player)
+        if (price > point) {
+            player.sendMessage("${ChatColor.RED}" + (price - point) + "ポイント足りません")
+            player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
+            player.closeInventory()
+        } else {
+            player.playSound(player, Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f)
+            remove(player, price)
+            possible = true
+        }
+
+        return possible
     }
 }

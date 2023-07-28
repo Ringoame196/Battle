@@ -17,4 +17,8 @@ class GET {
         val HP = shop.health
         return HP
     }
+    fun getpoint(player: Player): Int {
+        val point = Data.DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
+        return point
+    }
 }

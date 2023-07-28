@@ -32,39 +32,22 @@ class GUIClick {
                     return
                 }
                 val price = item.itemMeta?.lore?.get(0) // 値段取得
-                var price_int = 0
-                var point = Data.DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
 
-                for (i in 1..10000) {
-                    if (price == i.toString() + "p") {
-                        price_int = i
-                        break
-                    }
-                }
-                if (price_int == 0) {
+                if (!(price!!.contains("p"))) { return }
+                val price_int: Int = price.replace("p", "").toInt()
+
+                if (!point().purchase(player, price_int)) { return }
+
+                if (item_name?.contains("★") == true) { // null対策
+                    val set_team_name = GET().getTeamName(player) ?: return
+                    click_invocation(player, item_name, set_team_name)
                     return
                 }
-                if (price_int > point) {
-                    player.sendMessage("${ChatColor.RED}" + (price_int - point) + "ポイント足りません")
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
-                    player.closeInventory()
-                } else {
-                    point -= price_int
-                    player.playSound(player, Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f)
-                    Data.DataManager.playerDataMap[player.uniqueId]?.let { playerData ->
-                        playerData.point = point
-                    }
-                    if (item_name?.contains("★") == true) { // null対策
-                        val set_team_name = GET().getTeamName(player) ?: return
-                        click_invocation(player, item_name, set_team_name)
-                        return
-                    }
-                    val give_item = ItemStack(item)
-                    val meta = item.itemMeta
-                    meta?.lore = null
-                    give_item.setItemMeta(meta)
-                    player.inventory.addItem(give_item)
-                }
+                val give_item = ItemStack(item)
+                val meta = item.itemMeta
+                meta?.lore = null
+                give_item.setItemMeta(meta)
+                player.inventory.addItem(give_item)
             }
             "${ChatColor.DARK_GREEN}金床" -> {
                 if (item.type == Material.RED_STAINED_GLASS_PANE) {
