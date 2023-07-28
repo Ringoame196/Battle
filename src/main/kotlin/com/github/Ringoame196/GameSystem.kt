@@ -1,6 +1,5 @@
 package com.github.Ringoame196
 
-import jdk.jfr.Event
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
@@ -15,7 +14,7 @@ class GameSystem {
         PlayerSend().playsound(player, Sound.UI_BUTTON_CLICK)
         when (item_name) {
             "${ChatColor.AQUA}ゲームスタート" -> start(plugin, player)
-            "${ChatColor.RED}終了" -> stop(plugin, player)
+            "${ChatColor.RED}終了" -> stop(player)
             "${ChatColor.YELLOW}ショップ召喚" -> shop().summon(player.location)
         }
     }
@@ -38,7 +37,7 @@ class GameSystem {
         )
     }
 
-    fun stop(plugin: Plugin, player: Player) {
+    fun stop(player: Player) {
         if (!Data.DataManager.gameData.status) {
             player.sendMessage("${ChatColor.RED}ゲームは開始していません")
             return
@@ -70,7 +69,7 @@ class GameSystem {
 
     fun Schedule(time: Int) {
         when (time) {
-            30 -> PlayerSend().teammessage("${ChatColor.YELLOW}ゾンビ購入解放")
+            30 -> PlayerSend().participantmessage("${ChatColor.YELLOW}ゾンビ購入解放")
         }
     }
 }

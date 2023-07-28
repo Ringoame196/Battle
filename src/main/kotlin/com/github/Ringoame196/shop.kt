@@ -91,7 +91,7 @@ class shop {
         val Initial_HP = 100.0
         val world = location.world
         val villager: Villager = world!!.spawn(location, Villager::class.java)
-        villager.customName = "${ChatColor.RED}${Initial_HP}HP/${Initial_HP}HP"
+        shop().name(villager, Initial_HP.toString(), Initial_HP.toString())
         villager.isCustomNameVisible = true
         villager.scoreboardTags.add("shop")
         villager.setAI(false)

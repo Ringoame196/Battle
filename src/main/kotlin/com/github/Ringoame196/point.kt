@@ -4,15 +4,17 @@ import jdk.jfr.Event
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 
 class point {
     fun add(player: Player, addpoint: Int) {
+        player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
         var point = Data.DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
         point += addpoint
-        player.sendMessage("${ChatColor.AQUA}[現在]$point P")
+        player.sendMessage("${ChatColor.GREEN}+$addpoint (${point}ポイント)")
         Data.DataManager.playerDataMap[player.uniqueId]?.let { playerData ->
             playerData.point = point
         }

@@ -4,7 +4,6 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.Material
-import org.bukkit.Sound
 import org.bukkit.entity.IronGolem
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
@@ -45,13 +44,7 @@ class itemClick {
             }
             else -> { return }
         }
-        var pointdata = Data.DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
-        pointdata += point
-        player.sendMessage("${ChatColor.GREEN}+" + point + "p(" + pointdata + "ポイント)")
-        player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
-        Data.DataManager.playerDataMap[player.uniqueId]?.let { playerData ->
-            playerData.point = pointdata
-        }
+        point().add(player, point)
     }
     fun summon_golem(player: Player, type: Material?, name: String) {
         val location = player.location

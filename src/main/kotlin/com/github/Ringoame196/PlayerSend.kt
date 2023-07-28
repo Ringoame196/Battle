@@ -8,7 +8,7 @@ class PlayerSend {
     fun playsound(player: Player, sound: Sound) {
         player.playSound(player.location, sound, 1f, 1f)
     }
-    fun teammessage(message: String) {
+    fun participantmessage(message: String) {
         for (loopPlayer in Bukkit.getServer().onlinePlayers) {
             val team = GET().getTeamName(loopPlayer)
             if (team == "red" || team == "blue") {
