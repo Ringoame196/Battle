@@ -30,16 +30,16 @@ class point {
         val block_type = block.type
         GameSystem().adventure(e, player)
         var cooltime = Data.DataManager.teamDataMap.getOrPut(team) { Team() }.blockTime
-        var point = 0
+        val point: Int
         when (block_type) {
-            Material.COAL_ORE -> { point += 1 }
+            Material.COAL_ORE -> { point = 1 }
 
-            Material.IRON_ORE -> { point += 3 }
+            Material.IRON_ORE -> { point = 3 }
 
-            Material.GOLD_ORE -> { point += 5 }
+            Material.GOLD_ORE -> { point = 5 }
 
             Material.DIAMOND_ORE -> {
-                point += 100
+                point = 100
                 cooltime = 7 // ダイヤモンドだけ別時間
             }
 

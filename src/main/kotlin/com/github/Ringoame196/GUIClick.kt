@@ -33,7 +33,7 @@ class GUIClick {
                 }
                 val price = item.itemMeta?.lore?.get(0) // 値段取得
 
-                if (!(price!!.contains("p"))) { return }
+                if (!price!!.contains("p")) { return }
                 val price_int: Int = price.replace("p", "").toInt()
 
                 if (!point().purchase(player, price_int)) { return }
@@ -78,7 +78,7 @@ class GUIClick {
         when {
             item_type == Material.CHEST && item_name == "${ChatColor.YELLOW}共通チェスト" -> {
                 // 共有チェストの処理
-                if ((team_name != "red" && team_name != "blue")) {
+                if (team_name !in listOf("red", "blue")) {
                     return
                 }
                 val chest = Data.DataManager.teamDataMap.getOrPut(team_name) { Team() }.chest
@@ -119,24 +119,13 @@ class GUIClick {
         val enchantitem_name = enchantitem.type.toString()
         var shouldExecute = false
 
-        if (enchantitem_name.contains("PICKAXE")) {
-            // PICKAXEに関する処理
-            shouldExecute = true
-        } else if (enchantitem_name.contains("SWORD")) {
-            // SWORDに関する処理
-            shouldExecute = true
-        } else if (enchantitem_name.contains("BOW")) {
-            // BOWに関する処理
-            shouldExecute = true
-        } else if (enchantitem_name.contains("CHESTPLATE")) {
-            // CHESTPLATEに関する処理
-            shouldExecute = true
-        } else if (enchantitem_name.contains("LEGGINGS")) {
-            // LEGGINGSに関する処理
-            shouldExecute = true
-        } else if (enchantitem_name.contains("BOOTS")) {
-            // BOOTSに関する処理
-            shouldExecute = true
+        when {
+            enchantitem_name.contains("PICKAXE") -> shouldExecute = true
+            enchantitem_name.contains("SWORD") -> shouldExecute = true
+            enchantitem_name.contains("BOW") -> shouldExecute = true
+            enchantitem_name.contains("CHESTPLATE") -> shouldExecute = true
+            enchantitem_name.contains("LEGGINGS") -> shouldExecute = true
+            enchantitem_name.contains("BOOTS") -> shouldExecute = true
         }
         if (!shouldExecute) {
             player.sendMessage("${ChatColor.RED}対応するものをセットしてください")
@@ -184,88 +173,86 @@ class GUIClick {
         var level = 0
         var time = 0
 
-        check_name.let {
-            when (it) {
-                "攻撃力UP(3分)" -> {
-                    effect = PotionEffectType.INCREASE_DAMAGE
-                    level = 2
-                    time = 180
-                }
-                "再生UP(3分)" -> {
-                    effect = PotionEffectType.REGENERATION
-                    level = 2
-                    time = 180
-                }
-                "採掘速度UP(5分)" -> {
-                    effect = PotionEffectType.FAST_DIGGING
-                    level = 3
-                    time = 300
-                }
-                "耐性(3分)" -> {
-                    effect = PotionEffectType.DAMAGE_RESISTANCE
-                    level = 1
-                    time = 180
-                }
-                "移動速度UP(3分)" -> {
-                    effect = PotionEffectType.SPEED
-                    level = 1
-                    time = 180
-                }
-                "攻撃力UP&再生(1分)" -> {
-                    effect = PotionEffectType.REGENERATION
-                    effect2 = PotionEffectType.INCREASE_DAMAGE
-                    level = 5
-                    time = 60
-                }
-                "鉱石復活速度UP" -> {
-                    var set_time = Data.DataManager.teamDataMap.getOrPut(team_name) { Team() }.blockTime
-                    set_time -= 1
-                    Data.DataManager.teamDataMap[team_name]?.blockTime = set_time
-                    GUI().villagerlevelup(player.openInventory.topInventory, player)
+        when (check_name) {
+            "攻撃力UP(3分)" -> {
+                effect = PotionEffectType.INCREASE_DAMAGE
+                level = 2
+                time = 180
+            }
+            "再生UP(3分)" -> {
+                effect = PotionEffectType.REGENERATION
+                level = 2
+                time = 180
+            }
+            "採掘速度UP(5分)" -> {
+                effect = PotionEffectType.FAST_DIGGING
+                level = 3
+                time = 300
+            }
+            "耐性(3分)" -> {
+                effect = PotionEffectType.DAMAGE_RESISTANCE
+                level = 1
+                time = 180
+            }
+            "移動速度UP(3分)" -> {
+                effect = PotionEffectType.SPEED
+                level = 1
+                time = 180
+            }
+            "攻撃力UP&再生(1分)" -> {
+                effect = PotionEffectType.REGENERATION
+                effect2 = PotionEffectType.INCREASE_DAMAGE
+                level = 5
+                time = 60
+            }
+            "鉱石復活速度UP" -> {
+                var set_time = Data.DataManager.teamDataMap.getOrPut(team_name) { Team() }.blockTime
+                set_time -= 1
+                Data.DataManager.teamDataMap[team_name]?.blockTime = set_time
+                GUI().villagerlevelup(player.openInventory.topInventory, player)
 
-                    level = 6 - set_time
-                }
-                "村人体力増加" -> {
-                    val entity = Data.DataManager.teamDataMap[team_name]?.entities?.lastOrNull()
+                level = 6 - set_time
+            }
+            "村人体力増加" -> {
+                val entity = Data.DataManager.teamDataMap[team_name]?.entities?.lastOrNull()
 
-                    if (entity is LivingEntity) {
-                        val maxHPAttribute = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)
-                        if (maxHPAttribute != null) {
-                            // 現在の最大HPを取得
-                            val currentMaxHP = maxHPAttribute.baseValue
-                            // 最大HPを増やす
-                            val increasedMaxHP = currentMaxHP + 10.0
-                            // 最大HPを設定
-                            maxHPAttribute.baseValue = increasedMaxHP
+                if (entity is LivingEntity) {
+                    val maxHPAttribute = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)
+                    if (maxHPAttribute != null) {
+                        // 現在の最大HPを取得
+                        val currentMaxHP = maxHPAttribute.baseValue
+                        // 最大HPを増やす
+                        val increasedMaxHP = currentMaxHP + 10.0
+                        // 最大HPを設定
+                        maxHPAttribute.baseValue = increasedMaxHP
 
-                            // 村人の名前を更新（HP表示を変更する場合）
-                            shop().name(entity as Villager, GET().getHP(entity).toString(), increasedMaxHP.toString())
-                        }
+                        // 村人の名前を更新（HP表示を変更する場合）
+                        shop().name(entity as Villager, GET().getHP(entity).toString(), increasedMaxHP.toString())
                     }
                 }
-                "盲目(10秒)[妨害]" -> {
-                    effect = PotionEffectType.BLINDNESS
-                    level = 255
-                    time = 10
-                }
-                "弱体化(10秒)[妨害]" -> {
-                    effect = PotionEffectType.WEAKNESS
-                    level = 1
-                    time = 10
-                }
-                "採掘速度低下(1分)[妨害]" -> {
-                    effect = PotionEffectType.SLOW_DIGGING
-                    level = 1
-                    time = 60
-                }
+            }
+            "盲目(10秒)[妨害]" -> {
+                effect = PotionEffectType.BLINDNESS
+                level = 255
+                time = 10
+            }
+            "弱体化(10秒)[妨害]" -> {
+                effect = PotionEffectType.WEAKNESS
+                level = 1
+                time = 10
+            }
+            "採掘速度低下(1分)[妨害]" -> {
+                effect = PotionEffectType.SLOW_DIGGING
+                level = 1
+                time = 60
             }
         }
 
-        var message = "${ChatColor.AQUA}[チーム強化]" + player.name + "さんが" + item_name + "${ChatColor.AQUA}を発動しました(レベル" + level.toString() + ")"
+        var message = "${ChatColor.AQUA}[チーム強化]${player.name}さんが${item_name}${ChatColor.AQUA}を発動しました(レベル$level)"
         if (check_name.contains("[妨害]")) {
             // 反対チーム名にする
             player_team_name = if (player_team_name == "red") { "blue" } else { "red" }
-            message = "${ChatColor.RED}[妨害]" + player_team_name + "チームが" + item_name + "${ChatColor.RED}を発動しました(レベル" + level.toString() + ")"
+            message = "${ChatColor.RED}[妨害]${player_team_name}チームが${item_name}${ChatColor.RED}を発動しました(レベル $level)"
         }
 
         for (loopPlayer in Bukkit.getServer().onlinePlayers) {
