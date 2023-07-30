@@ -4,6 +4,8 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.block.Block
+import org.bukkit.block.Sign
 import org.bukkit.entity.IronGolem
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
@@ -12,22 +14,48 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
 class itemClick {
-    fun summonzombie(player: Player, item: ItemStack?) {
+    fun system(player: Player, item: ItemStack?, block: Block?, e: PlayerInteractEvent) {
+        val item_name = item?.itemMeta?.displayName.toString()
+        val item_type = item?.type
+        when {
+            item_type == Material.SLIME_BALL && item_name.contains("[召喚]") -> {
+                summonzombie(player, item_name)
+            }
+            item_type == Material.EMERALD -> {
+                money(player, item_name)
+            }
+            item_name.contains("ゴーレム") -> {
+                e.isCancelled = true
+                summon_golem(player, item?.type, item_name)
+            }
+            item_type == Material.COMMAND_BLOCK && item_name == "ゲーム設定" -> {
+                e.isCancelled = true
+                GUI().gamesettingGUI(player)
+            }
+            block?.type == Material.OAK_WALL_SIGN -> {
+                e.isCancelled = true
+                val sign = block.state as Sign
+                if (!sign.lines.contains("[BATTLE]")) { return }
+                GUI().playerGUI(player)
+            }
+            else -> return
+        }
+        removeitem(player)
+    }
+    fun summonzombie(player: Player, item_name: String) {
         if (player.location.subtract(0.0, 1.0, 0.0).block.type != Material.GLASS) {
             player.sendMessage("${ChatColor.RED}ガラスの上で実行してください")
             return
         }
 
-        val item_name = item?.itemMeta?.displayName
-        if (item_name?.contains("[召喚]") == false) { return }
-
-        var summon_name = item_name?.replace("[召喚]", "")
-        summon_name = summon_name?.replace("${ChatColor.YELLOW}", "")
+        var summon_name = item_name.replace("[召喚]", "")
+        summon_name = summon_name.replace("${ChatColor.YELLOW}", "")
 
         var command = "execute as ${player.name} at @s run function akmob:"
         command += when (summon_name) {
             "ノーマルゾンビ" -> "normal"
             "チビゾンビ" -> "chibi"
+            "シールドゾンビ" -> "shield"
             else -> return // 不明な召喚名の場合は何もせずに処理が終了します
         }
 
@@ -74,27 +102,5 @@ class itemClick {
         val oneItem = itemInHand.clone()
         oneItem.amount = 1
         player.inventory.removeItem(oneItem)
-    }
-    fun system(player: Player, item: ItemStack, e: PlayerInteractEvent) {
-        val item_name = item.itemMeta?.displayName.toString()
-        val item_type = item.type
-        when {
-            item_type == Material.SLIME_BALL -> {
-                summonzombie(player, item)
-            }
-            item_type == Material.EMERALD -> {
-                money(player, item_name)
-            }
-            item_name.contains("ゴーレム") -> {
-                e.isCancelled = true
-                summon_golem(player, item.type, item_name)
-            }
-            item_type == Material.COMMAND_BLOCK && item_name == "ゲーム設定" -> {
-                e.isCancelled = true
-                GUI().gamesettingGUI(player)
-            }
-            else -> return
-        }
-        removeitem(player)
     }
 }

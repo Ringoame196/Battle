@@ -66,10 +66,11 @@ class Events(private val plugin: Plugin) : Listener {
     fun onPlayerInteractEvent(e: PlayerInteractEvent) {
         // インベントリアイテムクリック
         val player = e.player
-        val item = e.item ?: return
+        val item = e.item
+        val block = e.clickedBlock
         val action = e.action
         if ((action == Action.RIGHT_CLICK_AIR) || (action == Action.RIGHT_CLICK_BLOCK)) {
-            itemClick().system(player, item, e)
+            itemClick().system(player, item, block, e)
         }
     }
 

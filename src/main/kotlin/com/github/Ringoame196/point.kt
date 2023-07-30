@@ -55,16 +55,17 @@ class point {
             Runnable { block.setType(block_type) }, cooltime.toLong() * 20 // クールダウン時間をtick単位に変換
         )
     }
-    fun purchase(player: Player, price: Int): Boolean {
+    fun purchase(player: Player, price: String): Boolean {
+        val price_int: Int = price.replace("p", "").toInt()
         var possible = false
         val point = GET().getpoint(player)
-        if (price > point) {
-            player.sendMessage("${ChatColor.RED}" + (price - point) + "ポイント足りません")
+        if (price_int > point) {
+            player.sendMessage("${ChatColor.RED}" + (price_int - point) + "ポイント足りません")
             player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
             player.closeInventory()
         } else {
             player.playSound(player, Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f)
-            remove(player, price)
+            remove(player, price_int)
             possible = true
         }
 

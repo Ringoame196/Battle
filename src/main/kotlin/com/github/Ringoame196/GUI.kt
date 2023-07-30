@@ -32,10 +32,9 @@ class GUI {
         val potionMeta = itemStack.itemMeta as PotionMeta
         lore(potionMeta, lore)
 
-        // 既存のカスタムエフェクトをクリア
-        potionMeta.clearCustomEffects()
         val regenerationEffect = PotionEffect(typePotion, time * 20, level)
         potionMeta.addCustomEffect(regenerationEffect, true)
+        potionMeta.setDisplayName("スプラッシュポーション")
         itemStack.setItemMeta(potionMeta)
         GUI.setItem(number, itemStack)
     }
@@ -47,17 +46,13 @@ class GUI {
         if (itemMeta is EnchantmentStorageMeta) {
             itemMeta.addStoredEnchant(enchant, level, true)
         }
-        item.itemMeta = itemMeta
+        item.setItemMeta(itemMeta)
         GUI.setItem(number, item)
     }
 
     fun lore(meta: ItemMeta?, lore: String) {
-        val loreList: MutableList<String> = mutableListOf()
-        loreList.add(lore)
-        if (meta?.displayName?.contains("★") == true) {
-            loreList.add("")
-            loreList.add("クリックで発動")
-        }
+        val loreList: MutableList<String> = mutableListOf(lore)
+        if (meta?.displayName?.contains("★") == true) loreList.addAll(listOf("", "クリックで発動"))
         meta?.lore = loreList
     }
 
@@ -130,6 +125,7 @@ class GUI {
     fun zombieshop(GUI: Inventory) {
         set_GUIitem(GUI, 0, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]ノーマルゾンビ", "5p")
         set_GUIitem(GUI, 1, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]チビゾンビ", "10p")
+        set_GUIitem(GUI, 2, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]シールドゾンビ", "20p")
     }
     fun general_merchandiseshop(GUI: Inventory, player: Player) {
         player.openInventory(GUI)
@@ -178,21 +174,22 @@ class GUI {
         }
     }
     fun gamesettingGUI(player: Player) {
-        val GUI = Bukkit.createInventory(null, 9, "${ChatColor.DARK_GREEN}設定画面")
+        val GUI = Bukkit.createInventory(null, 9, "${ChatColor.DARK_GREEN}設定画面[BATTLEGUI]")
         set_GUIitem(GUI, 0, Material.EMERALD, "${ChatColor.AQUA}ゲームスタート", "")
         set_GUIitem(GUI, 1, Material.BARRIER, "${ChatColor.RED}終了", "")
         set_GUIitem(GUI, 2, Material.VILLAGER_SPAWN_EGG, "${ChatColor.YELLOW}ショップ召喚", "")
         player.openInventory(GUI)
     }
+    fun playerGUI(player: Player) {
+        val GUI = Bukkit.createInventory(null, 9, ChatColor.BLUE.toString() + "BATTLEメニュー[BATTLEGUI]")
+        set_GUIitem(GUI, 1, Material.GREEN_DYE, "${ChatColor.YELLOW}ゲーム参加", "")
+        set_GUIitem(GUI, 2, Material.RED_DYE, "${ChatColor.RED}ゲーム退出", "")
+        player.openInventory(GUI)
+    }
     fun close(title: String, player: Player, inventory: Inventory) {
-        if (title == "${ChatColor.DARK_GREEN}チームチェスト") {
-            PlayerSend().playsound(player, Sound.BLOCK_CHEST_CLOSE)
-            return
-        }
-
-        if (title == "${ChatColor.DARK_GREEN}金床") {
-            anvil().close(player, inventory)
-            return
+        when (title) {
+            "${ChatColor.DARK_GREEN}チームチェスト" -> PlayerSend().playsound(player, Sound.BLOCK_CHEST_CLOSE)
+            "${ChatColor.DARK_GREEN}金床" -> anvil().close(player, inventory)
         }
     }
 }

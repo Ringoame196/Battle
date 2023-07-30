@@ -22,7 +22,7 @@ class shop {
         GUI(player)
     }
     fun GUI(player: Player) {
-        val GUI = Bukkit.createInventory(null, 27, ChatColor.BLUE.toString() + "攻防戦ショップ")
+        val GUI = Bukkit.createInventory(null, 27, ChatColor.BLUE.toString() + "攻防戦ショップ[BATTLEGUI]")
         val point = Data.DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
         val GUIclass = GUI()
 
@@ -95,6 +95,7 @@ class shop {
         villager.isCustomNameVisible = true
         villager.scoreboardTags.add("shop")
         villager.setAI(false)
+        villager.isSilent = true
 
         val maxHPAttribute = villager.getAttribute(Attribute.GENERIC_MAX_HEALTH)
         maxHPAttribute?.baseValue = Initial_HP

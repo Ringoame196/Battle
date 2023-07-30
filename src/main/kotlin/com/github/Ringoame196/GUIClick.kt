@@ -11,7 +11,6 @@ import org.bukkit.entity.Villager
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -19,26 +18,31 @@ import org.bukkit.potion.PotionEffectType
 class GUIClick {
     fun system(plugin: Plugin, e: InventoryClickEvent, player: Player, GUI_name: String, item: ItemStack) {
         val item_name = item.itemMeta?.displayName
-
-        when (GUI_name) {
-            "${ChatColor.BLUE}攻防戦ショップ" -> {
-                GUIClick().homeshop(player, item)
-                e.isCancelled = true
-                PlayerSend().playsound(player, Sound.UI_BUTTON_CLICK)
+        if (GUI_name == "${ChatColor.DARK_GREEN}金床") {
+            when (item.type) {
+                Material.RED_STAINED_GLASS_PANE -> e.isCancelled = true
+                Material.COMMAND_BLOCK -> anvil().system(player, e.inventory)
+                else -> return
             }
+            e.isCancelled = true
+            return
+        }
+
+        if (!GUI_name.contains("[BATTLEGUI]")) { return }
+        e.isCancelled = true
+        PlayerSend().playsound(player, Sound.UI_BUTTON_CLICK)
+        when (GUI_name.replace("[BATTLEGUI]", "")) {
+            "${ChatColor.BLUE}攻防戦ショップ" -> homeshop(player, item)
             "${ChatColor.DARK_GREEN}ショップ" -> {
-                e.isCancelled = true
                 if (item.type == Material.RED_STAINED_GLASS_PANE) {
                     return
                 }
                 val price = item.itemMeta?.lore?.get(0) // 値段取得
 
                 if (!price!!.contains("p")) { return }
-                val price_int: Int = price.replace("p", "").toInt()
+                if (!point().purchase(player, price)) { return }
 
-                if (!point().purchase(player, price_int)) { return }
-
-                if (item_name?.contains("★") == true) { // null対策
+                if (item_name?.contains("★")!!) {
                     val set_team_name = GET().getTeamName(player) ?: return
                     click_invocation(player, item_name, set_team_name)
                     return
@@ -49,19 +53,7 @@ class GUIClick {
                 give_item.setItemMeta(meta)
                 player.inventory.addItem(give_item)
             }
-            "${ChatColor.DARK_GREEN}金床" -> {
-                if (item.type == Material.RED_STAINED_GLASS_PANE) {
-                    e.isCancelled = true
-                    return
-                }
-                if (item.type != Material.COMMAND_BLOCK) {
-                    return
-                }
-                e.isCancelled = true
-                GUIClick().anvil(player, e.inventory)
-            }
             "${ChatColor.DARK_GREEN}設定画面" -> {
-                e.isCancelled = true
                 if (item_name != null) {
                     GameSystem().system(plugin, player, item_name)
                     player.closeInventory()
@@ -74,7 +66,7 @@ class GUIClick {
         val item_type = item.type
         val item_name = item.itemMeta?.displayName
         val team_name = GET().getTeamName(player) ?: return
-        val shop: Inventory = Bukkit.createInventory(null, 36, "${ChatColor.DARK_GREEN}ショップ")
+        val shop: Inventory = Bukkit.createInventory(null, 36, "${ChatColor.DARK_GREEN}ショップ[BATTLEGUI]")
         when {
             item_type == Material.CHEST && item_name == "${ChatColor.YELLOW}共通チェスト" -> {
                 // 共有チェストの処理
@@ -104,61 +96,6 @@ class GUIClick {
             else -> return
         }
         player.openInventory(shop)
-    }
-
-    fun anvil(player: Player, inv: Inventory) {
-        val enchantitem = inv.getItem(3)
-        val enchant_book = inv.getItem(5)
-        if (enchantitem == null) {
-            player.sendMessage("${ChatColor.RED}エンチャントするものをセットしてください")
-            player.closeInventory()
-            player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
-            return
-        }
-        // 金床
-        val enchantitem_name = enchantitem.type.toString()
-        var shouldExecute = false
-
-        when {
-            enchantitem_name.contains("PICKAXE") -> shouldExecute = true
-            enchantitem_name.contains("SWORD") -> shouldExecute = true
-            enchantitem_name.contains("BOW") -> shouldExecute = true
-            enchantitem_name.contains("CHESTPLATE") -> shouldExecute = true
-            enchantitem_name.contains("LEGGINGS") -> shouldExecute = true
-            enchantitem_name.contains("BOOTS") -> shouldExecute = true
-        }
-        if (!shouldExecute) {
-            player.sendMessage("${ChatColor.RED}対応するものをセットしてください")
-            player.closeInventory()
-            player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
-            return
-        }
-
-        if (enchant_book == null || enchant_book.type != Material.ENCHANTED_BOOK) {
-            player.sendMessage("${ChatColor.RED}エンチャント本をセットしてください")
-            player.closeInventory()
-            player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
-            return
-        }
-
-        val itemToEnchant = inv.getItem(3)
-        val meta = enchant_book.itemMeta
-
-        if (meta is EnchantmentStorageMeta) {
-            val storedEnchants = meta.storedEnchants
-            for ((enchantment, level) in storedEnchants) {
-                itemToEnchant?.addUnsafeEnchantment(enchantment, level)
-            }
-        } else {
-            val enchants = meta?.enchants
-            if (enchants == null) { return }
-            for ((enchantment, level) in enchants) {
-                itemToEnchant?.addUnsafeEnchantment(enchantment, level)
-            }
-        }
-        val newBookItem = ItemStack(Material.AIR)
-        inv.setItem(5, newBookItem)
-        player.playSound(player, Sound.BLOCK_ANVIL_USE, 1f, 1f)
     }
 
     fun click_invocation(player: Player, item_name: String, team_name: String) {
@@ -216,20 +153,19 @@ class GUIClick {
             "村人体力増加" -> {
                 val entity = Data.DataManager.teamDataMap[team_name]?.entities?.lastOrNull()
 
-                if (entity is LivingEntity) {
-                    val maxHPAttribute = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)
-                    if (maxHPAttribute != null) {
-                        // 現在の最大HPを取得
-                        val currentMaxHP = maxHPAttribute.baseValue
-                        // 最大HPを増やす
-                        val increasedMaxHP = currentMaxHP + 10.0
-                        // 最大HPを設定
-                        maxHPAttribute.baseValue = increasedMaxHP
+                if (entity !is LivingEntity) { return }
+                val maxHPAttribute = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)
+                if (maxHPAttribute == null) { return }
+                // 現在の最大HPを取得
+                val currentMaxHP = maxHPAttribute.baseValue
+                // 最大HPを増やす
+                val increasedMaxHP = currentMaxHP + 10.0
+                // 最大HPを設定
+                maxHPAttribute.baseValue = increasedMaxHP
 
-                        // 村人の名前を更新（HP表示を変更する場合）
-                        shop().name(entity as Villager, GET().getHP(entity).toString(), increasedMaxHP.toString())
-                    }
-                }
+                // 村人の名前を更新（HP表示を変更する場合）
+                shop().name(entity as Villager, GET().getHP(entity).toString(), increasedMaxHP.toString())
+                GUI().villagerlevelup(player.openInventory.topInventory, player)
             }
             "盲目(10秒)[妨害]" -> {
                 effect = PotionEffectType.BLINDNESS
@@ -251,12 +187,12 @@ class GUIClick {
         var message = "${ChatColor.AQUA}[チーム強化]${player.name}さんが${item_name}${ChatColor.AQUA}を発動しました(レベル$level)"
         if (check_name.contains("[妨害]")) {
             // 反対チーム名にする
-            player_team_name = if (player_team_name == "red") { "blue" } else { "red" }
             message = "${ChatColor.RED}[妨害]${player_team_name}チームが${item_name}${ChatColor.RED}を発動しました(レベル $level)"
+            player_team_name = GET().getOpposingTeamname(player_team_name)
         }
 
         for (loopPlayer in Bukkit.getServer().onlinePlayers) {
-            val loopPlayerTeam = loopPlayer.scoreboard.teams.firstOrNull { it.hasEntry(loopPlayer.name) }?.name
+            val loopPlayerTeam = GET().getTeamName(loopPlayer)
 
             if (loopPlayerTeam == player_team_name) {
                 loopPlayer.sendMessage(message)
