@@ -14,12 +14,34 @@ import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
+import org.bukkit.inventory.ItemStack
 
 class shop {
     fun open(e: PlayerInteractEntityEvent, player: Player, entity: Mob, team: String) {
         e.isCancelled = true
         Data.DataManager.teamDataMap[team]?.entities?.add(entity)
         GUI(player)
+    }
+    fun system(item: ItemStack, player: Player) {
+        if (item.type == Material.RED_STAINED_GLASS_PANE) {
+            return
+        }
+        val item_name = item.itemMeta?.displayName
+        val price = item.itemMeta?.lore?.get(0) // 値段取得
+        if (!price!!.contains("p")) { return }
+        if (!point().purchase(player, price)) { return }
+
+        if (item_name?.contains("★")!!) {
+            val set_team_name = GET().getTeamName(player) ?: return
+            GUIClick().click_invocation(player, item_name, set_team_name)
+        }
+        else {
+            val give_item = ItemStack(item)
+            val meta = item.itemMeta
+            meta?.lore = null
+            give_item.setItemMeta(meta)
+            player.inventory.addItem(give_item)
+        }
     }
     fun GUI(player: Player) {
         val GUI = Bukkit.createInventory(null, 27, ChatColor.BLUE.toString() + "攻防戦ショップ[BATTLEGUI]")

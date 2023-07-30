@@ -33,26 +33,7 @@ class GUIClick {
         PlayerSend().playsound(player, Sound.UI_BUTTON_CLICK)
         when (GUI_name.replace("[BATTLEGUI]", "")) {
             "${ChatColor.BLUE}攻防戦ショップ" -> homeshop(player, item)
-            "${ChatColor.DARK_GREEN}ショップ" -> {
-                if (item.type == Material.RED_STAINED_GLASS_PANE) {
-                    return
-                }
-                val price = item.itemMeta?.lore?.get(0) // 値段取得
-
-                if (!price!!.contains("p")) { return }
-                if (!point().purchase(player, price)) { return }
-
-                if (item_name?.contains("★")!!) {
-                    val set_team_name = GET().getTeamName(player) ?: return
-                    click_invocation(player, item_name, set_team_name)
-                    return
-                }
-                val give_item = ItemStack(item)
-                val meta = item.itemMeta
-                meta?.lore = null
-                give_item.setItemMeta(meta)
-                player.inventory.addItem(give_item)
-            }
+            "${ChatColor.DARK_GREEN}ショップ" -> shop().system(item, player)
             "${ChatColor.DARK_GREEN}設定画面" -> {
                 if (item_name != null) {
                     GameSystem().system(plugin, player, item_name)
