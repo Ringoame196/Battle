@@ -12,6 +12,7 @@ class GameSystem {
 
     fun system(plugin: Plugin, player: Player, item_name: String) {
         PlayerSend().playsound(player, Sound.UI_BUTTON_CLICK)
+        player.closeInventory()
         when (item_name) {
             "${ChatColor.AQUA}ゲームスタート" -> start(plugin, player)
             "${ChatColor.RED}終了" -> stop(player)

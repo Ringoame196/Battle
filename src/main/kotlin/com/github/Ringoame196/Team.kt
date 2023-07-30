@@ -8,5 +8,6 @@ import org.bukkit.inventory.Inventory
 data class Team(
     var blockTime: Int = 5,
     val chest: Inventory = Bukkit.createInventory(null, 27, "${ChatColor.DARK_GREEN}チームチェスト"),
-    val entities: MutableList<Mob> = mutableListOf()
+    val entities: MutableList<Mob> = mutableListOf(),
+    var opening: Boolean = false,
 )

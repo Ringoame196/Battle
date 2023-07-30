@@ -17,7 +17,7 @@ import org.bukkit.potion.PotionEffectType
 
 class GUIClick {
     fun system(plugin: Plugin, e: InventoryClickEvent, player: Player, GUI_name: String, item: ItemStack) {
-        val item_name = item.itemMeta?.displayName
+        val item_name = item.itemMeta?.displayName ?: return
         if (GUI_name == "${ChatColor.DARK_GREEN}金床") {
             when (item.type) {
                 Material.RED_STAINED_GLASS_PANE -> e.isCancelled = true
@@ -25,21 +25,13 @@ class GUIClick {
                 else -> return
             }
             e.isCancelled = true
-            return
-        }
-
-        if (!GUI_name.contains("[BATTLEGUI]")) { return }
+        } else if (!GUI_name.contains("[BATTLEGUI]")) { return }
         e.isCancelled = true
         PlayerSend().playsound(player, Sound.UI_BUTTON_CLICK)
         when (GUI_name.replace("[BATTLEGUI]", "")) {
             "${ChatColor.BLUE}攻防戦ショップ" -> homeshop(player, item)
             "${ChatColor.DARK_GREEN}ショップ" -> shop().system(item, player)
-            "${ChatColor.DARK_GREEN}設定画面" -> {
-                if (item_name != null) {
-                    GameSystem().system(plugin, player, item_name)
-                    player.closeInventory()
-                }
-            }
+            "${ChatColor.DARK_GREEN}設定画面" -> GameSystem().system(plugin, player, item_name)
         }
     }
 
@@ -92,6 +84,10 @@ class GUIClick {
         var time = 0
 
         when (check_name) {
+            "ショップ解放" -> {
+                Data.DataManager.teamDataMap[team_name]?.opening = true
+                shop().GUI(player)
+            }
             "攻撃力UP(3分)" -> {
                 effect = PotionEffectType.INCREASE_DAMAGE
                 level = 2

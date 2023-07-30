@@ -20,7 +20,11 @@ class shop {
     fun open(e: PlayerInteractEntityEvent, player: Player, entity: Mob, team: String) {
         e.isCancelled = true
         Data.DataManager.teamDataMap[team]?.entities?.add(entity)
-        GUI(player)
+        if (Data.DataManager.teamDataMap[team]?.opening == true) {
+            GUI(player)
+        } else {
+            unopened(player)
+        }
     }
     fun system(item: ItemStack, player: Player) {
         if (item.type == Material.RED_STAINED_GLASS_PANE) {
@@ -34,8 +38,7 @@ class shop {
         if (item_name?.contains("★")!!) {
             val set_team_name = GET().getTeamName(player) ?: return
             GUIClick().click_invocation(player, item_name, set_team_name)
-        }
-        else {
+        } else {
             val give_item = ItemStack(item)
             val meta = item.itemMeta
             meta?.lore = null
@@ -68,7 +71,11 @@ class shop {
         if (Data.DataManager.gameData.status && time <= 30) {
             GUIclass.set_GUIitem(GUI, 14, Material.BARRIER, "${ChatColor.RED}選択不可", "")
         }
-
+        player.openInventory(GUI)
+    }
+    fun unopened(player: Player) {
+        val GUI = Bukkit.createInventory(null, 9, "${ChatColor.DARK_GREEN}ショップ[BATTLEGUI]")
+        GUI().set_GUIitem(GUI, 4, Material.GOLD_BLOCK, "${ChatColor.YELLOW}★ショップ解放", "10p")
         player.openInventory(GUI)
     }
     fun recovery(shop: Villager, amount: Double) {
