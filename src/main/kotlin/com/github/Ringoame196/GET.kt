@@ -21,10 +21,11 @@ class GET {
         val point = Data.DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
         return point
     }
-    fun getOpposingTeamname(TeamName: String): String {
-        var OpoposingTeamname = "red"
-        if (TeamName == "red") {
-            OpoposingTeamname = "blue"
+    fun getOpposingTeamname(TeamName: String): String? {
+        val OpoposingTeamname = when(TeamName){
+            "red" -> "blue"
+            "blue" -> "red"
+            else -> null
         }
         return OpoposingTeamname
     }
