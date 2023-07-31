@@ -139,13 +139,8 @@ class GUI {
         val team_name = GET().getTeamName(player) ?: return
         val level = 6 - Data.DataManager.teamDataMap.getOrPut(team_name) { Team() }.blockTime
         val shop = Data.DataManager.teamDataMap[team_name]?.entities?.lastOrNull()
-        if (shop == null) {
-            player.sendMessage("${ChatColor.RED}[エラー]もう一度開いてください")
-            player.closeInventory()
-            return
-        }
         shop.let { entity ->
-            val maxHealthAttribute = shop.getAttribute(Attribute.GENERIC_MAX_HEALTH)
+            val maxHealthAttribute = shop?.getAttribute(Attribute.GENERIC_MAX_HEALTH)
             val maxHealth = maxHealthAttribute?.value?.toInt() ?: 0
             val modifiedMaxHealth = maxHealth / 10 * 50
             set_GUIitem(GUI, 1, Material.RED_DYE, "${ChatColor.YELLOW}★村人体力増加", modifiedMaxHealth.toString() + "p")
@@ -188,7 +183,7 @@ class GUI {
     }
     fun close(title: String, player: Player, inventory: Inventory) {
         when (title) {
-            "${ChatColor.DARK_GREEN}チームチェスト" -> PlayerSend().playsound(player, Sound.BLOCK_CHEST_CLOSE)
+            "${ChatColor.DARK_GREEN}チームチェスト" -> player.playSound(player, Sound.BLOCK_CHEST_CLOSE, 1f, 1f)
             "${ChatColor.DARK_GREEN}金床" -> anvil().close(player, inventory)
         }
     }

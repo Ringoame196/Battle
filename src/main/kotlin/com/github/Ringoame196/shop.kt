@@ -113,7 +113,7 @@ class shop {
                 continue
             }
             player.sendMessage(message)
-            PlayerSend().playsound(player, Sound.BLOCK_NOTE_BLOCK_BELL)
+            player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
         }
     }
     fun summon(location: Location) {

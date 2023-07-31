@@ -6,14 +6,15 @@ import org.bukkit.GameMode
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 
 class GameSystem {
 
-    fun system(plugin: Plugin, player: Player, item_name: String) {
-        PlayerSend().playsound(player, Sound.UI_BUTTON_CLICK)
+    fun system(plugin: Plugin, player: Player, item: ItemStack) {
+        player.playSound(player, Sound.UI_BUTTON_CLICK, 1f, 1f)
         player.closeInventory()
-        when (item_name) {
+        when (item.itemMeta?.displayName) {
             "${ChatColor.AQUA}ゲームスタート" -> start(plugin, player)
             "${ChatColor.RED}終了" -> stop(player)
             "${ChatColor.YELLOW}ショップ召喚" -> shop().summon(player.location)
