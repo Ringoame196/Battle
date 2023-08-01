@@ -5,11 +5,22 @@ import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 
 class anvil {
+    fun click(e: InventoryClickEvent, type: Material, player: Player) {
+        when (type) {
+            Material.RED_STAINED_GLASS_PANE -> e.isCancelled = true
+            Material.COMMAND_BLOCK -> {
+                system(player, e.inventory)
+                e.isCancelled = true
+            }
+            else -> return
+        }
+    }
     fun system(player: Player, inv: Inventory) {
         val enchantitem = inv.getItem(3) ?: return
         val enchantbook = inv.getItem(5) ?: return

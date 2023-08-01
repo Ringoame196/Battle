@@ -2,7 +2,6 @@ package com.github.Ringoame196
 
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
-import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -14,15 +13,10 @@ import org.bukkit.potion.PotionEffectType
 class GUIClick {
     fun system(plugin: Plugin, e: InventoryClickEvent, player: Player, GUI_name: String, item: ItemStack) {
         if (GUI_name == "${ChatColor.DARK_GREEN}金床") {
-            when (item.type) {
-                Material.RED_STAINED_GLASS_PANE -> e.isCancelled = true
-                Material.COMMAND_BLOCK -> {
-                    anvil().system(player, e.inventory)
-                    e.isCancelled = true
-                }
-                else -> return
-            }
-        } else if (!GUI_name.contains("[BATTLEGUI]")) { return }
+            anvil().click(e, item.type, player)
+            return
+        }
+        if (!GUI_name.contains("[BATTLEGUI]")) { return }
         e.isCancelled = true
         player.playSound(player, Sound.UI_BUTTON_CLICK, 1f, 1f)
         when (GUI_name.replace("[BATTLEGUI]", "")) {
@@ -37,7 +31,7 @@ class GUIClick {
         val item_name = item.itemMeta?.displayName ?: return
         val shop: Inventory = Bukkit.createInventory(null, 36, "${ChatColor.DARK_GREEN}ショップ[BATTLEGUI]")
         when (item_name) {
-            "${ChatColor.YELLOW}共通チェスト" -> Team().chest(player,team_name)
+            "${ChatColor.YELLOW}共通チェスト" -> Team().chest(player, team_name)
             "${ChatColor.YELLOW}ピッケル" -> GUI().pickaxeshop(shop)
             "${ChatColor.YELLOW}武器" -> GUI().weaponshop(shop)
             "${ChatColor.YELLOW}防具" -> GUI().equipmentshop(shop)
