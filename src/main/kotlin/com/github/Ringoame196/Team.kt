@@ -1,13 +1,10 @@
 package com.github.Ringoame196
 
-import org.bukkit.Bukkit
-import org.bukkit.ChatColor
-import org.bukkit.entity.Mob
-import org.bukkit.inventory.Inventory
+import org.bukkit.Sound
+import org.bukkit.entity.Player
 
-data class Team(
-    var blockTime: Int = 5,
-    val chest: Inventory = Bukkit.createInventory(null, 27, "${ChatColor.DARK_GREEN}チームチェスト"),
-    val entities: MutableList<Mob> = mutableListOf(),
-    var opening: Boolean = false,
-)
+class Team {
+    fun chest(player:Player,team_name:String){
+        player.playSound(player, Sound.BLOCK_CHEST_OPEN, 1f, 1f)
+        player.openInventory(Data.DataManager.teamDataMap.getOrPut(team_name) { TeamData() }.chest)    }
+}

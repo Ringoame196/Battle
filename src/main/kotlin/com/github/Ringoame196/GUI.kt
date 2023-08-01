@@ -137,7 +137,7 @@ class GUI {
     }
     fun villagerlevelup(GUI: Inventory, player: Player) {
         val team_name = GET().getTeamName(player) ?: return
-        val level = 6 - Data.DataManager.teamDataMap.getOrPut(team_name) { Team() }.blockTime
+        val level = 6 - Data.DataManager.teamDataMap.getOrPut(team_name) { TeamData() }.blockTime
         val shop = Data.DataManager.teamDataMap[team_name]?.entities?.lastOrNull()
         shop.let { entity ->
             val maxHealthAttribute = shop?.getAttribute(Attribute.GENERIC_MAX_HEALTH)

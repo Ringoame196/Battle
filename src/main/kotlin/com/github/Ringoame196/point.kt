@@ -29,7 +29,7 @@ class point {
     fun ore(e: org.bukkit.event.Event, player: Player, block: Block, team: String, plugin: Plugin) {
         val block_type = block.type
         GameSystem().adventure(e, player)
-        var cooltime = Data.DataManager.teamDataMap.getOrPut(team) { Team() }.blockTime
+        var cooltime = Data.DataManager.teamDataMap.getOrPut(team) { TeamData() }.blockTime
         val point: Int
         when (block_type) {
             Material.COAL_ORE -> { point = 1 }
@@ -70,5 +70,11 @@ class point {
         }
 
         return possible
+    }
+    fun fastbreaklevel(team_name: String, player: Player, item_name: String) {
+        val set_time = Data.DataManager.teamDataMap.getOrPut(team_name) { TeamData() }.blockTime - 1
+        Data.DataManager.teamDataMap[team_name]?.blockTime = set_time
+        GUI().villagerlevelup(player.openInventory.topInventory, player)
+        PlayerSend().TeamGiveEffect(player, item_name, null, null, 6 - set_time, 0)
     }
 }

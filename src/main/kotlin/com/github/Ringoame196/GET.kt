@@ -22,7 +22,7 @@ class GET {
         return point
     }
     fun getOpposingTeamname(TeamName: String): String? {
-        val OpoposingTeamname = when(TeamName){
+        val OpoposingTeamname = when (TeamName) {
             "red" -> "blue"
             "blue" -> "red"
             else -> null

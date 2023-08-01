@@ -9,6 +9,7 @@ import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mob
 import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
@@ -150,5 +151,29 @@ class shop {
             armorStand.remove()
             return
         }
+    }
+    fun release(player: Player, team_name: String, item_name: String) {
+        val teamData = Data.DataManager.teamDataMap[team_name]
+        if (teamData?.opening == null) {
+            player.sendMessage("${ChatColor.RED}鉱石を破壊してお金をゲットしてください")
+            point().add(player, 10)
+            player.closeInventory()
+        } else {
+            teamData.opening = true
+            shop().GUI(player)
+            PlayerSend().TeamGiveEffect(player, item_name, null, null, 0, 0)
+        }
+    }
+    fun TeamMaxHPadd(team_name: String, player: Player, item_name: String, add: Int) {
+        val entity = Data.DataManager.teamDataMap[team_name]?.entities?.lastOrNull() as? LivingEntity ?: return
+        val maxHPAttribute = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH) ?: return
+        // 現在の最大HPを取得
+        val currentMaxHP = maxHPAttribute.baseValue + add
+        // 最大HPを設定
+        maxHPAttribute.baseValue = currentMaxHP
+        // 村人の名前を更新（HP表示を変更する場合）
+        shop().name(entity as Villager, GET().getHP(entity).toString(), currentMaxHP.toString())
+        GUI().villagerlevelup(player.openInventory.topInventory, player)
+        PlayerSend().TeamGiveEffect(player, item_name, null, null, 0, 0)
     }
 }
