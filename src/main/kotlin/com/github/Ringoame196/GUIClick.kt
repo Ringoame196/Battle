@@ -13,7 +13,7 @@ import org.bukkit.potion.PotionEffectType
 class GUIClick {
     fun system(plugin: Plugin, e: InventoryClickEvent, player: Player, GUI_name: String, item: ItemStack) {
         if (GUI_name == "${ChatColor.DARK_GREEN}金床") {
-            anvil().click(e, item.type, player)
+            anvil().click(e)
             return
         }
         if (!GUI_name.contains("[BATTLEGUI]")) { return }
@@ -23,6 +23,7 @@ class GUIClick {
             "${ChatColor.BLUE}攻防戦ショップ" -> homeshop(player, item)
             "${ChatColor.DARK_GREEN}ショップ" -> shop().system(item, player)
             "${ChatColor.DARK_GREEN}設定画面" -> GameSystem().system(plugin, player, item)
+            "${ChatColor.BLUE}BATTLEメニュー" -> Team().GUIClick(player, item)
         }
     }
 
@@ -59,7 +60,7 @@ class GUIClick {
             "耐性(3分)" -> PlayerSend().TeamGiveEffect(player, item_name, PotionEffectType.DAMAGE_RESISTANCE, null, 1, 180)
             "移動速度UP(3分)" -> PlayerSend().TeamGiveEffect(player, item_name, PotionEffectType.SPEED, null, 1, 180)
             "攻撃力UP&再生(1分)" -> PlayerSend().TeamGiveEffect(player, item_name, PotionEffectType.REGENERATION, PotionEffectType.INCREASE_DAMAGE, 5, 60)
-            "鉱石復活速度UP" -> point().fastbreaklevel(team_name, player, item_name)
+            "鉱石復活速度UP" -> Team().fastbreaklevel(team_name, player, item_name)
             "村人体力増加" -> shop().TeamMaxHPadd(team_name, player, item_name, 10)
             "盲目(10秒)[妨害]" -> PlayerSend().TeamGiveEffect(player, item_name, PotionEffectType.BLINDNESS, null, 255, 10)
             "弱体化(10秒)[妨害]" -> PlayerSend().TeamGiveEffect(player, item_name, PotionEffectType.WEAKNESS, null, 255, 10)

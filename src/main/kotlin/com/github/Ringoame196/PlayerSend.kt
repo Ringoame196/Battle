@@ -9,11 +9,14 @@ import org.bukkit.potion.PotionEffectType
 
 class PlayerSend {
     fun participantmessage(message: String) {
-        for (loopPlayer in Bukkit.getServer().onlinePlayers) {
-            val team = GET().getTeamName(loopPlayer)
-            if (team !in listOf("red", "blue")) { return }
-            loopPlayer.sendMessage(message)
+        for (loopplayer in Data.DataManager.gameData.ParticipatingPlayer) {
+            loopplayer.sendMessage(message)
         }
+    }
+    fun errormessage(message: String, player: Player) {
+        player.sendMessage("${ChatColor.RED}$message")
+        player.closeInventory()
+        player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
     }
     fun TeamGiveEffect(player: Player, itemName: String, effect1: PotionEffectType? = null, effect2: PotionEffectType? = null, level: Int, time: Int) {
         val playerName = player.name

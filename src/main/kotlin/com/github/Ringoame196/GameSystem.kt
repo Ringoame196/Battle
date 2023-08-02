@@ -10,7 +10,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 
 class GameSystem {
-
     fun system(plugin: Plugin, player: Player, item: ItemStack) {
         player.playSound(player, Sound.UI_BUTTON_CLICK, 1f, 1f)
         player.closeInventory()
@@ -31,7 +30,7 @@ class GameSystem {
         Bukkit.getScheduler().runTaskTimer(
             plugin,
             Runnable {
-                if (Data.DataManager.gameData.status == false) { return@Runnable }
+                if (!Data.DataManager.gameData.status) { return@Runnable }
                 Data.DataManager.gameData.time += 1
                 Schedule(Data.DataManager.gameData.time)
             },
@@ -52,21 +51,25 @@ class GameSystem {
     }
     fun gameendSystem(message: String) {
         Bukkit.broadcastMessage(message)
-        Data.DataManager.gameData.status = false
+        PlayerSend().participantmessage("${ChatColor.YELLOW}[ゲーム時間]" + Data.DataManager.gameData.time + "秒")
+        reset()
     }
 
     fun adventure(e: org.bukkit.event.Event, player: Player) {
-        val team = GET().getTeamName(player)
-        if (team != "red" && team != "blue") {
+        if (GET().getJoinTeam(player)) {
             return
         }
         if (player.gameMode == GameMode.CREATIVE) {
             return
         }
-        if (e !is Cancellable) {
-            return
+        if (e is Cancellable) {
+            e.isCancelled = true
         }
-        e.isCancelled = true
+    }
+    fun reset() {
+        Data.DataManager.teamDataMap.clear() // teamDataMap を空にする
+        Data.DataManager.playerDataMap.clear() // playerDataMap を空にする
+        Data.DataManager.gameData = Gamedata() // gameData を新しい Gamedata インスタンスに置き換える
     }
 
     fun Schedule(time: Int) {

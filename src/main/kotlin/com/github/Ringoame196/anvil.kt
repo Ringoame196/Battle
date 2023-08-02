@@ -11,8 +11,10 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 
 class anvil {
-    fun click(e: InventoryClickEvent, type: Material, player: Player) {
-        when (type) {
+    fun click(e: InventoryClickEvent) {
+        val item = e.currentItem?.type
+        val player = e.whoClicked as Player
+        when (item) {
             Material.RED_STAINED_GLASS_PANE -> e.isCancelled = true
             Material.COMMAND_BLOCK -> {
                 system(player, e.inventory)
@@ -25,7 +27,7 @@ class anvil {
         val enchantitem = inv.getItem(3) ?: return
         val enchantbook = inv.getItem(5) ?: return
         if (enchantbook.type != Material.ENCHANTED_BOOK) {
-            errormessage("${ChatColor.RED}エンチャント本をセットしてください(右)", player)
+            PlayerSend().errormessage("${ChatColor.RED}エンチャント本をセットしてください(右)", player)
             return
         }
         val enchantitem_name = enchantitem.type.toString()
@@ -33,7 +35,7 @@ class anvil {
         val supportedItems = listOf("PICKAXE", "SWORD", "CHESTPLATE", "LEGGINGS", "BOOTS")
         shouldExecute = supportedItems.any { enchantitem_name.contains(it) }
         if (!shouldExecute) {
-            errormessage("${ChatColor.RED}対応しているアイテムをセットしてください(左)", player)
+            PlayerSend().errormessage("${ChatColor.RED}対応しているアイテムをセットしてください(左)", player)
             return
         }
 
@@ -51,11 +53,6 @@ class anvil {
         inv.setItem(5, ItemStack(Material.AIR))
         player.playSound(player, Sound.BLOCK_ANVIL_USE, 1f, 1f)
     }
-    fun errormessage(message: String, player: Player) {
-        player.sendMessage("${ChatColor.RED}$message")
-        player.closeInventory()
-        player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
-    }
     fun set(player: Player) {
         val anvil: Inventory = Bukkit.createInventory(null, 9, "${ChatColor.DARK_GREEN}金床")
         for (i in 0..7) {
@@ -70,10 +67,9 @@ class anvil {
     fun close(player: Player, inventory: Inventory) {
         for (i in 0 until 8) {
             val item = inventory.getItem(i)
-            if (item?.type == Material.RED_STAINED_GLASS_PANE) {
-                continue
+            if (item?.type != Material.RED_STAINED_GLASS_PANE) {
+                player.inventory.addItem(item)
             }
-            player.inventory.addItem(item)
         }
     }
 }

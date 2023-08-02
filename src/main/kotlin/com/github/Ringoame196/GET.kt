@@ -9,6 +9,14 @@ class GET {
         val teamName = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
         return teamName
     }
+    fun getJoinTeam(player: Player): Boolean {
+        val jointeam = when (getTeamName(player)) {
+            "red" -> true
+            "blue" -> true
+            else -> false
+        }
+        return jointeam
+    }
     fun getMaxHP(shop: Villager): Double? {
         val maxHP = shop.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value
         return maxHP

@@ -155,9 +155,8 @@ class shop {
     fun release(player: Player, team_name: String, item_name: String) {
         val teamData = Data.DataManager.teamDataMap[team_name]
         if (teamData?.opening == null) {
-            player.sendMessage("${ChatColor.RED}鉱石を破壊してお金をゲットしてください")
+            PlayerSend().errormessage("${ChatColor.RED}鉱石を破壊してお金をゲットしてください", player)
             point().add(player, 10)
-            player.closeInventory()
         } else {
             teamData.opening = true
             shop().GUI(player)

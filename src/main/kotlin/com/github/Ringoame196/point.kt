@@ -68,13 +68,6 @@ class point {
             remove(player, price_int)
             possible = true
         }
-
         return possible
-    }
-    fun fastbreaklevel(team_name: String, player: Player, item_name: String) {
-        val set_time = Data.DataManager.teamDataMap.getOrPut(team_name) { TeamData() }.blockTime - 1
-        Data.DataManager.teamDataMap[team_name]?.blockTime = set_time
-        GUI().villagerlevelup(player.openInventory.topInventory, player)
-        PlayerSend().TeamGiveEffect(player, item_name, null, null, 6 - set_time, 0)
     }
 }

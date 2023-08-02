@@ -176,10 +176,13 @@ class GUI {
         player.openInventory(GUI)
     }
     fun playerGUI(player: Player) {
-        val GUI = Bukkit.createInventory(null, 9, ChatColor.BLUE.toString() + "BATTLEメニュー[BATTLEGUI]")
-        set_GUIitem(GUI, 1, Material.GREEN_DYE, "${ChatColor.YELLOW}ゲーム参加", "")
-        set_GUIitem(GUI, 2, Material.RED_DYE, "${ChatColor.RED}ゲーム退出", "")
+        val GUI = Bukkit.createInventory(null, 9, "${ChatColor.BLUE}BATTLEメニュー[BATTLEGUI]")
         player.openInventory(GUI)
+        if (Data.DataManager.gameData.ParticipatingPlayer.contains(player)) {
+            set_GUIitem(GUI, 4, Material.RED_DYE, "${ChatColor.RED}ゲーム退出", "")
+        } else {
+            set_GUIitem(GUI, 4, Material.GREEN_DYE, "${ChatColor.YELLOW}ゲーム参加", "")
+        }
     }
     fun close(title: String, player: Player, inventory: Inventory) {
         when (title) {
