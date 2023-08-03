@@ -67,21 +67,16 @@ class shop {
         GUIclass.no_set(GUI, 21)
         GUIclass.no_set(GUI, 23)
         GUIclass.no_set(GUI, 25)
-
-        val time = Data.DataManager.gameData.time
-        if (Data.DataManager.gameData.status && time <= 30) {
-            GUIclass.set_GUIitem(GUI, 14, Material.BARRIER, "${ChatColor.RED}選択不可", "")
-        }
         player.openInventory(GUI)
     }
     fun unopened(player: Player) {
         val GUI = Bukkit.createInventory(null, 9, "${ChatColor.DARK_GREEN}ショップ[BATTLEGUI]")
-        GUI().set_GUIitem(GUI, 4, Material.GOLD_BLOCK, "${ChatColor.YELLOW}★ショップ解放", "10p")
+        GUI().set_GUIitem(GUI, 4, Material.GOLD_BLOCK, "${ChatColor.YELLOW}★ショップ解放", "30p")
         player.openInventory(GUI)
     }
     fun recovery(shop: Villager, amount: Double) {
         val maxHP = GET().getMaxHP(shop)
-        val currentHP = shop.health + amount
+        val currentHP = String.format("%.1f", shop.health + amount).toDouble()
         val newHP = maxHP?.let { if (currentHP >= it) it else currentHP }?.toString() ?: return
         name(shop, newHP, maxHP.toString())
     }

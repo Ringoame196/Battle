@@ -35,8 +35,8 @@ class itemClick {
             block?.type == Material.OAK_WALL_SIGN -> {
                 e.isCancelled = true
                 val sign = block.state as Sign
-                if (!sign.lines.contains("[BATTLE]")) { return }
-                GUI().playerGUI(player)
+                Sign().click(player, sign.lines[0])
+                return
             }
             else -> return
         }

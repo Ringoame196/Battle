@@ -175,15 +175,6 @@ class GUI {
         set_GUIitem(GUI, 2, Material.VILLAGER_SPAWN_EGG, "${ChatColor.YELLOW}ショップ召喚", "")
         player.openInventory(GUI)
     }
-    fun playerGUI(player: Player) {
-        val GUI = Bukkit.createInventory(null, 9, "${ChatColor.BLUE}BATTLEメニュー[BATTLEGUI]")
-        player.openInventory(GUI)
-        if (Data.DataManager.gameData.ParticipatingPlayer.contains(player)) {
-            set_GUIitem(GUI, 4, Material.RED_DYE, "${ChatColor.RED}ゲーム退出", "")
-        } else {
-            set_GUIitem(GUI, 4, Material.GREEN_DYE, "${ChatColor.YELLOW}ゲーム参加", "")
-        }
-    }
     fun close(title: String, player: Player, inventory: Inventory) {
         when (title) {
             "${ChatColor.DARK_GREEN}チームチェスト" -> player.playSound(player, Sound.BLOCK_CHEST_CLOSE, 1f, 1f)

@@ -9,6 +9,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.block.SignChangeEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityRegainHealthEvent
@@ -17,6 +18,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.Plugin
 
 class Events(private val plugin: Plugin) : Listener {
@@ -116,7 +118,7 @@ class Events(private val plugin: Plugin) : Listener {
     }
 
     @EventHandler
-    fun onZombieAggro(e: EntityTargetEvent) {
+    fun onEntityTargetEvent(e: EntityTargetEvent) {
         // 敵対されない帽子
         val player = e.target
         if (player !is Player) { return }
@@ -124,6 +126,22 @@ class Events(private val plugin: Plugin) : Listener {
         val displayname = helmet?.itemMeta?.displayName
         if (helmet?.type == Material.ZOMBIE_HEAD && displayname == "${ChatColor.GREEN}敵対されない帽子") {
             GameSystem().adventure(e, player)
+        }
+    }
+    @EventHandler
+    fun onSignChangeEvent(e: SignChangeEvent) {
+        val block = e.block
+        if (block.type == Material.OAK_WALL_SIGN) {
+            Sign().make(e)
+        }
+    }
+
+    @EventHandler
+    fun onPlayerQuitEvent(e: PlayerQuitEvent) {
+        if (Data.DataManager.gameData.status) { return }
+        val player = e.player
+        if (Data.DataManager.gameData.ParticipatingPlayer.contains(player)) {
+            Team().inAndout(player)
         }
     }
 }

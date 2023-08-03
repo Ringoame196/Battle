@@ -74,7 +74,6 @@ class GameSystem {
 
     fun Schedule(time: Int) {
         when (time) {
-            30 -> PlayerSend().participantmessage("${ChatColor.YELLOW}ゾンビ購入解放")
         }
     }
 }

@@ -5,6 +5,7 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
+@Suppress("DEPRECATION")
 class Team {
     fun chest(player: Player, team_name: String) {
         player.playSound(player, Sound.BLOCK_CHEST_OPEN, 1f, 1f)
@@ -18,23 +19,29 @@ class Team {
     }
     fun GUIClick(player: Player, item: ItemStack) {
         val item_name = item.itemMeta!!.displayName
-        val ParticipatingPlayer = Data.DataManager.gameData.ParticipatingPlayer
         when (item_name) {
-            "${ChatColor.YELLOW}ゲーム参加" -> {
-                ParticipatingPlayer.add(player)
-                numberMessage("[参加] ${player.name}")
-            }
-            "${ChatColor.RED}ゲーム退出" -> {
-                ParticipatingPlayer.remove(player)
-                numberMessage("[退出] ${player.name}")
-            }
+            "${ChatColor.YELLOW}ゲーム参加" -> inAndout(player)
+            "${ChatColor.RED}ゲーム退出" -> inAndout(player)
             else -> return
         }
         player.closeInventory()
         player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
     }
-    fun numberMessage(message: String) {
-        val size = "(${Data.DataManager.gameData.ParticipatingPlayer.size}人)"
-        PlayerSend().participantmessage("${ChatColor.YELLOW}$message $size")
+    fun inAndout(player: Player) {
+        val ParticipatingPlayer = Data.DataManager.gameData.ParticipatingPlayer
+        val message: String = if (ParticipatingPlayer.contains(player)) {
+            ParticipatingPlayer.remove(player)
+            "退出"
+        } else {
+            if (Data.DataManager.gameData.status) {
+                PlayerSend().errormessage("ゲームが終わるまでしばらくお待ち下さい", player)
+                return
+            }
+            ParticipatingPlayer.add(player)
+            "参加"
+        }
+        val size = "(参加人数:${ParticipatingPlayer.size}人)"
+        PlayerSend().participantmessage("${ChatColor.AQUA}[$message] ${player.name}$size")
+        player.sendTitle("", "${ChatColor.YELLOW}[${message}しました]")
     }
 }
