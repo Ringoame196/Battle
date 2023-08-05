@@ -3,6 +3,7 @@ package com.github.Ringoame196
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
+import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
@@ -18,6 +19,9 @@ class GameSystem {
             "${ChatColor.RED}終了" -> stop(player)
             "${ChatColor.YELLOW}ショップ召喚" -> shop().summon(player.location)
         }
+        if (item.type == Material.ENDER_EYE) {
+            setlocation(item, player)
+        }
     }
 
     fun start(plugin: Plugin, player: Player) {
@@ -25,6 +29,11 @@ class GameSystem {
             player.sendMessage("${ChatColor.RED}既にゲームはスタートしています")
             return
         }
+        Data.DataManager.LocationData.let { locationData ->
+            locationData.redshop?.let { shop().summon(it) }
+            locationData.blueshop?.let { shop().summon(it) }
+        }
+        Sign().Numberdisplay(0)
         Bukkit.broadcastMessage("${ChatColor.GREEN}攻防戦ゲームスタート！！")
         Data.DataManager.gameData.status = true
         Bukkit.getScheduler().runTaskTimer(
@@ -32,12 +41,22 @@ class GameSystem {
             Runnable {
                 if (!Data.DataManager.gameData.status) { return@Runnable }
                 Data.DataManager.gameData.time += 1
-                Schedule(Data.DataManager.gameData.time)
             },
             0L, 20L
         )
     }
+    fun setlocation(item: ItemStack, player: Player) {
+        when (item.itemMeta?.displayName) {
+            "${ChatColor.RED}shop" -> Data.DataManager.LocationData.redshop = player.location
+            "${ChatColor.BLUE}shop" -> Data.DataManager.LocationData.blueshop = player.location
+            "${ChatColor.RED}spawn" -> Data.DataManager.LocationData.redspawn = player.location
+            "${ChatColor.BLUE}spawn" -> Data.DataManager.LocationData.bluespawn = player.location
+        }
+        player.sendMessage("${ChatColor.AQUA}座標設定完了")
 
+        val filePath = "plugins/Battle/location_data.yml"
+        Data.DataManager.LocationData.saveToFile(filePath)
+    }
     fun stop(player: Player) {
         if (!Data.DataManager.gameData.status) {
             player.sendMessage("${ChatColor.RED}ゲームは開始していません")
@@ -70,10 +89,5 @@ class GameSystem {
         Data.DataManager.teamDataMap.clear() // teamDataMap を空にする
         Data.DataManager.playerDataMap.clear() // playerDataMap を空にする
         Data.DataManager.gameData = Gamedata() // gameData を新しい Gamedata インスタンスに置き換える
-    }
-
-    fun Schedule(time: Int) {
-        when (time) {
-        }
     }
 }

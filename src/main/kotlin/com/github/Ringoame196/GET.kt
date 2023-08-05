@@ -37,4 +37,7 @@ class GET {
         }
         return OpoposingTeamname
     }
+    fun status(): Boolean {
+        return Data.DataManager.gameData.status
+    }
 }

@@ -130,8 +130,8 @@ class Events(private val plugin: Plugin) : Listener {
     }
     @EventHandler
     fun onSignChangeEvent(e: SignChangeEvent) {
-        val block = e.block
-        if (block.type == Material.OAK_WALL_SIGN) {
+        val block = e.block.type == Material.OAK_WALL_SIGN
+        if (block) {
             Sign().make(e)
         }
     }

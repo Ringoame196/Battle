@@ -30,6 +30,7 @@ configurations["implementation"].extendsFrom(shadowImplementation)
 dependencies {
     shadowImplementation(kotlin("stdlib"))
     compileOnly("org.spigotmc:spigot-api:$pluginVersion-R0.1-SNAPSHOT")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
 }
 
 configure<BukkitPluginDescription> {

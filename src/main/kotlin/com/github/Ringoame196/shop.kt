@@ -98,12 +98,13 @@ class shop {
         val maxHP = GET().getMaxHP(shop)
         name(shop, health.toString(), maxHP.toString())
         val blockBelow = shop.location.subtract(0.0, 1.0, 0.0).block.type
-        var set_team_name = "red"
-        if (blockBelow == Material.BLUE_WOOL) {
-            set_team_name = "blue"
+        val set_team_name = when (blockBelow) {
+            Material.RED_WOOL -> "red"
+            Material.BLUE_WOOL -> "blue"
+            else -> return
         }
 
-        for (player in Bukkit.getServer().onlinePlayers) {
+        for (player in Data.DataManager.gameData.ParticipatingPlayer) {
             val team_name = GET().getTeamName(player)
             if (team_name != set_team_name) {
                 continue
@@ -151,7 +152,7 @@ class shop {
         val teamData = Data.DataManager.teamDataMap[team_name]
         if (teamData?.opening == null) {
             PlayerSend().errormessage("${ChatColor.RED}鉱石を破壊してお金をゲットしてください", player)
-            point().add(player, 10)
+            point().add(player, 30)
         } else {
             teamData.opening = true
             shop().GUI(player)

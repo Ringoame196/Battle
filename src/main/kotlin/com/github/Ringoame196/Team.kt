@@ -2,6 +2,7 @@ package com.github.Ringoame196
 
 import org.bukkit.ChatColor
 import org.bukkit.Sound
+import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -29,19 +30,20 @@ class Team {
     }
     fun inAndout(player: Player) {
         val ParticipatingPlayer = Data.DataManager.gameData.ParticipatingPlayer
+        if (Data.DataManager.gameData.status) {
+            PlayerSend().errormessage("ゲームが終わるまでしばらくお待ち下さい", player)
+            return
+        }
         val message: String = if (ParticipatingPlayer.contains(player)) {
             ParticipatingPlayer.remove(player)
             "退出"
         } else {
-            if (Data.DataManager.gameData.status) {
-                PlayerSend().errormessage("ゲームが終わるまでしばらくお待ち下さい", player)
-                return
-            }
             ParticipatingPlayer.add(player)
             "参加"
         }
         val size = "(参加人数:${ParticipatingPlayer.size}人)"
         PlayerSend().participantmessage("${ChatColor.AQUA}[$message] ${player.name}$size")
         player.sendTitle("", "${ChatColor.YELLOW}[${message}しました]")
+        Sign().Numberdisplay(ParticipatingPlayer.size)
     }
 }

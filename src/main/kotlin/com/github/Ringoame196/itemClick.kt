@@ -34,8 +34,7 @@ class itemClick {
             }
             block?.type == Material.OAK_WALL_SIGN -> {
                 e.isCancelled = true
-                val sign = block.state as Sign
-                Sign().click(player, sign.lines[0])
+                Sign().click(player, block)
                 return
             }
             else -> return
