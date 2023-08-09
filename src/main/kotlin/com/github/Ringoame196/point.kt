@@ -11,22 +11,20 @@ import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 
 class point {
+    fun set(player: Player, setpoint: Int) {
+        Data.DataManager.playerDataMap[player.uniqueId]?.point = setpoint
+    }
     fun add(player: Player, addpoint: Int) {
         player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f)
-        var point = GET().getpoint(player)
-        point += addpoint
+        val point = GET().getpoint(player) + addpoint
         player.sendMessage("${ChatColor.GREEN}+$addpoint (${point}ポイント)")
-        Data.DataManager.playerDataMap[player.uniqueId]?.let { playerData ->
-            playerData.point = point
-        }
+        set(player, point)
     }
     fun remove(player: Player, removepoint: Int) {
         player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
         var point = GET().getpoint(player)
         point -= removepoint
-        Data.DataManager.playerDataMap[player.uniqueId]?.let { playerData ->
-            playerData.point = point
-        }
+        set(player, point)
     }
     fun ore(e: org.bukkit.event.Event, player: Player, block: Block, team: String, plugin: Plugin) {
         val block_type = block.type
@@ -34,20 +32,14 @@ class point {
         var cooltime = Data.DataManager.teamDataMap.getOrPut(team) { TeamData() }.blockTime
         val point: Int
         when (block_type) {
-            Material.COAL_ORE -> { point = 1 }
-
-            Material.IRON_ORE -> { point = 3 }
-
-            Material.GOLD_ORE -> { point = 5 }
-
+            Material.COAL_ORE -> point = 1
+            Material.IRON_ORE -> point = 3
+            Material.GOLD_ORE -> point = 5
             Material.DIAMOND_ORE -> {
                 point = 100
                 cooltime = 7 // ダイヤモンドだけ別時間
             }
-
-            else -> {
-                return
-            }
+            else -> return
         }
         point().add(player, point)
         block.setType(Material.BEDROCK)
@@ -59,17 +51,14 @@ class point {
     }
     fun purchase(player: Player, price: String): Boolean {
         val price_int: Int = price.replace("p", "").toInt()
-        var possible = false
         val point = GET().getpoint(player)
-        if (price_int > point) {
-            player.sendMessage("${ChatColor.RED}" + (price_int - point) + "ポイント足りません")
-            player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
-            player.closeInventory()
+        return if (price_int > point) {
+            PlayerSend().errormessage("${ChatColor.RED}" + (price_int - point) + "ポイント足りません", player)
+            false
         } else {
             player.playSound(player, Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f)
             remove(player, price_int)
-            possible = true
+            true
         }
-        return possible
     }
 }

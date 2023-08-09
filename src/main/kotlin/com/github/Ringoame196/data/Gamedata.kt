@@ -1,5 +1,6 @@
-package com.github.Ringoame196
+package com.github.Ringoame196.data
 
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 
 class Gamedata {
@@ -7,4 +8,5 @@ class Gamedata {
     var time = 0
     var ParticipatingPlayer: MutableList<Player> = mutableListOf()
     var signLocation: org.bukkit.Location? = null
+    var shoplist: MutableList<Entity> = mutableListOf()
 }

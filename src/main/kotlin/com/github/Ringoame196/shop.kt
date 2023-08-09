@@ -11,6 +11,7 @@ import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mob
 import org.bukkit.entity.Player
@@ -141,6 +142,9 @@ class shop {
         armorStand.customName = "${ChatColor.GOLD}攻防戦ショップ"
         armorStand.isCustomNameVisible = true
         armorStand.setGravity(false)
+
+        Data.DataManager.gameData.shoplist.add(villager)
+        Data.DataManager.gameData.shoplist.add(armorStand)
     }
     fun delete_name(location: Location) {
         val world = location.world
@@ -172,5 +176,10 @@ class shop {
         shop().name(entity as Villager, GET().getHP(entity).toString(), currentMaxHP.toString())
         GUI().villagerlevelup(player.openInventory.topInventory, player)
         PlayerSend().TeamGiveEffect(player, item_name, null, null, 0, 0)
+    }
+    fun kill(location: Location) {
+        val world = location.world ?: return
+        val villager = world.spawnEntity(location, EntityType.VILLAGER)
+        villager.remove() // 村人をキル
     }
 }

@@ -1,6 +1,7 @@
 package com.github.Ringoame196
 
 import com.github.Ringoame196.data.Data
+import com.github.Ringoame196.data.Gamedata
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
@@ -15,7 +16,8 @@ class GameSystem {
     fun system(plugin: Plugin, player: Player, item: ItemStack) {
         player.playSound(player, Sound.UI_BUTTON_CLICK, 1f, 1f)
         player.closeInventory()
-        when (item.itemMeta?.displayName) {
+        val displayName = item.itemMeta?.displayName
+        when (displayName) {
             "${ChatColor.AQUA}ゲームスタート" -> start(plugin, player)
             "${ChatColor.RED}終了" -> stop(player)
             "${ChatColor.YELLOW}ショップ召喚" -> shop().summon(player.location)
@@ -35,7 +37,8 @@ class GameSystem {
             locationData.blueshop?.let { shop().summon(it) }
         }
         Sign().Numberdisplay(0)
-        Bukkit.broadcastMessage("${ChatColor.GREEN}攻防戦ゲームスタート！！")
+        PlayerSend().participantmessage("${ChatColor.GREEN}攻防戦ゲームスタート！！")
+        PlayerSend().participantplaysound(Sound.ENTITY_ENDER_DRAGON_AMBIENT)
         Data.DataManager.gameData.status = true
         Bukkit.getScheduler().runTaskTimer(
             plugin,
@@ -63,30 +66,28 @@ class GameSystem {
             player.sendMessage("${ChatColor.RED}ゲームは開始していません")
             return
         }
-        gameendSystem("${ChatColor.RED}攻防戦ゲーム強制終了！！")
+        gameEndSystem("${ChatColor.RED}攻防戦ゲーム強制終了！！")
     }
 
     fun gameend() {
-        gameendSystem("${ChatColor.RED}攻防戦ゲーム終了！！")
+        gameEndSystem("${ChatColor.RED}攻防戦ゲーム終了！！")
     }
-    fun gameendSystem(message: String) {
-        Bukkit.broadcastMessage(message)
+    fun gameEndSystem(message: String) {
+        PlayerSend().participantmessage(message)
         PlayerSend().participantmessage("${ChatColor.YELLOW}[ゲーム時間]" + Data.DataManager.gameData.time + "秒")
+        PlayerSend().participantplaysound(Sound.BLOCK_ANVIL_USE)
         reset()
     }
 
     fun adventure(e: org.bukkit.event.Event, player: Player) {
-        if (GET().getJoinTeam(player)) {
-            return
-        }
-        if (player.gameMode == GameMode.CREATIVE) {
-            return
-        }
-        if (e is Cancellable) {
-            e.isCancelled = true
-        }
+        if (!GET().getJoinTeam(player)) { return }
+        if (player.gameMode == GameMode.CREATIVE) { return }
+        if (e is Cancellable) { e.isCancelled = true }
     }
     fun reset() {
+        for (shop in Data.DataManager.gameData.shoplist) {
+            shop.remove()
+        }
         Data.DataManager.teamDataMap.clear() // teamDataMap を空にする
         Data.DataManager.playerDataMap.clear() // playerDataMap を空にする
         Data.DataManager.gameData = Gamedata() // gameData を新しい Gamedata インスタンスに置き換える
