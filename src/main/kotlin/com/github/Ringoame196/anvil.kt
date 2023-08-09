@@ -65,11 +65,7 @@ class anvil {
         player.openInventory(anvil)
     }
     fun close(player: Player, inventory: Inventory) {
-        for (i in 0 until 8) {
-            val item = inventory.getItem(i)
-            if (item?.type != Material.RED_STAINED_GLASS_PANE) {
-                player.inventory.addItem(item)
-            }
-        }
+        inventory.getItem(3)?.let { player.inventory.addItem(it) }
+        inventory.getItem(5)?.let { player.inventory.addItem(it) }
     }
 }

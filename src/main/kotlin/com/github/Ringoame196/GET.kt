@@ -1,5 +1,7 @@
 package com.github.Ringoame196
 
+import com.github.Ringoame196.data.Data
+import com.github.Ringoame196.data.PlayerData
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
@@ -39,5 +41,16 @@ class GET {
     }
     fun status(): Boolean {
         return Data.DataManager.gameData.status
+    }
+    fun locationTitle(location: org.bukkit.Location?): String {
+        if (location == null) {
+            return "null"
+        }
+
+        val x = location.x.toInt()
+        val y = location.y.toInt()
+        val z = location.z.toInt()
+
+        return "x:$x,y:$y,z:$z"
     }
 }

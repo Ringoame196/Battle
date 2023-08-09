@@ -1,8 +1,9 @@
 package com.github.Ringoame196
 
+import com.github.Ringoame196.data.Data
+import com.github.Ringoame196.data.TeamData
 import org.bukkit.ChatColor
 import org.bukkit.Sound
-import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 

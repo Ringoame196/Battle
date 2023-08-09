@@ -1,5 +1,7 @@
 package com.github.Ringoame196
 
+import com.github.Ringoame196.data.Data
+import com.github.Ringoame196.data.TeamData
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -176,10 +178,11 @@ class GUI {
             set_GUIitem(GUI, 0, Material.EMERALD, "${ChatColor.AQUA}ゲームスタート", "")
         }
         set_GUIitem(GUI, 1, Material.VILLAGER_SPAWN_EGG, "${ChatColor.YELLOW}ショップ召喚", "")
-        set_GUIitem(GUI, 3, Material.ENDER_EYE, "${ChatColor.RED}shop", "")
-        set_GUIitem(GUI, 4, Material.ENDER_EYE, "${ChatColor.BLUE}shop", "")
-        set_GUIitem(GUI, 5, Material.ENDER_EYE, "${ChatColor.RED}spawn", "")
-        set_GUIitem(GUI, 6, Material.ENDER_EYE, "${ChatColor.BLUE}spawn", "")
+        val location = Data.DataManager.LocationData
+        set_GUIitem(GUI, 3, Material.ENDER_EYE, "${ChatColor.RED}shop", GET().locationTitle(location.redshop))
+        set_GUIitem(GUI, 4, Material.ENDER_EYE, "${ChatColor.BLUE}shop", GET().locationTitle(location.blueshop))
+        set_GUIitem(GUI, 5, Material.ENDER_EYE, "${ChatColor.RED}spawn", GET().locationTitle(location.redspawn))
+        set_GUIitem(GUI, 6, Material.ENDER_EYE, "${ChatColor.BLUE}spawn", GET().locationTitle(location.bluespawn))
         player.openInventory(GUI)
     }
     fun close(title: String, player: Player, inventory: Inventory) {
