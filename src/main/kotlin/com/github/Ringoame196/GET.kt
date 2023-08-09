@@ -7,31 +7,31 @@ import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
 
 class GET {
-    fun getTeamName(player: Player): String? {
+    fun TeamName(player: Player): String? {
         val teamName = player.scoreboard.teams.firstOrNull { it.hasEntry(player.name) }?.name
         return teamName
     }
-    fun getJoinTeam(player: Player): Boolean {
-        val jointeam = when (getTeamName(player)) {
+    fun JoinTeam(player: Player): Boolean {
+        val jointeam = when (TeamName(player)) {
             "red" -> true
             "blue" -> true
             else -> false
         }
         return jointeam
     }
-    fun getMaxHP(shop: Villager): Double? {
+    fun MaxHP(shop: Villager): Double? {
         val maxHP = shop.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value
         return maxHP
     }
-    fun getHP(shop: Villager): Double {
+    fun HP(shop: Villager): Double {
         val HP = shop.health
         return HP
     }
-    fun getpoint(player: Player): Int {
+    fun point(player: Player): Int {
         val point = Data.DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
         return point
     }
-    fun getOpposingTeamname(TeamName: String): String? {
+    fun OpposingTeamname(TeamName: String): String? {
         val OpoposingTeamname = when (TeamName) {
             "red" -> "blue"
             "blue" -> "red"

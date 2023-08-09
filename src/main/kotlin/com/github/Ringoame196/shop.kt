@@ -11,7 +11,6 @@ import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
-import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mob
 import org.bukkit.entity.Player
@@ -40,7 +39,7 @@ class shop {
         if (!point().purchase(player, price)) { return }
 
         if (item_name?.contains("★")!!) {
-            val set_team_name = GET().getTeamName(player) ?: return
+            val set_team_name = GET().TeamName(player) ?: return
             GUIClick().click_invocation(player, item_name, set_team_name)
         } else {
             val give_item = ItemStack(item)
@@ -78,7 +77,7 @@ class shop {
         player.openInventory(GUI)
     }
     fun recovery(shop: Villager, amount: Double) {
-        val maxHP = GET().getMaxHP(shop)
+        val maxHP = GET().MaxHP(shop)
         val currentHP = String.format("%.1f", shop.health + amount).toDouble()
         val newHP = maxHP?.let { if (currentHP >= it) it else currentHP }?.toString() ?: return
         name(shop, newHP, maxHP.toString())
@@ -98,7 +97,7 @@ class shop {
             return
         }
         val message = "${ChatColor.RED}ショップがダメージを食らっています (残りHP $health)"
-        val maxHP = GET().getMaxHP(shop)
+        val maxHP = GET().MaxHP(shop)
         name(shop, health.toString(), maxHP.toString())
         val blockBelow = shop.location.subtract(0.0, 1.0, 0.0).block.type
         val set_team_name = when (blockBelow) {
@@ -108,7 +107,7 @@ class shop {
         }
 
         for (player in Data.DataManager.gameData.ParticipatingPlayer) {
-            val team_name = GET().getTeamName(player)
+            val team_name = GET().TeamName(player)
             if (team_name != set_team_name) {
                 continue
             }
@@ -143,6 +142,7 @@ class shop {
         armorStand.isCustomNameVisible = true
         armorStand.setGravity(false)
 
+        if (!GET().status()) { return }
         Data.DataManager.gameData.shoplist.add(villager)
         Data.DataManager.gameData.shoplist.add(armorStand)
     }
@@ -173,13 +173,8 @@ class shop {
         // 最大HPを設定
         maxHPAttribute.baseValue = currentMaxHP
         // 村人の名前を更新（HP表示を変更する場合）
-        shop().name(entity as Villager, GET().getHP(entity).toString(), currentMaxHP.toString())
+        shop().name(entity as Villager, GET().HP(entity).toString(), currentMaxHP.toString())
         GUI().villagerlevelup(player.openInventory.topInventory, player)
         PlayerSend().TeamGiveEffect(player, item_name, null, null, 0, 0)
-    }
-    fun kill(location: Location) {
-        val world = location.world ?: return
-        val villager = world.spawnEntity(location, EntityType.VILLAGER)
-        villager.remove() // 村人をキル
     }
 }

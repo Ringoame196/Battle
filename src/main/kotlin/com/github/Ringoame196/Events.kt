@@ -29,7 +29,7 @@ class Events(private val plugin: Plugin) : Listener {
         // ショップGUIを開く
         val player = e.player
         val entity = e.rightClicked
-        val team_name = GET().getTeamName(player) ?: return
+        val team_name = GET().TeamName(player) ?: return
         if (inspection().shop(entity)) {
             shop().open(e, player, entity as Villager, team_name)
         }
@@ -81,7 +81,7 @@ class Events(private val plugin: Plugin) : Listener {
     fun onBlockBreakEvent(e: BlockBreakEvent) {
         // ブロックを破壊したとき
         val player = e.player
-        val team_name = GET().getTeamName(player) ?: return
+        val team_name = GET().TeamName(player) ?: return
         val block = e.block
         point().ore(e, player, block, team_name, plugin)
     }
@@ -102,7 +102,7 @@ class Events(private val plugin: Plugin) : Listener {
             player().kill(killer)
         } else if (inspection().shop(mob)) {
             shop().delete_name(mob.location)
-            if (!Data.DataManager.gameData.status) { return }
+            if (!GET().status()) { return }
             GameSystem().gameend()
         }
     }
@@ -139,7 +139,7 @@ class Events(private val plugin: Plugin) : Listener {
 
     @EventHandler
     fun onPlayerQuitEvent(e: PlayerQuitEvent) {
-        if (Data.DataManager.gameData.status) { return }
+        if (GET().status()) { return }
         val player = e.player
         if (Data.DataManager.gameData.ParticipatingPlayer.contains(player)) {
             Team().inAndout(player)

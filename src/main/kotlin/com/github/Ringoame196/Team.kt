@@ -31,7 +31,7 @@ class Team {
     }
     fun inAndout(player: Player) {
         val ParticipatingPlayer = Data.DataManager.gameData.ParticipatingPlayer
-        if (Data.DataManager.gameData.status) {
+        if (GET().status()) {
             PlayerSend().errormessage("ゲームが終わるまでしばらくお待ち下さい", player)
             return
         }

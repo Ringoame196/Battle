@@ -138,7 +138,7 @@ class GUI {
         set_GUIitem(GUI, 19, Material.ENCHANTED_GOLDEN_APPLE, "エンチャント金リンゴ", "300p")
     }
     fun villagerlevelup(GUI: Inventory, player: Player) {
-        val team_name = GET().getTeamName(player) ?: return
+        val team_name = GET().TeamName(player) ?: return
         val level = 6 - Data.DataManager.teamDataMap.getOrPut(team_name) { TeamData() }.blockTime
         val shop = Data.DataManager.teamDataMap[team_name]?.entities?.lastOrNull()
         shop.let { entity ->

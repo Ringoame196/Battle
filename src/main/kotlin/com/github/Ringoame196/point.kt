@@ -16,13 +16,13 @@ class point {
     }
     fun add(player: Player, addpoint: Int) {
         player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f)
-        val point = GET().getpoint(player) + addpoint
+        val point = GET().point(player) + addpoint
         player.sendMessage("${ChatColor.GREEN}+$addpoint (${point}ポイント)")
         set(player, point)
     }
     fun remove(player: Player, removepoint: Int) {
         player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
-        var point = GET().getpoint(player)
+        var point = GET().point(player)
         point -= removepoint
         set(player, point)
     }
@@ -51,7 +51,7 @@ class point {
     }
     fun purchase(player: Player, price: String): Boolean {
         val price_int: Int = price.replace("p", "").toInt()
-        val point = GET().getpoint(player)
+        val point = GET().point(player)
         return if (price_int > point) {
             PlayerSend().errormessage("${ChatColor.RED}" + (price_int - point) + "ポイント足りません", player)
             false

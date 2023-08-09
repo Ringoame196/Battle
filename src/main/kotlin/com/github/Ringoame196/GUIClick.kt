@@ -28,7 +28,7 @@ class GUIClick {
     }
 
     fun homeshop(player: Player, item: ItemStack) {
-        val team_name = GET().getTeamName(player) ?: return
+        val team_name = GET().TeamName(player) ?: return
         val item_name = item.itemMeta?.displayName ?: return
         val shop: Inventory = Bukkit.createInventory(null, 36, "${ChatColor.DARK_GREEN}ショップ[BATTLEGUI]")
         when (item_name) {

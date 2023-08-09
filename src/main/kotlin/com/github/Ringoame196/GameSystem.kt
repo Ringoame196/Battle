@@ -28,10 +28,11 @@ class GameSystem {
     }
 
     fun start(plugin: Plugin, player: Player) {
-        if (Data.DataManager.gameData.status) {
+        if (GET().status()) {
             player.sendMessage("${ChatColor.RED}既にゲームはスタートしています")
             return
         }
+        Data.DataManager.gameData.status = true
         Data.DataManager.LocationData.let { locationData ->
             locationData.redshop?.let { shop().summon(it) }
             locationData.blueshop?.let { shop().summon(it) }
@@ -39,11 +40,10 @@ class GameSystem {
         Sign().Numberdisplay(0)
         PlayerSend().participantmessage("${ChatColor.GREEN}攻防戦ゲームスタート！！")
         PlayerSend().participantplaysound(Sound.ENTITY_ENDER_DRAGON_AMBIENT)
-        Data.DataManager.gameData.status = true
         Bukkit.getScheduler().runTaskTimer(
             plugin,
             Runnable {
-                if (!Data.DataManager.gameData.status) { return@Runnable }
+                if (!GET().status()) { return@Runnable }
                 Data.DataManager.gameData.time += 1
             },
             0L, 20L
@@ -62,7 +62,7 @@ class GameSystem {
         Data.DataManager.LocationData.saveToFile(filePath)
     }
     fun stop(player: Player) {
-        if (!Data.DataManager.gameData.status) {
+        if (!GET().status()) {
             player.sendMessage("${ChatColor.RED}ゲームは開始していません")
             return
         }
@@ -80,7 +80,7 @@ class GameSystem {
     }
 
     fun adventure(e: org.bukkit.event.Event, player: Player) {
-        if (!GET().getJoinTeam(player)) { return }
+        if (!GET().JoinTeam(player)) { return }
         if (player.gameMode == GameMode.CREATIVE) { return }
         if (e is Cancellable) { e.isCancelled = true }
     }

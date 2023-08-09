@@ -29,15 +29,15 @@ class PlayerSend {
         time: Int
     ) {
         val playerName = player.name
-        val playerTeamName = GET().getTeamName(player)
-        var effectTeamName = GET().getTeamName(player)
+        val playerTeamName = GET().TeamName(player)
+        var effectTeamName = GET().TeamName(player)
         if (itemName.contains("[妨害]")) {
             // 反対チーム名にする
-            effectTeamName = GET().getOpposingTeamname(playerTeamName!!)
+            effectTeamName = GET().OpposingTeamname(playerTeamName!!)
         }
 
         for (loopPlayer in Data.DataManager.gameData.ParticipatingPlayer) {
-            val loopPlayerTeam = GET().getTeamName(loopPlayer)
+            val loopPlayerTeam = GET().TeamName(loopPlayer)
 
             if (loopPlayerTeam == playerTeamName) {
                 loopPlayer.sendMessage("${ChatColor.AQUA}[チーム]${playerName}さんが${itemName}${ChatColor.AQUA}を発動しました(レベル$level)")
