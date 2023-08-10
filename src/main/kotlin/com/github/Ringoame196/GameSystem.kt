@@ -37,9 +37,12 @@ class GameSystem {
             locationData.redshop?.let { shop().summon(it) }
             locationData.blueshop?.let { shop().summon(it) }
         }
-        Sign().Numberdisplay(0)
+        Sign().Numberdisplay("ゲーム進行中")
         PlayerSend().participantmessage("${ChatColor.GREEN}攻防戦ゲームスタート！！")
         PlayerSend().participantplaysound(Sound.ENTITY_ENDER_DRAGON_AMBIENT)
+        timer(plugin)
+    }
+    fun timer(plugin: Plugin) {
         Bukkit.getScheduler().runTaskTimer(
             plugin,
             Runnable {
@@ -73,9 +76,13 @@ class GameSystem {
         gameEndSystem("${ChatColor.RED}攻防戦ゲーム終了！！")
     }
     fun gameEndSystem(message: String) {
-        PlayerSend().participantmessage(message)
-        PlayerSend().participantmessage("${ChatColor.YELLOW}[ゲーム時間]" + Data.DataManager.gameData.time + "秒")
-        PlayerSend().participantplaysound(Sound.BLOCK_ANVIL_USE)
+        for (loopPlayer in Data.DataManager.gameData.ParticipatingPlayer) {
+            loopPlayer.teleport(loopPlayer.world.spawnLocation)
+            loopPlayer.sendMessage(message)
+            loopPlayer.sendMessage("${ChatColor.YELLOW}[ゲーム時間]" + Data.DataManager.gameData.time + "秒")
+            loopPlayer.playSound(loopPlayer.location, Sound.BLOCK_ANVIL_USE, 1f, 1f)
+        }
+        Sign().Numberdisplay("(参加中:0人)")
         reset()
     }
 

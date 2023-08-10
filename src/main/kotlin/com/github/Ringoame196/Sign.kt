@@ -24,11 +24,10 @@ class Sign() {
             player.playSound(player, Sound.UI_BUTTON_CLICK, 1f, 1f)
         }
     }
-    fun Numberdisplay(number: Int) {
-        val size = "(参加中:${number}人)"
+    fun Numberdisplay(text: String) {
         val sign = Data.DataManager.gameData.signLocation?.block?.state
         if (sign !is Sign) { return }
-        sign.lines.set(1, "${ChatColor.GREEN}$size")
+        sign.lines.set(1, "${ChatColor.GREEN}$text")
         sign.update()
     }
 }

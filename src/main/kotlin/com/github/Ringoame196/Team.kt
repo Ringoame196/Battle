@@ -45,6 +45,6 @@ class Team {
         val size = "(参加人数:${ParticipatingPlayer.size}人)"
         PlayerSend().participantmessage("${ChatColor.AQUA}[$message] ${player.name}$size")
         player.sendTitle("", "${ChatColor.YELLOW}[${message}しました]")
-        Sign().Numberdisplay(ParticipatingPlayer.size)
+        Sign().Numberdisplay("(参加中:${ParticipatingPlayer.size}人)")
     }
 }
