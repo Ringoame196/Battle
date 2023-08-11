@@ -4,9 +4,11 @@ import com.github.Ringoame196.data.Data
 import com.github.Ringoame196.data.TeamData
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.GameMode
 import org.bukkit.Sound
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerRespawnEvent
+import org.bukkit.plugin.Plugin
+import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scoreboard.NameTagVisibility
 
 @Suppress("DEPRECATION")
@@ -67,10 +69,29 @@ class Team {
             team = !team
         }
     }
-    fun respawn(player: Player, e: PlayerRespawnEvent) {
+    fun respawn(player: Player, plugin: Plugin) {
+        PlayerSend().participantmessage("${ChatColor.RED}[DEATH] ${player.name}")
+        player.health = 20.0
+        player.gameMode = GameMode.SPECTATOR
+        var c = 6
+        object : BukkitRunnable() {
+            override fun run() {
+                if (c> 0) {
+                    c--
+                    player.sendTitle("", "${ChatColor.GREEN}復活まで${c}秒")
+                    player.playSound(player, Sound.UI_BUTTON_CLICK, 1f, 1f)
+                } else {
+                    player.gameMode = GameMode.SURVIVAL
+                    respawnTP(player)
+                    this.cancel()
+                }
+            }
+        }.runTaskTimer(plugin, 0, 20)
+    }
+    fun respawnTP(player: Player) {
         when (GET().TeamName(player)) {
-            "red" -> e.respawnLocation = Data.DataManager.LocationData.redspawn!!
-            "blue" -> e.respawnLocation = Data.DataManager.LocationData.bluespawn!!
+            "red" -> player.teleport(Data.DataManager.LocationData.redspawn!!)
+            "blue" -> player.teleport(Data.DataManager.LocationData.bluespawn!!)
         }
     }
 }

@@ -12,6 +12,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.block.SignChangeEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityRegainHealthEvent
 import org.bukkit.event.entity.EntityTargetEvent
@@ -20,7 +21,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.event.player.PlayerRespawnEvent
 import org.bukkit.plugin.Plugin
 
 class Events(private val plugin: Plugin) : Listener {
@@ -147,8 +147,11 @@ class Events(private val plugin: Plugin) : Listener {
         }
     }
     @EventHandler
-    fun onPlayerRespawn(e: PlayerRespawnEvent) {
-        val player = e.player
-        if (GET().JoinTeam(player)) { Team().respawn(player, e) }
+    fun onPlayerRespawn(e: EntityDamageEvent) {
+        val player = e.entity as Player
+        if (!GET().JoinTeam(player)) { return }
+        if ((player.health - e.damage) > 0) { return }
+        e.isCancelled = true
+        Team().respawn(player, plugin)
     }
 }
