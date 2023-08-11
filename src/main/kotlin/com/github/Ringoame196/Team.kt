@@ -6,6 +6,7 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Sound
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerRespawnEvent
 import org.bukkit.scoreboard.NameTagVisibility
 
 @Suppress("DEPRECATION")
@@ -43,12 +44,33 @@ class Team {
         Bukkit.getScoreboardManager()?.mainScoreboard?.registerNewTeam(name)
         Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam(name)?.let {
             it.setAllowFriendlyFire(false)
-            it.color = ChatColor.RED
+            it.color = color
             it.nameTagVisibility = NameTagVisibility.ALWAYS
         }
     }
     fun delete() {
         Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("red")?.unregister()
         Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("blue")?.unregister()
+    }
+    fun division() {
+        val redTeam = Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("red")
+        val blueTeam = Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("blue")
+        var team = true
+        for (loopPlayer in Data.DataManager.gameData.ParticipatingPlayer) {
+            if (team) {
+                redTeam?.addPlayer(loopPlayer)
+                loopPlayer.teleport(Data.DataManager.LocationData.redspawn!!)
+            } else {
+                blueTeam?.addPlayer(loopPlayer)
+                loopPlayer.teleport(Data.DataManager.LocationData.bluespawn!!)
+            }
+            team = !team
+        }
+    }
+    fun respawn(player: Player, e: PlayerRespawnEvent) {
+        when (GET().TeamName(player)) {
+            "red" -> e.respawnLocation = Data.DataManager.LocationData.redspawn!!
+            "blue" -> e.respawnLocation = Data.DataManager.LocationData.bluespawn!!
+        }
     }
 }

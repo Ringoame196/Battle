@@ -22,7 +22,7 @@ class GUIClick {
         when (GUI_name.replace("[BATTLEGUI]", "")) {
             "${ChatColor.BLUE}攻防戦ショップ" -> homeshop(player, item)
             "${ChatColor.DARK_GREEN}ショップ" -> shop().system(item, player)
-            "${ChatColor.DARK_GREEN}設定画面" -> GameSystem().system(plugin, player, item)
+            "${ChatColor.DARK_GREEN}設定画面" -> GameSystem().system(plugin, player, item, e)
         }
     }
 

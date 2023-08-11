@@ -37,7 +37,7 @@ class point {
             Material.GOLD_ORE -> point = 5
             Material.DIAMOND_ORE -> {
                 point = 100
-                cooltime = 7 // ダイヤモンドだけ別時間
+                cooltime = 210 // ダイヤモンドだけ別時間
             }
             else -> return
         }

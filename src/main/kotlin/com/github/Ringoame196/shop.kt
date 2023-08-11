@@ -73,7 +73,7 @@ class shop {
     }
     fun unopened(player: Player) {
         val GUI = Bukkit.createInventory(null, 9, "${ChatColor.DARK_GREEN}ショップ[BATTLEGUI]")
-        GUI().set_GUIitem(GUI, 4, Material.GOLD_BLOCK, "${ChatColor.YELLOW}★ショップ解放", "30p")
+        GUI().set_GUIitem(GUI, 4, Material.GOLD_BLOCK, "${ChatColor.YELLOW}★ショップ解放", "15p")
         player.openInventory(GUI)
     }
     fun recovery(shop: Villager, amount: Double) {

@@ -2,6 +2,7 @@ package com.github.Ringoame196
 
 import com.github.Ringoame196.data.Data
 import com.github.Ringoame196.data.Gamedata
+import com.github.Ringoame196.data.LocationData
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
@@ -9,11 +10,12 @@ import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 
 class GameSystem {
-    fun system(plugin: Plugin, player: Player, item: ItemStack) {
+    fun system(plugin: Plugin, player: Player, item: ItemStack, e: InventoryClickEvent) {
         player.playSound(player, Sound.UI_BUTTON_CLICK, 1f, 1f)
         player.closeInventory()
         val displayName = item.itemMeta?.displayName
@@ -22,7 +24,7 @@ class GameSystem {
             "${ChatColor.RED}終了" -> stop(player)
             "${ChatColor.YELLOW}ショップ召喚" -> shop().summon(player.location)
         }
-        if (item.type == Material.ENDER_EYE) {
+        if (item.type == Material.ENDER_EYE && e.isShiftClick) {
             setlocation(item, player)
         }
     }
@@ -33,12 +35,13 @@ class GameSystem {
             return
         }
         Data.DataManager.gameData.status = true
-        Team().make("red", ChatColor.RED)
-        Team().make("blue", ChatColor.BLUE)
         Data.DataManager.LocationData.let { locationData ->
             locationData.redshop?.let { shop().summon(it) }
             locationData.blueshop?.let { shop().summon(it) }
         }
+        Team().make("red", ChatColor.RED)
+        Team().make("blue", ChatColor.BLUE)
+        Team().division()
         Sign().Numberdisplay("ゲーム進行中")
         PlayerSend().participantmessage("${ChatColor.GREEN}攻防戦ゲームスタート！！")
         PlayerSend().participantplaysound(Sound.ENTITY_ENDER_DRAGON_AMBIENT)

@@ -20,6 +20,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.player.PlayerRespawnEvent
 import org.bukkit.plugin.Plugin
 
 class Events(private val plugin: Plugin) : Listener {
@@ -144,5 +145,10 @@ class Events(private val plugin: Plugin) : Listener {
         if (Data.DataManager.gameData.ParticipatingPlayer.contains(player)) {
             Team().inAndout(player)
         }
+    }
+    @EventHandler
+    fun onPlayerRespawn(e: PlayerRespawnEvent) {
+        val player = e.player
+        if (GET().JoinTeam(player)) { Team().respawn(player, e) }
     }
 }
