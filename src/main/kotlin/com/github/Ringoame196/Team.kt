@@ -8,6 +8,8 @@ import org.bukkit.GameMode
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scoreboard.NameTagVisibility
 
@@ -66,6 +68,9 @@ class Team {
                 blueTeam?.addPlayer(loopPlayer)
                 loopPlayer.teleport(Data.DataManager.LocationData.bluespawn!!)
             }
+            loopPlayer.addPotionEffect(PotionEffect(PotionEffectType.SATURATION, Int.MAX_VALUE, 100, true, false))
+            Equipment().Initial(loopPlayer)
+            loopPlayer.gameMode = GameMode.SURVIVAL
             team = !team
         }
     }

@@ -148,7 +148,8 @@ class Events(private val plugin: Plugin) : Listener {
     }
     @EventHandler
     fun onPlayerRespawn(e: EntityDamageEvent) {
-        val player = e.entity as Player
+        val player = e.entity
+        if (player !is Player) { return }
         if (!GET().JoinTeam(player)) { return }
         if ((player.health - e.damage) > 0) { return }
         e.isCancelled = true

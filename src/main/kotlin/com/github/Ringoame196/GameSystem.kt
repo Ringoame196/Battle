@@ -2,7 +2,6 @@ package com.github.Ringoame196
 
 import com.github.Ringoame196.data.Data
 import com.github.Ringoame196.data.Gamedata
-import com.github.Ringoame196.data.LocationData
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
@@ -39,8 +38,8 @@ class GameSystem {
             locationData.redshop?.let { shop().summon(it) }
             locationData.blueshop?.let { shop().summon(it) }
         }
-        Team().make("red", ChatColor.RED)
-        Team().make("blue", ChatColor.BLUE)
+        if (Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("red") == null) { Team().make("red", ChatColor.RED) }
+        if (Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("red") == null) { Team().make("blue", ChatColor.BLUE) }
         Team().division()
         Sign().Numberdisplay("ゲーム進行中")
         PlayerSend().participantmessage("${ChatColor.GREEN}攻防戦ゲームスタート！！")
@@ -86,6 +85,7 @@ class GameSystem {
             loopPlayer.sendMessage(message)
             loopPlayer.sendMessage("${ChatColor.YELLOW}[ゲーム時間]" + Data.DataManager.gameData.time + "秒")
             loopPlayer.playSound(loopPlayer.location, Sound.BLOCK_ANVIL_USE, 1f, 1f)
+            for (effect in loopPlayer.activePotionEffects) { loopPlayer.removePotionEffect(effect.type) }
         }
         Sign().Numberdisplay("(参加中:0人)")
         reset()
