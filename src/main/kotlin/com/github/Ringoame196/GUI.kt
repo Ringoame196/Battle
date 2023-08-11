@@ -179,10 +179,10 @@ class GUI {
         }
         set_GUIitem(GUI, 1, Material.VILLAGER_SPAWN_EGG, "${ChatColor.YELLOW}ショップ召喚", "")
         val location = Data.DataManager.LocationData
-        set_GUIitem(GUI, 3, Material.ENDER_EYE, "${ChatColor.RED}shop", GET().locationTitle(location.redshop))
-        set_GUIitem(GUI, 4, Material.ENDER_EYE, "${ChatColor.BLUE}shop", GET().locationTitle(location.blueshop))
-        set_GUIitem(GUI, 5, Material.ENDER_EYE, "${ChatColor.RED}spawn", GET().locationTitle(location.redspawn))
-        set_GUIitem(GUI, 6, Material.ENDER_EYE, "${ChatColor.BLUE}spawn", GET().locationTitle(location.bluespawn))
+        set_GUIitem(GUI, 2, Material.ENDER_EYE, "${ChatColor.RED}shop", GET().locationTitle(location.redshop))
+        set_GUIitem(GUI, 3, Material.ENDER_EYE, "${ChatColor.BLUE}shop", GET().locationTitle(location.blueshop))
+        set_GUIitem(GUI, 4, Material.ENDER_EYE, "${ChatColor.RED}spawn", GET().locationTitle(location.redspawn))
+        set_GUIitem(GUI, 5, Material.ENDER_EYE, "${ChatColor.BLUE}spawn", GET().locationTitle(location.bluespawn))
         player.openInventory(GUI)
     }
     fun close(title: String, player: Player, inventory: Inventory) {

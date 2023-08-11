@@ -33,6 +33,8 @@ class GameSystem {
             return
         }
         Data.DataManager.gameData.status = true
+        Team().make("red", ChatColor.RED)
+        Team().make("blue", ChatColor.BLUE)
         Data.DataManager.LocationData.let { locationData ->
             locationData.redshop?.let { shop().summon(it) }
             locationData.blueshop?.let { shop().summon(it) }
@@ -98,5 +100,6 @@ class GameSystem {
         Data.DataManager.teamDataMap.clear() // teamDataMap を空にする
         Data.DataManager.playerDataMap.clear() // playerDataMap を空にする
         Data.DataManager.gameData = Gamedata() // gameData を新しい Gamedata インスタンスに置き換える
+        Team().delete()
     }
 }

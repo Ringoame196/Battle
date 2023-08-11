@@ -2,10 +2,11 @@ package com.github.Ringoame196
 
 import com.github.Ringoame196.data.Data
 import com.github.Ringoame196.data.TeamData
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Sound
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
+import org.bukkit.scoreboard.NameTagVisibility
 
 @Suppress("DEPRECATION")
 class Team {
@@ -19,16 +20,7 @@ class Team {
         GUI().villagerlevelup(player.openInventory.topInventory, player)
         PlayerSend().TeamGiveEffect(player, item_name, null, null, 6 - set_time, 0)
     }
-    fun GUIClick(player: Player, item: ItemStack) {
-        val item_name = item.itemMeta!!.displayName
-        when (item_name) {
-            "${ChatColor.YELLOW}ゲーム参加" -> inAndout(player)
-            "${ChatColor.RED}ゲーム退出" -> inAndout(player)
-            else -> return
-        }
-        player.closeInventory()
-        player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
-    }
+
     fun inAndout(player: Player) {
         val ParticipatingPlayer = Data.DataManager.gameData.ParticipatingPlayer
         if (GET().status()) {
@@ -46,5 +38,17 @@ class Team {
         PlayerSend().participantmessage("${ChatColor.AQUA}[$message] ${player.name}$size")
         player.sendTitle("", "${ChatColor.YELLOW}[${message}しました]")
         Sign().Numberdisplay("(参加中:${ParticipatingPlayer.size}人)")
+    }
+    fun make(name: String, color: ChatColor) {
+        Bukkit.getScoreboardManager()?.mainScoreboard?.registerNewTeam(name)
+        Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam(name)?.let {
+            it.setAllowFriendlyFire(false)
+            it.color = ChatColor.RED
+            it.nameTagVisibility = NameTagVisibility.ALWAYS
+        }
+    }
+    fun delete() {
+        Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("red")?.unregister()
+        Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("blue")?.unregister()
     }
 }
