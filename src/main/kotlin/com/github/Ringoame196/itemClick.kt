@@ -80,6 +80,7 @@ class itemClick {
         golem.customName = name
         golem.isCustomNameVisible = true
         golem.isPlayerCreated = true
+        Team().mobjoin(player, golem)
 
         when (type) {
             Material.GOLD_BLOCK -> {

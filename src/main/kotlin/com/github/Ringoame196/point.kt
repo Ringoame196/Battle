@@ -2,13 +2,14 @@ package com.github.Ringoame196
 
 import com.github.Ringoame196.data.Data
 import com.github.Ringoame196.data.TeamData
-import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Block
+import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
+import org.bukkit.scheduler.BukkitRunnable
 
 class point {
     fun set(player: Player, setpoint: Int) {
@@ -42,12 +43,32 @@ class point {
             else -> return
         }
         point().add(player, point)
-        block.setType(Material.BEDROCK)
+        block.setType(Material.GLASS)
         // 復活
-        Bukkit.getScheduler().runTaskLater(
-            plugin,
-            Runnable { block.setType(block_type) }, cooltime.toLong() * 20 // クールダウン時間をtick単位に変換
-        )
+        val world = block.world
+        val location = block.getLocation()
+        location.add(0.5, -1.0, 0.5)
+        val armorStand: ArmorStand = world.spawn(location, ArmorStand::class.java)
+
+        // アーマースタンドの設定
+        armorStand.isVisible = false // 可視化するかどうか
+        armorStand.isSmall = true // サイズを小さくするかどうか
+        armorStand.isInvulnerable = true
+        armorStand.customName = ""
+        armorStand.isCustomNameVisible = true
+        armorStand.setGravity(false)
+        object : BukkitRunnable() {
+            override fun run() {
+                if (cooltime >= 0) {
+                    armorStand.customName = "${ChatColor.GREEN}復活まで${cooltime}秒"
+                    cooltime --
+                } else {
+                    block.setType(block_type)
+                    armorStand.remove()
+                    this.cancel()
+                }
+            }
+        }.runTaskTimer(plugin, 0L, 20L)
     }
     fun purchase(player: Player, price: String): Boolean {
         val price_int: Int = price.replace("p", "").toInt()
