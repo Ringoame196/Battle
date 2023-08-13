@@ -58,12 +58,12 @@ class Events(private val plugin: Plugin) : Listener {
     fun onEntityDamageByEntityEvent(e: EntityDamageByEntityEvent) {
         // ショップがダメージを受けたときの処理
         val entity = e.entity
-        if (entity !is Villager) { return }
-        val damager = e.damager
-
-        if (inspection().shop(entity)) {
-            shop().attack(e, damager, entity)
-        }
+        if (entity is Villager) {
+            val damager = e.damager
+            if (inspection().shop(entity)) {
+                shop().attack(e, damager, entity)
+            }
+        } else if (entity.scoreboardTags.contains("targetshop")) { entity.scoreboardTags.remove("targetshop") }
     }
 
     @EventHandler
@@ -121,14 +121,14 @@ class Events(private val plugin: Plugin) : Listener {
 
     @EventHandler
     fun onEntityTargetEvent(e: EntityTargetEvent) {
-        // 敵対されない帽子
         val player = e.target
+        val entity = e.entity
         if (player !is Player) { return }
+        if (entity.scoreboardTags.contains("targetshop")) { e.isCancelled = true }
+        // 敵対されない帽子
         val helmet = player.inventory.helmet
         val displayname = helmet?.itemMeta?.displayName
-        if (helmet?.type == Material.ZOMBIE_HEAD && displayname == "${ChatColor.GREEN}敵対されない帽子") {
-            GameSystem().adventure(e, player)
-        }
+        if (helmet?.type == Material.ZOMBIE_HEAD && displayname == "${ChatColor.GREEN}敵対されない帽子") { e.isCancelled = true }
     }
     @EventHandler
     fun onSignChangeEvent(e: SignChangeEvent) {

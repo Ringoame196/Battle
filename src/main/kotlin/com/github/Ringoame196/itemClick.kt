@@ -1,5 +1,6 @@
 package com.github.Ringoame196
 
+import com.github.Ringoame196.data.Data
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
@@ -8,6 +9,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.Sign
 import org.bukkit.entity.IronGolem
 import org.bukkit.entity.Player
+import org.bukkit.entity.Zombie
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
@@ -50,12 +52,22 @@ class itemClick {
         var summon_name = item_name.replace("[召喚]", "")
         summon_name = summon_name.replace("${ChatColor.YELLOW}", "")
 
-        var command = "execute as ${player.name} at @s run function akmob:"
+        val world = player.world
+        val location = player.getLocation()
+        location.add(0.0, -3.0, 0.0)
+        val zombie: Zombie = world.spawn(location, Zombie::class.java)
+        zombie.scoreboardTags.add("targetshop")
+        Data.DataManager.gameData.killmob.add(zombie)
+
+        var command = "execute as ${zombie.uniqueId} at @s run function akmob:"
         command += when (summon_name) {
-            "ノーマルゾンビ" -> "normal"
+            "ノーマルゾンビ" -> "normals"
             "チビゾンビ" -> "chibi"
             "シールドゾンビ" -> "shield"
-            else -> return // 不明な召喚名の場合は何もせずに処理が終了します
+            else -> {
+                zombie.remove()
+                return // 不明な召喚名の場合は何もせずに処理が終了します
+            }
         }
 
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)
@@ -80,7 +92,6 @@ class itemClick {
         golem.customName = name
         golem.isCustomNameVisible = true
         golem.isPlayerCreated = true
-        Team().mobjoin(player, golem)
 
         when (type) {
             Material.GOLD_BLOCK -> {

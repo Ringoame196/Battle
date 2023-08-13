@@ -143,8 +143,8 @@ class shop {
         armorStand.setGravity(false)
 
         if (!GET().status()) { return }
-        Data.DataManager.gameData.shoplist.add(villager)
-        Data.DataManager.gameData.shoplist.add(armorStand)
+        Data.DataManager.gameData.killmob.add(villager)
+        Data.DataManager.gameData.killmob.add(armorStand)
     }
     fun delete_name(location: Location) {
         val world = location.world

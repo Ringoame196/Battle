@@ -34,12 +34,10 @@ class GameSystem {
             return
         }
         Data.DataManager.gameData.status = true
-        Data.DataManager.LocationData.let { locationData ->
-            locationData.redshop?.let { shop().summon(it) }
-            locationData.blueshop?.let { shop().summon(it) }
-        }
+        shop().summon(Data.DataManager.LocationData.redshop!!)
+        shop().summon(Data.DataManager.LocationData.blueshop!!)
         if (Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("red") == null) { Team().make("red", ChatColor.RED) }
-        if (Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("red") == null) { Team().make("blue", ChatColor.BLUE) }
+        if (Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("blue") == null) { Team().make("blue", ChatColor.BLUE) }
         Team().division()
         Sign().Numberdisplay("ゲーム進行中")
         PlayerSend().participantmessage("${ChatColor.GREEN}攻防戦ゲームスタート！！")
@@ -97,7 +95,7 @@ class GameSystem {
         if (e is Cancellable) { e.isCancelled = true }
     }
     fun reset() {
-        for (shop in Data.DataManager.gameData.shoplist) {
+        for (shop in Data.DataManager.gameData.killmob) {
             shop.remove()
         }
         Data.DataManager.teamDataMap.clear() // teamDataMap を空にする

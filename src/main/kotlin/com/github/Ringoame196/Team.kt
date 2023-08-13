@@ -6,7 +6,6 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.Sound
-import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
@@ -99,8 +98,5 @@ class Team {
             "red" -> player.teleport(Data.DataManager.LocationData.redspawn!!)
             "blue" -> player.teleport(Data.DataManager.LocationData.bluespawn!!)
         }
-    }
-    fun mobjoin(player: Player, entity: Entity) {
-        Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam(GET().TeamName(player).toString())?.addEntry(entity.uniqueId.toString())
     }
 }

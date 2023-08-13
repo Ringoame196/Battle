@@ -8,5 +8,5 @@ class Gamedata {
     var time = 0
     var ParticipatingPlayer: MutableList<Player> = mutableListOf()
     var signLocation: org.bukkit.Location? = null
-    var shoplist: MutableList<Entity> = mutableListOf()
+    var killmob: MutableList<Entity> = mutableListOf()
 }
