@@ -32,8 +32,8 @@ class GUIClick {
         val shop: Inventory = Bukkit.createInventory(null, 36, "${ChatColor.DARK_GREEN}ショップ[BATTLEGUI]")
         when (item_name) {
             "${ChatColor.YELLOW}共通チェスト" -> Team().chest(player, team_name)
-            "${ChatColor.YELLOW}ピッケル" -> GUI().pickaxeshop(shop)
-            "${ChatColor.YELLOW}武器" -> GUI().weaponshop(shop)
+            "${ChatColor.YELLOW}ピッケル" -> GUI().pickaxeshop(shop, player)
+            "${ChatColor.YELLOW}武器" -> GUI().weaponshop(shop, player)
             "${ChatColor.YELLOW}防具" -> GUI().equipmentshop(shop)
             "${ChatColor.YELLOW}金床" -> anvil().set(player)
             "${ChatColor.YELLOW}チーム強化" -> GUI().potionshop(shop, player)

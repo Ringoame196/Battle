@@ -43,10 +43,25 @@ class shop {
             GUIClick().click_invocation(player, item_name, set_team_name)
         } else {
             val give_item = ItemStack(item)
-            val meta = item.itemMeta
-            meta?.lore = null
-            give_item.setItemMeta(meta)
-            player.inventory.addItem(give_item)
+            give_item.let {
+                val meta = item.itemMeta
+                meta?.lore = null
+                give_item.setItemMeta(meta)
+                if (it.itemMeta?.displayName?.contains("[装備]") == true) {
+                    Give().Equipment(player, it)
+                    return
+                } else if (it.itemMeta?.displayName?.contains("[武器]") == true) {
+                    Give().Sword(player)
+                    player.inventory.addItem(it)
+                    GUI().weaponshop(player.openInventory.topInventory, player)
+                } else if (it.itemMeta?.displayName?.contains("[ツール]") == true) {
+                    Give().Pickaxe(player)
+                    player.inventory.addItem(it)
+                    GUI().pickaxeshop(player.openInventory.topInventory, player)
+                } else {
+                    player.inventory.addItem(it)
+                }
+            }
         }
     }
     fun GUI(player: Player) {

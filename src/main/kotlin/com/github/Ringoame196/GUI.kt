@@ -62,28 +62,44 @@ class GUI {
         set_GUIitem(GUI, number, Material.OAK_SIGN, "${ChatColor.YELLOW}近日公開", "")
     }
 
-    fun pickaxeshop(GUI: Inventory) {
+    fun pickaxeshop(GUI: Inventory, player: Player) {
         dividing_line(GUI, 9)
-        set_GUIitem(GUI, 0, Material.STONE_PICKAXE, "石ピッケル", "5p")
-        set_GUIitem(GUI, 1, Material.IRON_PICKAXE, "鉄ピッケル", "20p")
-        set_GUIitem(GUI, 2, Material.DIAMOND_PICKAXE, "ダイヤモンドピッケル", "300p")
-        set_GUIitem(GUI, 3, Material.NETHERITE_PICKAXE, "ネザライトピッケル", "5000p")
+        set_GUIitem(GUI, 0, Material.WOODEN_PICKAXE, "[ツール]木のピッケル", "1p")
+        if (player.inventory.contains(Material.WOODEN_PICKAXE)) {
+            set_GUIitem(GUI, 0, Material.STONE_PICKAXE, "[ツール]石ピッケル", "5p")
+        } else if (player.inventory.contains(Material.STONE_PICKAXE)) {
+            set_GUIitem(GUI, 0, Material.IRON_PICKAXE, "[ツール]鉄ピッケル", "20p")
+        } else if (player.inventory.contains(Material.IRON_PICKAXE)) {
+            set_GUIitem(GUI, 0, Material.DIAMOND_PICKAXE, "[ツール]ダイヤモンドピッケル", "300p")
+        } else if (player.inventory.contains(Material.DIAMOND_PICKAXE)) {
+            set_GUIitem(GUI, 0, Material.NETHERITE_PICKAXE, "[ツール]ネザライトピッケル", "5000p")
+        } else if (player.inventory.contains(Material.NETHERITE_PICKAXE)) {
+            set_GUIitem(GUI, 0, Material.BARRIER, "${ChatColor.RED}選択不可", "")
+        }
         set_enchant_GUIitem(GUI, 18, "5p", Enchantment.DIG_SPEED, 1)
         set_enchant_GUIitem(GUI, 19, "20p", Enchantment.DIG_SPEED, 2)
         set_enchant_GUIitem(GUI, 20, "300p", Enchantment.DIG_SPEED, 3)
         set_enchant_GUIitem(GUI, 21, "500p", Enchantment.DIG_SPEED, 4)
         set_enchant_GUIitem(GUI, 22, "5000p", Enchantment.DIG_SPEED, 5)
     }
-    fun weaponshop(GUI: Inventory) {
+    fun weaponshop(GUI: Inventory, player: Player) {
         dividing_line(GUI, 9)
-        set_GUIitem(GUI, 0, Material.STONE_SWORD, "石の剣", "5p")
-        set_GUIitem(GUI, 1, Material.IRON_SWORD, "鉄の剣", "20p")
-        set_GUIitem(GUI, 2, Material.DIAMOND_SWORD, "ダイヤモンドの剣", "100p")
-        set_GUIitem(GUI, 3, Material.NETHERITE_SWORD, "ネザーライトの剣", "1500p")
-        set_GUIitem(GUI, 5, Material.SHIELD, "盾", "500p")
-        set_GUIitem(GUI, 6, Material.BOW, "弓", "100p")
-        set_GUIitem(GUI, 7, Material.CROSSBOW, "クロスボー", "300p")
-        set_GUIitem(GUI, 8, Material.ARROW, "矢", "1p")
+        set_GUIitem(GUI, 0, Material.WOODEN_SWORD, "[武器]木の剣", "1p")
+        if (player.inventory.contains(Material.WOODEN_SWORD)) {
+            set_GUIitem(GUI, 0, Material.STONE_SWORD, "[武器]石の剣", "5p")
+        } else if (player.inventory.contains(Material.STONE_SWORD)) {
+            set_GUIitem(GUI, 0, Material.IRON_SWORD, "[武器]鉄の剣", "20p")
+        } else if (player.inventory.contains(Material.IRON_SWORD)) {
+            set_GUIitem(GUI, 0, Material.DIAMOND_SWORD, "[武器]ダイヤモンドの剣", "100p")
+        } else if (player.inventory.contains(Material.DIAMOND_SWORD)) {
+            set_GUIitem(GUI, 0, Material.NETHERITE_SWORD, "[武器]ネザーライトの剣", "1500p")
+        } else if (player.inventory.contains(Material.NETHERITE_SWORD)) {
+            set_GUIitem(GUI, 0, Material.BARRIER, "${ChatColor.RED}選択不可", "")
+        }
+        set_GUIitem(GUI, 2, Material.SHIELD, "盾", "500p")
+        set_GUIitem(GUI, 3, Material.BOW, "弓", "100p")
+        set_GUIitem(GUI, 4, Material.CROSSBOW, "クロスボー", "300p")
+        set_GUIitem(GUI, 5, Material.ARROW, "矢", "1p")
         set_enchant_GUIitem(GUI, 18, "20p", Enchantment.DAMAGE_ALL, 1)
         set_enchant_GUIitem(GUI, 19, "100p", Enchantment.DAMAGE_ALL, 2)
         set_enchant_GUIitem(GUI, 20, "300p", Enchantment.DAMAGE_ALL, 3)
@@ -95,18 +111,18 @@ class GUI {
     }
     fun equipmentshop(GUI: Inventory) {
         dividing_line(GUI, 18)
-        set_GUIitem(GUI, 0, Material.GOLDEN_CHESTPLATE, "金のチェストプレート", "100p")
-        set_GUIitem(GUI, 1, Material.GOLDEN_LEGGINGS, "金のレギンス", "100p")
-        set_GUIitem(GUI, 2, Material.GOLDEN_BOOTS, "金のブーツ", "100p")
-        set_GUIitem(GUI, 4, Material.DIAMOND_CHESTPLATE, "ダイヤモンドのチェストプレート", "2500p")
-        set_GUIitem(GUI, 5, Material.DIAMOND_LEGGINGS, "ダイヤモンドのレギンス", "2500p")
-        set_GUIitem(GUI, 6, Material.DIAMOND_BOOTS, "ダイヤモンドのブーツ", "1500p")
-        set_GUIitem(GUI, 9, Material.IRON_CHESTPLATE, "鉄のチェストプレート", "300p")
-        set_GUIitem(GUI, 10, Material.IRON_LEGGINGS, "鉄のレギンス", "300p")
-        set_GUIitem(GUI, 11, Material.IRON_BOOTS, "鉄のブーツ", "300p")
-        set_GUIitem(GUI, 13, Material.NETHERITE_CHESTPLATE, "ネザーライトのチェストプレート", "10000p")
-        set_GUIitem(GUI, 14, Material.NETHERITE_LEGGINGS, "ネザーライトのレギンス", "8000p")
-        set_GUIitem(GUI, 15, Material.NETHERITE_BOOTS, "ネザーライトのブーツ", "5000p")
+        set_GUIitem(GUI, 0, Material.GOLDEN_CHESTPLATE, "[装備]金のチェストプレート", "100p")
+        set_GUIitem(GUI, 1, Material.GOLDEN_LEGGINGS, "[装備]金のレギンス", "100p")
+        set_GUIitem(GUI, 2, Material.GOLDEN_BOOTS, "[装備]金のブーツ", "100p")
+        set_GUIitem(GUI, 4, Material.DIAMOND_CHESTPLATE, "[装備]ダイヤモンドのチェストプレート", "2500p")
+        set_GUIitem(GUI, 5, Material.DIAMOND_LEGGINGS, "[装備]ダイヤモンドのレギンス", "2500p")
+        set_GUIitem(GUI, 6, Material.DIAMOND_BOOTS, "[装備]ダイヤモンドのブーツ", "1500p")
+        set_GUIitem(GUI, 9, Material.IRON_CHESTPLATE, "[装備]鉄のチェストプレート", "300p")
+        set_GUIitem(GUI, 10, Material.IRON_LEGGINGS, "[装備]鉄のレギンス", "300p")
+        set_GUIitem(GUI, 11, Material.IRON_BOOTS, "[装備]鉄のブーツ", "300p")
+        set_GUIitem(GUI, 13, Material.NETHERITE_CHESTPLATE, "[装備]ネザーライトのチェストプレート", "10000p")
+        set_GUIitem(GUI, 14, Material.NETHERITE_LEGGINGS, "[装備]ネザーライトのレギンス", "8000p")
+        set_GUIitem(GUI, 15, Material.NETHERITE_BOOTS, "[装備]ネザーライトのブーツ", "5000p")
         set_enchant_GUIitem(GUI, 27, "20p", Enchantment.PROTECTION_ENVIRONMENTAL, 1)
         set_enchant_GUIitem(GUI, 28, "100p", Enchantment.PROTECTION_ENVIRONMENTAL, 2)
         set_enchant_GUIitem(GUI, 29, "300p", Enchantment.PROTECTION_ENVIRONMENTAL, 3)
@@ -183,6 +199,7 @@ class GUI {
         set_GUIitem(GUI, 3, Material.ENDER_EYE, "${ChatColor.BLUE}shop", GET().locationTitle(location.blueshop))
         set_GUIitem(GUI, 4, Material.ENDER_EYE, "${ChatColor.RED}spawn", GET().locationTitle(location.redspawn))
         set_GUIitem(GUI, 5, Material.ENDER_EYE, "${ChatColor.BLUE}spawn", GET().locationTitle(location.bluespawn))
+        set_GUIitem(GUI, 6, Material.DIAMOND, "${ChatColor.GREEN}参加", "")
         player.openInventory(GUI)
     }
     fun close(title: String, player: Player, inventory: Inventory) {

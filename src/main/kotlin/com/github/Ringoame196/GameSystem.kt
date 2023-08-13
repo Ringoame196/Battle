@@ -22,6 +22,7 @@ class GameSystem {
             "${ChatColor.AQUA}ゲームスタート" -> start(plugin, player)
             "${ChatColor.RED}終了" -> stop(player)
             "${ChatColor.YELLOW}ショップ召喚" -> shop().summon(player.location)
+            "${ChatColor.GREEN}参加" -> Team().inAndout(player)
         }
         if (item.type == Material.ENDER_EYE && e.isShiftClick) {
             setlocation(item, player)
@@ -90,12 +91,16 @@ class GameSystem {
     fun gameEndSystem(message: String) {
         for (loopPlayer in Data.DataManager.gameData.ParticipatingPlayer) {
             loopPlayer.teleport(loopPlayer.world.spawnLocation)
-            loopPlayer.sendMessage(message)
-            loopPlayer.sendMessage("${ChatColor.YELLOW}[ゲーム時間]" + Data.DataManager.gameData.time + "秒")
+            loopPlayer.sendMessage("${ChatColor.YELLOW}[ゲーム時間] $message")
+            loopPlayer.sendMessage(GET().minutes(Data.DataManager.gameData.time))
+
             loopPlayer.playSound(loopPlayer.location, Sound.BLOCK_ANVIL_USE, 1f, 1f)
             loopPlayer.inventory.clear()
             if (loopPlayer.isOp) {
                 Give().GameSetting(loopPlayer)
+                loopPlayer.gameMode = GameMode.CREATIVE
+            } else {
+                loopPlayer.gameMode = GameMode.ADVENTURE
             }
             for (effect in loopPlayer.activePotionEffects) { loopPlayer.removePotionEffect(effect.type) }
         }

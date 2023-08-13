@@ -28,6 +28,7 @@ class point {
         set(player, point)
     }
     fun ore(e: org.bukkit.event.Event, player: Player, block: Block, team: String, plugin: Plugin) {
+        if (!GET().status()) { return }
         val block_type = block.type
         GameSystem().adventure(e, player)
         var cooltime = Data.DataManager.teamDataMap.getOrPut(team) { TeamData() }.blockTime
@@ -44,6 +45,7 @@ class point {
         }
         point().add(player, point)
         block.setType(Material.GLASS)
+
         // 復活
         val world = block.world
         val location = block.getLocation()
@@ -60,7 +62,7 @@ class point {
         object : BukkitRunnable() {
             override fun run() {
                 if (cooltime >= 0) {
-                    armorStand.customName = "${ChatColor.GREEN}${cooltime}秒"
+                    armorStand.customName = "${ChatColor.GREEN}${GET().minutes(cooltime)}"
                     cooltime --
                 } else {
                     block.setType(block_type)

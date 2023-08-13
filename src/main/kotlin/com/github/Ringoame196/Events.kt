@@ -12,7 +12,6 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.block.SignChangeEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityRegainHealthEvent
 import org.bukkit.event.entity.EntityTargetEvent
@@ -101,9 +100,7 @@ class Events(private val plugin: Plugin) : Listener {
         // キル
         val killer = e.entity.killer
         val mob = e.entity
-        if (killer is Player && mob is Player) {
-            player().kill(killer)
-        } else if (inspection().shop(mob)) {
+        if (inspection().shop(mob)) {
             shop().delete_name(mob.location)
             if (!GET().status()) { return }
             GameSystem().gameend()
@@ -152,12 +149,16 @@ class Events(private val plugin: Plugin) : Listener {
         }
     }
     @EventHandler
-    fun onPlayerRespawn(e: EntityDamageEvent) {
+    fun onPlayerRespawn(e: EntityDamageByEntityEvent) {
+        // リスポーン
         val player = e.entity
+        val damager = e.damager
         if (player !is Player) { return }
         if (!GET().JoinTeam(player)) { return }
         if ((player.health - e.damage) > 0) { return }
         e.isCancelled = true
         Team().respawn(player, plugin)
+        if (damager !is Player) { return }
+        player().kill(damager)
     }
 }

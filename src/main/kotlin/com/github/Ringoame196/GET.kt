@@ -53,4 +53,9 @@ class GET {
 
         return "x:$x,y:$y,z:$z"
     }
+    fun minutes(time: Int): String {
+        val minutes = time / 60 + 0
+        val seconds = time % 60 + 0
+        return "${minutes}分${seconds}秒"
+    }
 }
