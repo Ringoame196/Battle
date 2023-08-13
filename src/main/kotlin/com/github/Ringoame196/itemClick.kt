@@ -56,6 +56,7 @@ class itemClick {
         val location = player.getLocation()
         location.add(0.0, -3.0, 0.0)
         val zombie: Zombie = world.spawn(location, Zombie::class.java)
+        val team = GET().OpposingTeamname(GET().TeamName(player)!!)
         zombie.scoreboardTags.add("targetshop")
         Data.DataManager.gameData.killmob.add(zombie)
 

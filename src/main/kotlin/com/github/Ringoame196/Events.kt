@@ -56,14 +56,16 @@ class Events(private val plugin: Plugin) : Listener {
 
     @EventHandler
     fun onEntityDamageByEntityEvent(e: EntityDamageByEntityEvent) {
-        // ショップがダメージを受けたときの処理
         val entity = e.entity
         if (entity is Villager) {
+            // ショップがダメージを受けたときの処理
             val damager = e.damager
             if (inspection().shop(entity)) {
                 shop().attack(e, damager, entity)
             }
-        } else if (entity.scoreboardTags.contains("targetshop")) { entity.scoreboardTags.remove("targetshop") }
+        } else if (entity is org.bukkit.entity.Zombie && entity.scoreboardTags.contains("targetshop")) {
+            entity.scoreboardTags.remove("targetshop")
+        }
     }
 
     @EventHandler
@@ -123,8 +125,11 @@ class Events(private val plugin: Plugin) : Listener {
     fun onEntityTargetEvent(e: EntityTargetEvent) {
         val player = e.target
         val entity = e.entity
+
         if (player !is Player) { return }
-        if (entity.scoreboardTags.contains("targetshop")) { e.isCancelled = true }
+        if (entity.scoreboardTags.contains("targetshop")) {
+            e.target = Zombie().getNearestVillager(entity.location, 20.0)
+        }
         // 敵対されない帽子
         val helmet = player.inventory.helmet
         val displayname = helmet?.itemMeta?.displayName

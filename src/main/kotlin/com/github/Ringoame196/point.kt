@@ -60,7 +60,7 @@ class point {
         object : BukkitRunnable() {
             override fun run() {
                 if (cooltime >= 0) {
-                    armorStand.customName = "${ChatColor.GREEN}復活まで${cooltime}秒"
+                    armorStand.customName = "${ChatColor.GREEN}${cooltime}秒"
                     cooltime --
                 } else {
                     block.setType(block_type)
