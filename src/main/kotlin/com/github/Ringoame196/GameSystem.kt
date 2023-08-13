@@ -34,8 +34,14 @@ class GameSystem {
             return
         }
         Data.DataManager.gameData.status = true
-        shop().summon(Data.DataManager.LocationData.redshop!!)
-        shop().summon(Data.DataManager.LocationData.blueshop!!)
+        Data.DataManager.LocationData.let {
+            if (it.redshop == null || it.blueshop == null || it.redspawn == null || it.bluespawn == null) {
+                NotSet(player)
+                return
+            }
+        }
+        shop().summon(Data.DataManager.LocationData.redshop)
+        shop().summon(Data.DataManager.LocationData.blueshop)
         if (Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("red") == null) { Team().make("red", ChatColor.RED) }
         if (Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("blue") == null) { Team().make("blue", ChatColor.BLUE) }
         Team().division()
@@ -43,6 +49,10 @@ class GameSystem {
         PlayerSend().participantmessage("${ChatColor.GREEN}攻防戦ゲームスタート！！")
         PlayerSend().participantplaysound(Sound.ENTITY_ENDER_DRAGON_AMBIENT)
         timer(plugin)
+    }
+    fun NotSet(player: Player) {
+        player.sendMessage("${ChatColor.RED}未設定の項目があります")
+        player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
     }
     fun timer(plugin: Plugin) {
         Bukkit.getScheduler().runTaskTimer(
@@ -83,10 +93,16 @@ class GameSystem {
             loopPlayer.sendMessage(message)
             loopPlayer.sendMessage("${ChatColor.YELLOW}[ゲーム時間]" + Data.DataManager.gameData.time + "秒")
             loopPlayer.playSound(loopPlayer.location, Sound.BLOCK_ANVIL_USE, 1f, 1f)
+            loopPlayer.inventory.clear()
+            if (loopPlayer.isOp) {
+                Give().GameSetting(loopPlayer)
+            }
             for (effect in loopPlayer.activePotionEffects) { loopPlayer.removePotionEffect(effect.type) }
         }
         Sign().Numberdisplay("(参加中:0人)")
         reset()
+        Team().make("red", ChatColor.RED)
+        Team().make("blue", ChatColor.BLUE)
     }
 
     fun adventure(e: org.bukkit.event.Event, player: Player) {

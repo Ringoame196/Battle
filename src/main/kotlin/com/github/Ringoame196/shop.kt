@@ -115,9 +115,9 @@ class shop {
             player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
         }
     }
-    fun summon(location: Location) {
+    fun summon(location: Location?) {
         val Initial_HP = 100.0
-        val world = location.world
+        val world = location?.world
         val villager: Villager = world!!.spawn(location, Villager::class.java)
         shop().name(villager, Initial_HP.toString(), Initial_HP.toString())
         villager.isCustomNameVisible = true
@@ -131,8 +131,9 @@ class shop {
         villager.customName = "${ChatColor.RED}${villager.health}HP/${Initial_HP}HP" // カスタムネームの表示を更新
 
         // アーマースタンドを召喚
-        location.add(0.0, 1.3, 0.0)
-        val armorStand: ArmorStand = world.spawn(location, ArmorStand::class.java)
+        val armorStandLocation = location.clone()
+        armorStandLocation.add(0.0, 1.3, 0.0)
+        val armorStand: ArmorStand = world.spawn(armorStandLocation, ArmorStand::class.java)
 
         // アーマースタンドの設定
         armorStand.isVisible = false // 可視化するかどうか

@@ -27,7 +27,7 @@ class Sign() {
     fun Numberdisplay(text: String) {
         val sign = Data.DataManager.gameData.signLocation?.block?.state
         if (sign !is Sign) { return }
-        sign.lines.set(1, "${ChatColor.GREEN}$text")
+        sign.setLine(1, "${ChatColor.GREEN}$text")
         sign.update()
     }
 }
