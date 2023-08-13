@@ -61,6 +61,7 @@ class point {
         armorStand.setGravity(false)
         object : BukkitRunnable() {
             override fun run() {
+                if (!GET().status()) { cooltime = -1 }
                 if (cooltime >= 0) {
                     armorStand.customName = "${ChatColor.GREEN}${GET().minutes(cooltime)}"
                     cooltime --
