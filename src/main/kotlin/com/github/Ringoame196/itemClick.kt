@@ -1,7 +1,5 @@
 package com.github.Ringoame196
 
-import com.github.Ringoame196.data.Data
-import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -21,7 +19,7 @@ class itemClick {
         val item_type = item?.type
         when {
             item_type == Material.SLIME_BALL && item_name.contains("[召喚]") -> {
-                summonzombie(player, item_name)
+                Zombie().summon(player, item_name)
             }
             item_type == Material.EMERALD -> {
                 money(player, item_name)
@@ -42,35 +40,6 @@ class itemClick {
             else -> return
         }
         removeitem(player)
-    }
-    fun summonzombie(player: Player, item_name: String) {
-        if (player.location.subtract(0.0, 1.0, 0.0).block.type != Material.GLASS) {
-            player.sendMessage("${ChatColor.RED}ガラスの上で実行してください")
-            return
-        }
-
-        var summon_name = item_name.replace("[召喚]", "")
-        summon_name = summon_name.replace("${ChatColor.YELLOW}", "")
-
-        val world = player.world
-        val location = player.getLocation()
-        location.add(0.0, -3.0, 0.0)
-        val zombie: Zombie = world.spawn(location, Zombie::class.java)
-        zombie.scoreboardTags.add("targetshop")
-        Data.DataManager.gameData.killmob.add(zombie)
-
-        var command = "execute as ${zombie.uniqueId} at @s run function akmob:"
-        command += when (summon_name) {
-            "ノーマルゾンビ" -> "normal"
-            "チビゾンビ" -> "chibi"
-            "シールドゾンビ" -> "shield"
-            else -> {
-                zombie.remove()
-                return // 不明な召喚名の場合は何もせずに処理が終了します
-            }
-        }
-
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)
     }
     fun money(player: Player, item_name: String) {
         val point: Int

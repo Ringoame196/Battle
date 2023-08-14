@@ -139,6 +139,7 @@ class shop {
         villager.scoreboardTags.add("shop")
         villager.setAI(false)
         villager.isSilent = true
+        villager.scoreboardTags.add("BATTLEmob")
 
         val maxHPAttribute = villager.getAttribute(Attribute.GENERIC_MAX_HEALTH)
         maxHPAttribute?.baseValue = Initial_HP
@@ -148,15 +149,7 @@ class shop {
         // アーマースタンドを召喚
         val armorStandLocation = location.clone()
         armorStandLocation.add(0.0, 1.3, 0.0)
-        val armorStand: ArmorStand = world.spawn(armorStandLocation, ArmorStand::class.java)
-
-        // アーマースタンドの設定
-        armorStand.isVisible = false // 可視化するかどうか
-        armorStand.isSmall = true // サイズを小さくするかどうか
-        armorStand.isInvulnerable = true
-        armorStand.customName = "${ChatColor.GOLD}攻防戦ショップ"
-        armorStand.isCustomNameVisible = true
-        armorStand.setGravity(false)
+        val armorStand: ArmorStand = ArmorStand().summon(armorStandLocation, "${ChatColor.GOLD}攻防戦ショップ")
 
         if (!GET().status()) { return }
         Data.DataManager.gameData.killmob.add(villager)

@@ -34,6 +34,9 @@ class GameSystem {
             player.sendMessage("${ChatColor.RED}既にゲームはスタートしています")
             return
         }
+        for (entity in player.world.entities) {
+            if (entity.scoreboardTags.contains("BATTLEmob")) { entity.remove() }
+        }
         Data.DataManager.gameData.status = true
         Data.DataManager.LocationData.let {
             if (it.redshop == null || it.blueshop == null || it.redspawn == null || it.bluespawn == null) {
@@ -90,9 +93,8 @@ class GameSystem {
     }
     fun gameEndSystem(message: String) {
         for (loopPlayer in Data.DataManager.gameData.ParticipatingPlayer) {
-            loopPlayer.teleport(loopPlayer.world.spawnLocation)
-            loopPlayer.sendMessage("${ChatColor.YELLOW}[ゲーム時間] $message")
-            loopPlayer.sendMessage(GET().minutes(Data.DataManager.gameData.time))
+            loopPlayer.sendMessage("${ChatColor.YELLOW}[ゲーム終了]$message")
+            loopPlayer.sendMessage("${ChatColor.AQUA}[ゲーム時間]${GET().minutes(Data.DataManager.gameData.time)}")
 
             loopPlayer.playSound(loopPlayer.location, Sound.BLOCK_ANVIL_USE, 1f, 1f)
             loopPlayer.inventory.clear()
@@ -103,6 +105,7 @@ class GameSystem {
                 loopPlayer.gameMode = GameMode.ADVENTURE
             }
             for (effect in loopPlayer.activePotionEffects) { loopPlayer.removePotionEffect(effect.type) }
+            Bukkit.getWorld("world")?.let { loopPlayer.teleport(it.spawnLocation) }
         }
         Sign().Numberdisplay("(参加中:0人)")
         reset()

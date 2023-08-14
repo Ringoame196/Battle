@@ -49,7 +49,7 @@ class Team {
         Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam(name)?.let {
             it.setAllowFriendlyFire(false)
             it.color = color
-            it.nameTagVisibility = NameTagVisibility.ALWAYS
+            it.nameTagVisibility = NameTagVisibility.HIDE_FOR_OTHER_TEAMS
         }
     }
     fun delete() {
@@ -71,6 +71,7 @@ class Team {
             loopPlayer.addPotionEffect(PotionEffect(PotionEffectType.SATURATION, Int.MAX_VALUE, 100, true, false))
             Equipment().Initial(loopPlayer)
             loopPlayer.gameMode = GameMode.SURVIVAL
+            loopPlayer.health = 20.0
             team = !team
         }
     }

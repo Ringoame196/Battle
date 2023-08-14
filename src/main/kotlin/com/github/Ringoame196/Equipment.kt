@@ -22,7 +22,7 @@ class Equipment {
         val meta = hat.itemMeta as LeatherArmorMeta
         when (GET().TeamName(player)) {
             "red" -> meta.setColor(Color.RED)
-            "blue" -> meta.setColor(Color.RED)
+            "blue" -> meta.setColor(Color.BLUE)
         }
         hat.setItemMeta(meta)
         hat.addEnchantment(Enchantment.BINDING_CURSE, 1)

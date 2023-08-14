@@ -41,11 +41,18 @@ class PlayerSend {
 
             if (loopPlayerTeam == playerTeamName) {
                 loopPlayer.sendMessage("${ChatColor.AQUA}[チーム]${playerName}さんが${itemName}${ChatColor.AQUA}を発動しました(レベル$level)")
-            } else if (loopPlayerTeam == effectTeamName) {
+                effect1?.let { loopPlayer.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
+                effect2?.let {
+                    loopPlayer.addPotionEffect(PotionEffect(it, time * 20, level - 1))
+                    loopPlayer.playSound(loopPlayer.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+                }
+            } else if ("[妨害]$loopPlayerTeam" == effectTeamName) {
                 loopPlayer.sendMessage("${ChatColor.RED}[妨害]${playerTeamName}チームが${itemName}${ChatColor.RED}を発動しました(レベル $level)")
                 effect1?.let { loopPlayer.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
-                effect2?.let { loopPlayer.addPotionEffect(PotionEffect(it, time * 20, level - 1)) }
-                loopPlayer.playSound(loopPlayer.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+                effect2?.let {
+                    loopPlayer.addPotionEffect(PotionEffect(it, time * 20, level - 1))
+                    loopPlayer.playSound(loopPlayer.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f)
+                }
             }
         }
     }

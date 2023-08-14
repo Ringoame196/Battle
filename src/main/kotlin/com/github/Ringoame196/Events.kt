@@ -12,6 +12,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.block.SignChangeEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityRegainHealthEvent
 import org.bukkit.event.entity.EntityTargetEvent
@@ -123,17 +124,18 @@ class Events(private val plugin: Plugin) : Listener {
         val player = e.target
         val entity = e.entity
 
-        if (player !is Player) { return }
         if (entity.scoreboardTags.contains("targetshop")) {
-            e.target = Zombie().getNearestVillager(entity.location, 20.0)
+            e.target = Zombie().getNearestVillager(entity.location, 30.0)
         }
         // 敵対されない帽子
+        if (player !is Player) { return }
         val helmet = player.inventory.helmet
         val displayname = helmet?.itemMeta?.displayName
         if (helmet?.type == Material.ZOMBIE_HEAD && displayname == "${ChatColor.GREEN}敵対されない帽子") { e.isCancelled = true }
     }
     @EventHandler
     fun onSignChangeEvent(e: SignChangeEvent) {
+        // 看板に文字を決定したとき
         val block = e.block.type == Material.OAK_WALL_SIGN
         if (block) {
             Sign().make(e)
@@ -142,6 +144,7 @@ class Events(private val plugin: Plugin) : Listener {
 
     @EventHandler
     fun onPlayerQuitEvent(e: PlayerQuitEvent) {
+        // プレイヤーが抜けたとき
         if (GET().status()) { return }
         val player = e.player
         if (Data.DataManager.gameData.ParticipatingPlayer.contains(player)) {
@@ -149,16 +152,23 @@ class Events(private val plugin: Plugin) : Listener {
         }
     }
     @EventHandler
-    fun onPlayerRespawn(e: EntityDamageByEntityEvent) {
-        // リスポーン
+    fun onPlayerRespawn(e: EntityDamageEvent) {
+        // ダメージを受けたプレイヤー
         val player = e.entity
-        val damager = e.damager
         if (player !is Player) { return }
-        if (!GET().JoinTeam(player)) { return }
-        if ((player.health - e.damage) > 0) { return }
-        e.isCancelled = true
-        Team().respawn(player, plugin)
-        if (damager !is Player) { return }
-        player().kill(damager)
+
+        // ダメージが0以上の場合（リスポーン判定）
+        if (e.damage > 0 && player.health <= e.damage) {
+            e.isCancelled = true
+            Team().respawn(player, plugin)
+
+            // ダメージを与えたエンティティがプレイヤーであればキル処理
+            if (e is EntityDamageByEntityEvent) {
+                val damager = e.damager
+                if (damager is Player) {
+                    player().kill(damager)
+                }
+            }
+        }
     }
 }

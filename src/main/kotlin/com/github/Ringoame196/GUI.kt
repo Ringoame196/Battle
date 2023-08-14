@@ -130,7 +130,7 @@ class GUI {
     }
     fun potionshop(GUI: Inventory, player: Player) {
         player.openInventory(GUI)
-        set_potionGUIitem(GUI, 0, Material.SPLASH_POTION, "20p", PotionEffectType.HEAL, 1, 1)
+        set_potionGUIitem(GUI, 0, Material.SPLASH_POTION, "15p", PotionEffectType.HEAL, 1, 1)
         set_potionGUIitem(GUI, 1, Material.SPLASH_POTION, "100p", PotionEffectType.REGENERATION, 1, 22)
         dividing_line(GUI, 9)
         set_GUIitem(GUI, 18, Material.RED_DYE, "${ChatColor.YELLOW}★チーム全員に攻撃力UP(3分)", "100p")
@@ -141,9 +141,9 @@ class GUI {
         set_GUIitem(GUI, 23, Material.NETHER_STAR, "${ChatColor.YELLOW}★チーム全員に攻撃力UP&再生(1分)", "500p")
     }
     fun zombieshop(GUI: Inventory) {
-        set_GUIitem(GUI, 0, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]ノーマルゾンビ", "5p")
-        set_GUIitem(GUI, 1, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]チビゾンビ", "10p")
-        set_GUIitem(GUI, 2, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]シールドゾンビ", "20p")
+        set_GUIitem(GUI, 0, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]ノーマルゾンビ", "40p")
+        set_GUIitem(GUI, 1, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]チビゾンビ", "60p")
+        set_GUIitem(GUI, 2, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]シールドゾンビ", "60p")
     }
     fun general_merchandiseshop(GUI: Inventory, player: Player) {
         player.openInventory(GUI)
