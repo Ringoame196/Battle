@@ -130,7 +130,7 @@ class shop {
             player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
         }
     }
-    fun summon(location: Location?) {
+    fun summon(location: Location?, tag: String?) {
         val Initial_HP = 100.0
         val world = location?.world
         val villager: Villager = world!!.spawn(location, Villager::class.java)
@@ -139,7 +139,7 @@ class shop {
         villager.scoreboardTags.add("shop")
         villager.setAI(false)
         villager.isSilent = true
-        villager.scoreboardTags.add("BATTLEmob")
+        if (tag != null) { villager.scoreboardTags.add(tag) }
 
         val maxHPAttribute = villager.getAttribute(Attribute.GENERIC_MAX_HEALTH)
         maxHPAttribute?.baseValue = Initial_HP
@@ -149,11 +149,7 @@ class shop {
         // アーマースタンドを召喚
         val armorStandLocation = location.clone()
         armorStandLocation.add(0.0, 1.3, 0.0)
-        val armorStand: ArmorStand = ArmorStand().summon(armorStandLocation, "${ChatColor.GOLD}攻防戦ショップ")
-
-        if (!GET().status()) { return }
-        Data.DataManager.gameData.killmob.add(villager)
-        Data.DataManager.gameData.killmob.add(armorStand)
+        ArmorStand().summon(armorStandLocation, "${ChatColor.GOLD}攻防戦ショップ")
     }
     fun delete_name(location: Location) {
         val world = location.world

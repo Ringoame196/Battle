@@ -53,17 +53,18 @@ class GUIClick {
             .replace("チーム全員に", "")
         when (check_name) {
             "ショップ解放" -> shop().release(player, team_name, item_name)
-            "攻撃力UP(3分)" -> PlayerSend().TeamGiveEffect(player, item_name, PotionEffectType.INCREASE_DAMAGE, null, 2, 180)
+            "攻撃力UP(3分)" -> PlayerSend().TeamGiveEffect(player, item_name, PotionEffectType.INCREASE_DAMAGE, null, 1, 180)
             "再生UP(3分)" -> PlayerSend().TeamGiveEffect(player, item_name, PotionEffectType.REGENERATION, null, 2, 180)
             "採掘速度UP(5分)" -> PlayerSend().TeamGiveEffect(player, item_name, PotionEffectType.FAST_DIGGING, null, 3, 300)
             "耐性(3分)" -> PlayerSend().TeamGiveEffect(player, item_name, PotionEffectType.DAMAGE_RESISTANCE, null, 1, 180)
             "移動速度UP(3分)" -> PlayerSend().TeamGiveEffect(player, item_name, PotionEffectType.SPEED, null, 1, 180)
-            "攻撃力UP&再生(1分)" -> PlayerSend().TeamGiveEffect(player, item_name, PotionEffectType.REGENERATION, PotionEffectType.INCREASE_DAMAGE, 5, 60)
+            "攻撃力UP&再生(1分)" -> PlayerSend().TeamGiveEffect(player, item_name, PotionEffectType.REGENERATION, PotionEffectType.INCREASE_DAMAGE, 3, 60)
             "鉱石復活速度UP" -> Team().fastbreaklevel(team_name, player, item_name)
             "村人体力増加" -> shop().TeamMaxHPadd(team_name, player, item_name, 10)
             "盲目(10秒)[妨害]" -> PlayerSend().TeamGiveEffect(player, item_name, PotionEffectType.BLINDNESS, null, 255, 10)
             "弱体化(10秒)[妨害]" -> PlayerSend().TeamGiveEffect(player, item_name, PotionEffectType.WEAKNESS, null, 255, 10)
-            "採掘速度低下(1分)[妨害]" -> PlayerSend().TeamGiveEffect(player, item_name, PotionEffectType.SLOW_DIGGING, null, 255, 10)
+            "採掘速度低下(10秒)[妨害]" -> PlayerSend().TeamGiveEffect(player, item_name, PotionEffectType.SLOW_DIGGING, null, 255, 10)
+            "狼召喚" -> Wolf().summon(player)
         }
     }
 }

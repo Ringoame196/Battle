@@ -8,6 +8,8 @@ import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Player
+import org.bukkit.event.block.BlockDamageEvent
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitRunnable
 
@@ -28,7 +30,7 @@ class point {
         player.sendMessage("${ChatColor.RED}-$removepoint (${point}ポイント)")
         set(player, point)
     }
-    fun ore(e: org.bukkit.event.Event, player: Player, block: Block, team: String, plugin: Plugin) {
+    fun ore(e: org.bukkit.event.Event, player: Player, block: Block, team: String?, plugin: Plugin) {
         val block_type = block.type
         GameSystem().adventure(e, player)
         var cooltime = Data.DataManager.teamDataMap.getOrPut(team) { TeamData() }.blockTime
@@ -49,7 +51,7 @@ class point {
         // 復活
         val location = block.getLocation()
         location.add(0.5, -1.0, 0.5)
-        val armorStand: ArmorStand = com.github.Ringoame196.ArmorStand().summon(location, "")
+        val armorStand: ArmorStand = ArmorStand().summon(location, "")
         object : BukkitRunnable() {
             override fun run() {
                 if (!GET().status()) { cooltime = -1 }
@@ -75,6 +77,34 @@ class point {
             player.playSound(player, Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f)
             remove(player, price_int)
             true
+        }
+    }
+    fun NotAppropriate(item: ItemStack, block: Block, e: BlockDamageEvent) {
+        if (item.type == Material.AIR) {
+            e.isCancelled = true
+        }
+
+        when (block.type) {
+            Material.DIAMOND_ORE -> when (item.type) {
+                Material.NETHERITE_PICKAXE -> {}
+                Material.DIAMOND_PICKAXE -> {}
+                Material.IRON_PICKAXE -> {}
+                else -> e.isCancelled = true
+            }
+            Material.GOLD_ORE -> when (item.type) {
+                Material.NETHERITE_PICKAXE -> {}
+                Material.DIAMOND_PICKAXE -> {}
+                Material.IRON_PICKAXE -> {}
+                else -> e.isCancelled = true
+            }
+            Material.IRON_ORE -> when (item.type) {
+                Material.NETHERITE_PICKAXE -> {}
+                Material.DIAMOND_PICKAXE -> {}
+                Material.IRON_PICKAXE -> {}
+                Material.STONE_PICKAXE -> {}
+                else -> e.isCancelled = true
+            }
+            else -> {}
         }
     }
 }

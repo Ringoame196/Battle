@@ -5,12 +5,12 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 class Give {
-    fun GameSetting(player: Player) {
+    fun GameSetting(): ItemStack {
         val Gamesetting = ItemStack(Material.COMMAND_BLOCK)
         val meta = Gamesetting.itemMeta
         meta?.setDisplayName("ゲーム設定")
         Gamesetting.setItemMeta(meta)
-        player.inventory.addItem(Gamesetting)
+        return Gamesetting
     }
     fun Equipment(player: Player, item: ItemStack) {
         val type = item.type.toString()
@@ -37,5 +37,12 @@ class Give {
         player.inventory.remove(Material.STONE_PICKAXE)
         player.inventory.remove(Material.IRON_PICKAXE)
         player.inventory.remove(Material.DIAMOND_PICKAXE)
+    }
+    fun coin(): ItemStack {
+        val coin = ItemStack(Material.GOLD_INGOT)
+        val meta = coin.itemMeta
+        meta?.setDisplayName("${org.bukkit.ChatColor.YELLOW}コイン")
+        coin.setItemMeta(meta)
+        return coin
     }
 }

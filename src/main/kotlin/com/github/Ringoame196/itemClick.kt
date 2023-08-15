@@ -19,6 +19,10 @@ class itemClick {
         val item_type = item?.type
         when {
             item_type == Material.SLIME_BALL && item_name.contains("[召喚]") -> {
+                if (player.location.subtract(0.0, 1.0, 0.0).block.type != Material.GLASS) {
+                    player.sendMessage("${ChatColor.RED}ガラスの上で実行してください")
+                    return
+                }
                 Zombie().summon(player, item_name)
             }
             item_type == Material.EMERALD -> {
@@ -71,6 +75,10 @@ class itemClick {
             Material.DIAMOND_BLOCK -> {
                 golem.health = 500.0
                 golem.damage(10.0)
+            }
+            Material.NETHERITE_BLOCK -> {
+                golem.health = 600.0
+                golem.damage(15.0)
             }
             else -> return
         }

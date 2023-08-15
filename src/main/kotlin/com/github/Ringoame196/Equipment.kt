@@ -15,7 +15,9 @@ class Equipment {
         player.inventory.leggings = Unbreakable(ItemStack(Material.LEATHER_LEGGINGS))
         player.inventory.boots = Unbreakable(ItemStack(Material.LEATHER_BOOTS))
         player.inventory.addItem(Unbreakable(ItemStack(Material.WOODEN_SWORD)))
-        player.inventory.addItem(Unbreakable(ItemStack(Material.WOODEN_PICKAXE)))
+        val pickaxe = Unbreakable(ItemStack(Material.WOODEN_PICKAXE))
+        pickaxe.addEnchantment(Enchantment.DIG_SPEED, 1)
+        player.inventory.addItem(pickaxe)
     }
     fun hat(player: Player) {
         val hat = ItemStack(Material.LEATHER_HELMET)

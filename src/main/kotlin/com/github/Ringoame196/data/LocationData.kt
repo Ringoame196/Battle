@@ -1,5 +1,6 @@
 package com.github.Ringoame196.data
 
+import com.github.Ringoame196.randomChest
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
@@ -11,7 +12,8 @@ data class LocationData(
     var redshop: Location? = null,
     var blueshop: Location? = null,
     var redspawn: Location? = null,
-    var bluespawn: Location? = null
+    var bluespawn: Location? = null,
+    var randomChest: Location? = null
 ) {
     fun saveToFile(filePath: String) {
         val yamlConfiguration = YamlConfiguration()
@@ -35,6 +37,7 @@ data class LocationData(
         yamlConfiguration.set("blueshop", createSectionFromLocation(blueshop))
         yamlConfiguration.set("redspawn", createSectionFromLocation(redspawn))
         yamlConfiguration.set("bluespawn", createSectionFromLocation(bluespawn))
+        yamlConfiguration.set("randomChest", createSectionFromLocation(randomChest))
 
         try {
             yamlConfiguration.save(File(filePath))
@@ -42,6 +45,7 @@ data class LocationData(
             println("Error while saving data: ${e.message}")
         }
     }
+
     fun loadLocationDataFromYaml(filePath: String) {
         val yaml = YamlConfiguration.loadConfiguration(File(filePath))
         val locationData = Data.DataManager.LocationData
@@ -77,6 +81,11 @@ data class LocationData(
         val bluespawnSection = yaml.getConfigurationSection("bluespawn")
         if (bluespawnSection != null) {
             locationData.bluespawn = getLocationFromSection(bluespawnSection)
+        }
+
+        val randomChestSection = yaml.getConfigurationSection("randomChest")
+        if (randomChestSection != null) {
+            locationData.randomChest = getLocationFromSection(randomChestSection)
         }
     }
 }

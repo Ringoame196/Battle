@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockDamageEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.block.SignChangeEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
@@ -84,7 +85,8 @@ class Events(private val plugin: Plugin) : Listener {
     fun onBlockBreakEvent(e: BlockBreakEvent) {
         // ブロックを破壊したとき
         val player = e.player
-        val team_name = GET().TeamName(player) ?: return
+        GameSystem().adventure(e, player)
+        val team_name = GET().TeamName(player)
         val block = e.block
         point().ore(e, player, block, team_name, plugin)
     }
@@ -103,8 +105,19 @@ class Events(private val plugin: Plugin) : Listener {
         val mob = e.entity
         if (inspection().shop(mob)) {
             shop().delete_name(mob.location)
-            if (!GET().status()) { return }
-            GameSystem().gameend()
+            if (!GET().status()) {
+                return
+            }
+            val blockBelowBlock = mob.location.add(0.0, -1.0, 0.0).block.type
+            val winTeam: String? = when (blockBelowBlock) {
+                Material.RED_WOOL -> "blue"
+                Material.BLUE_WOOL -> "red"
+                else -> null
+            }
+            winTeam?.let { GameSystem().gameend(it) }
+        } else {
+            if (killer !is Player) { return }
+            point().add(killer, 1)
         }
     }
 
@@ -163,12 +176,16 @@ class Events(private val plugin: Plugin) : Listener {
             Team().respawn(player, plugin)
 
             // ダメージを与えたエンティティがプレイヤーであればキル処理
-            if (e is EntityDamageByEntityEvent) {
-                val damager = e.damager
-                if (damager is Player) {
-                    player().kill(damager)
-                }
-            }
+            if (e !is EntityDamageByEntityEvent) { return }
+            val damager = e.damager
+            if (damager !is Player) { return }
+            player().kill(damager)
         }
+    }
+    @EventHandler
+    fun onBlockDamage(e: BlockDamageEvent) {
+        val player = e.player
+        val block = e.block
+        point().NotAppropriate(player.inventory.itemInMainHand, block, e)
     }
 }

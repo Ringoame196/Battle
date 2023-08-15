@@ -72,6 +72,9 @@ class Team {
             Equipment().Initial(loopPlayer)
             loopPlayer.gameMode = GameMode.SURVIVAL
             loopPlayer.health = 20.0
+            if (loopPlayer.isOp) {
+                loopPlayer.inventory.addItem(Give().GameSetting())
+            }
             team = !team
         }
     }
@@ -98,6 +101,7 @@ class Team {
         when (GET().TeamName(player)) {
             "red" -> player.teleport(Data.DataManager.LocationData.redspawn!!)
             "blue" -> player.teleport(Data.DataManager.LocationData.bluespawn!!)
+            else -> player.teleport(player.world.spawnLocation)
         }
     }
 }

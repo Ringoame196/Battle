@@ -96,18 +96,17 @@ class GUI {
         } else if (player.inventory.contains(Material.NETHERITE_SWORD)) {
             set_GUIitem(GUI, 0, Material.BARRIER, "${ChatColor.RED}選択不可", "")
         }
-        set_GUIitem(GUI, 2, Material.SHIELD, "盾", "500p")
-        set_GUIitem(GUI, 3, Material.BOW, "弓", "100p")
-        set_GUIitem(GUI, 4, Material.CROSSBOW, "クロスボー", "300p")
-        set_GUIitem(GUI, 5, Material.ARROW, "矢", "1p")
-        set_enchant_GUIitem(GUI, 18, "20p", Enchantment.DAMAGE_ALL, 1)
-        set_enchant_GUIitem(GUI, 19, "100p", Enchantment.DAMAGE_ALL, 2)
-        set_enchant_GUIitem(GUI, 20, "300p", Enchantment.DAMAGE_ALL, 3)
-        set_enchant_GUIitem(GUI, 21, "500p", Enchantment.DAMAGE_ALL, 4)
-        set_enchant_GUIitem(GUI, 27, "20p", Enchantment.DAMAGE_UNDEAD, 1)
-        set_enchant_GUIitem(GUI, 28, "100p", Enchantment.DAMAGE_UNDEAD, 2)
-        set_enchant_GUIitem(GUI, 29, "300p", Enchantment.DAMAGE_UNDEAD, 3)
-        set_enchant_GUIitem(GUI, 30, "500p", Enchantment.DAMAGE_UNDEAD, 4)
+        set_GUIitem(GUI, 2, Material.BOW, "弓", "100p")
+        set_GUIitem(GUI, 3, Material.CROSSBOW, "クロスボー", "300p")
+        set_GUIitem(GUI, 4, Material.ARROW, "矢", "1p")
+        set_enchant_GUIitem(GUI, 18, "40p", Enchantment.DAMAGE_ALL, 1)
+        set_enchant_GUIitem(GUI, 19, "200p", Enchantment.DAMAGE_ALL, 2)
+        set_enchant_GUIitem(GUI, 20, "600p", Enchantment.DAMAGE_ALL, 3)
+        set_enchant_GUIitem(GUI, 21, "1000p", Enchantment.DAMAGE_ALL, 4)
+        set_enchant_GUIitem(GUI, 27, "40p", Enchantment.DAMAGE_UNDEAD, 1)
+        set_enchant_GUIitem(GUI, 28, "200p", Enchantment.DAMAGE_UNDEAD, 2)
+        set_enchant_GUIitem(GUI, 29, "600p", Enchantment.DAMAGE_UNDEAD, 3)
+        set_enchant_GUIitem(GUI, 30, "1000p", Enchantment.DAMAGE_UNDEAD, 4)
     }
     fun equipmentshop(GUI: Inventory) {
         dividing_line(GUI, 18)
@@ -130,20 +129,25 @@ class GUI {
     }
     fun potionshop(GUI: Inventory, player: Player) {
         player.openInventory(GUI)
-        set_potionGUIitem(GUI, 0, Material.SPLASH_POTION, "15p", PotionEffectType.HEAL, 1, 1)
-        set_potionGUIitem(GUI, 1, Material.SPLASH_POTION, "100p", PotionEffectType.REGENERATION, 1, 22)
+        set_potionGUIitem(GUI, 0, Material.SPLASH_POTION, "15p", PotionEffectType.HEAL, 0, 1)
+        set_potionGUIitem(GUI, 1, Material.SPLASH_POTION, "50p", PotionEffectType.HEAL, 1, 1)
+        set_potionGUIitem(GUI, 2, Material.SPLASH_POTION, "100p", PotionEffectType.REGENERATION, 1, 22)
         dividing_line(GUI, 9)
-        set_GUIitem(GUI, 18, Material.RED_DYE, "${ChatColor.YELLOW}★チーム全員に攻撃力UP(3分)", "100p")
-        set_GUIitem(GUI, 19, Material.MAGENTA_DYE, "${ChatColor.YELLOW}★チーム全員に再生UP(3分)", "100p")
-        set_GUIitem(GUI, 20, Material.ORANGE_DYE, "${ChatColor.YELLOW}★チーム全員に採掘速度UP(5分)", "100p")
-        set_GUIitem(GUI, 21, Material.GRAY_DYE, "${ChatColor.YELLOW}★チーム全員に耐性(3分)", "100p")
-        set_GUIitem(GUI, 22, Material.LIGHT_BLUE_DYE, "${ChatColor.YELLOW}★チーム全員に移動速度UP(3分)", "100p")
-        set_GUIitem(GUI, 23, Material.NETHER_STAR, "${ChatColor.YELLOW}★チーム全員に攻撃力UP&再生(1分)", "500p")
+        set_GUIitem(GUI, 18, Material.RED_DYE, "${ChatColor.YELLOW}★チーム全員に攻撃力UP(3分)", "300p")
+        set_GUIitem(GUI, 19, Material.MAGENTA_DYE, "${ChatColor.YELLOW}★チーム全員に再生UP(3分)", "300p")
+        set_GUIitem(GUI, 20, Material.ORANGE_DYE, "${ChatColor.YELLOW}★チーム全員に採掘速度UP(5分)", "300p")
+        set_GUIitem(GUI, 21, Material.GRAY_DYE, "${ChatColor.YELLOW}★チーム全員に耐性(3分)", "300p")
+        set_GUIitem(GUI, 22, Material.LIGHT_BLUE_DYE, "${ChatColor.YELLOW}★チーム全員に移動速度UP(3分)", "300p")
+        set_GUIitem(GUI, 23, Material.NETHER_STAR, "${ChatColor.YELLOW}★チーム全員に攻撃力UP&再生(1分)", "1000p")
     }
     fun zombieshop(GUI: Inventory) {
-        set_GUIitem(GUI, 0, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]ノーマルゾンビ", "40p")
-        set_GUIitem(GUI, 1, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]チビゾンビ", "60p")
-        set_GUIitem(GUI, 2, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]シールドゾンビ", "60p")
+        set_GUIitem(GUI, 0, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]ノーマルゾンビ", "20p")
+        set_GUIitem(GUI, 1, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]チビゾンビ", "40p")
+        set_GUIitem(GUI, 2, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]シールドゾンビ", "40p")
+        set_GUIitem(GUI, 3, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]ゾンビソルジャー", "40p")
+        set_GUIitem(GUI, 4, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]タンクマン", "300p")
+        set_GUIitem(GUI, 5, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]ダッシュマン", "100p")
+        set_GUIitem(GUI, 6, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]スケルトンマン", "100p")
     }
     fun general_merchandiseshop(GUI: Inventory, player: Player) {
         player.openInventory(GUI)
@@ -151,7 +155,8 @@ class GUI {
         set_GUIitem(GUI, 1, Material.EMERALD, "${ChatColor.GREEN}100p", "100p")
         dividing_line(GUI, 9)
         set_GUIitem(GUI, 18, Material.ZOMBIE_HEAD, "${ChatColor.GREEN}敵対されない帽子", "8000p")
-        set_GUIitem(GUI, 19, Material.ENCHANTED_GOLDEN_APPLE, "エンチャント金リンゴ", "300p")
+        set_GUIitem(GUI, 19, Material.GOLDEN_APPLE, "金リンゴ", "300p")
+        set_GUIitem(GUI, 20, Material.BONE, "${ChatColor.YELLOW}★狼召喚", "100p")
     }
     fun villagerlevelup(GUI: Inventory, player: Player) {
         val team_name = GET().TeamName(player) ?: return
@@ -160,10 +165,9 @@ class GUI {
         shop.let { entity ->
             val maxHealthAttribute = shop?.getAttribute(Attribute.GENERIC_MAX_HEALTH)
             val maxHealth = maxHealthAttribute?.value?.toInt() ?: 0
-            val modifiedMaxHealth = maxHealth / 10 * 50
-            set_GUIitem(GUI, 1, Material.RED_DYE, "${ChatColor.YELLOW}★村人体力増加", modifiedMaxHealth.toString() + "p")
+            set_GUIitem(GUI, 1, Material.RED_DYE, "${ChatColor.YELLOW}★村人体力増加", maxHealth.toString() + "p")
         }
-        val price = level * 100
+        val price = level * 200
         if (level < 5) {
             set_GUIitem(GUI, 0, Material.GOLDEN_PICKAXE, "${ChatColor.YELLOW}★鉱石復活速度UP", price.toString() + "p")
         } else {
@@ -178,7 +182,7 @@ class GUI {
     fun disturbshop(GUI: Inventory) {
         set_GUIitem(GUI, 0, Material.BLACK_CANDLE, "${ChatColor.YELLOW}★盲目(10秒)[妨害]", "300p")
         set_GUIitem(GUI, 1, Material.LIGHT_GRAY_CANDLE, "${ChatColor.YELLOW}★弱体化(10秒)[妨害]", "300p")
-        set_GUIitem(GUI, 2, Material.BROWN_CANDLE, "${ChatColor.YELLOW}★採掘速度低下(1分)[妨害]", "300p")
+        set_GUIitem(GUI, 2, Material.BROWN_CANDLE, "${ChatColor.YELLOW}★採掘速度低下(10秒)[妨害]", "300p")
     }
 
     fun dividing_line(GUI: Inventory, beginning: Int) {
@@ -199,7 +203,8 @@ class GUI {
         set_GUIitem(GUI, 3, Material.ENDER_EYE, "${ChatColor.BLUE}shop", GET().locationTitle(location.blueshop))
         set_GUIitem(GUI, 4, Material.ENDER_EYE, "${ChatColor.RED}spawn", GET().locationTitle(location.redspawn))
         set_GUIitem(GUI, 5, Material.ENDER_EYE, "${ChatColor.BLUE}spawn", GET().locationTitle(location.bluespawn))
-        set_GUIitem(GUI, 6, Material.DIAMOND, "${ChatColor.GREEN}参加", "")
+        set_GUIitem(GUI, 6, Material.ENDER_EYE, "${ChatColor.YELLOW}ランダムチェスト", GET().locationTitle(location.randomChest))
+        set_GUIitem(GUI, 7, Material.DIAMOND, "${ChatColor.GREEN}参加", "")
         player.openInventory(GUI)
     }
     fun close(title: String, player: Player, inventory: Inventory) {
