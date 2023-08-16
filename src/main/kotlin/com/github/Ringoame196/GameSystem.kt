@@ -2,6 +2,7 @@ package com.github.Ringoame196
 
 import com.github.Ringoame196.data.Data
 import com.github.Ringoame196.data.Gamedata
+import com.github.Ringoame196.data.Ranking
 import com.github.Ringoame196.data.TeamData
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -157,13 +158,17 @@ class GameSystem {
             }
             Bukkit.getWorld("world")?.let { loopPlayer.teleport(it.spawnLocation) }
             if (winTeam == null) { continue }
+            val ranking = Data.DataManager.RankingDataMap
             if (winTeam == GET().TeamName(loopPlayer)) {
                 for (i in 1..5) {
                     loopPlayer.inventory.addItem(Give().coin())
                 }
+                ranking.getOrPut(loopPlayer.name) { Ranking() }.win += 1
             } else {
                 loopPlayer.inventory.addItem(Give().coin())
+                ranking.getOrPut(loopPlayer.name) { Ranking() }.lose += 1
             }
+            Ranking().calculation(loopPlayer)
         }
         for (player in Bukkit.getWorld("BATTLE")?.players!!) {
             Bukkit.getWorld("world")?.let { player.teleport(it.spawnLocation) }
