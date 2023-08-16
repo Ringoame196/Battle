@@ -81,7 +81,11 @@ class shop {
         GUIclass.set_GUIitem(GUI, 9, Material.ANVIL, "${ChatColor.YELLOW}金床", "エンチャント用")
         GUIclass.set_GUIitem(GUI, 10, Material.POTION, "${ChatColor.YELLOW}チーム強化", "")
         GUIclass.set_GUIitem(GUI, 12, Material.VILLAGER_SPAWN_EGG, "${ChatColor.YELLOW}村人強化", "")
-        GUIclass.set_GUIitem(GUI, 14, Material.ZOMBIE_SPAWN_EGG, "${ChatColor.YELLOW}ゾンビ", "")
+        if (Data.DataManager.gameData.time >= 300 || player.gameMode == GameMode.CREATIVE) {
+            GUIclass.set_GUIitem(GUI, 14, Material.ZOMBIE_SPAWN_EGG, "${ChatColor.YELLOW}ゾンビ", "")
+        } else {
+            GUIclass.set_GUIitem(GUI, 14, Material.BARRIER, "${ChatColor.RED}選択禁止", "")
+        }
         GUIclass.set_GUIitem(GUI, 16, Material.BEACON, "${ChatColor.YELLOW}その他", "")
         GUIclass.set_GUIitem(GUI, 18, Material.CHEST, "${ChatColor.YELLOW}共通チェスト", "チーム共通")
         GUIclass.set_GUIitem(GUI, 19, Material.IRON_AXE, "${ChatColor.YELLOW}斧", "")

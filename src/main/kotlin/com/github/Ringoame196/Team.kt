@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.github.Ringoame196
 
 import com.github.Ringoame196.data.Data
@@ -55,11 +57,13 @@ class Team {
     fun delete() {
         Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("red")?.unregister()
         Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("blue")?.unregister()
+        Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("kansen")?.unregister()
     }
     fun division() {
         val redTeam = Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("red")
         val blueTeam = Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("blue")
         var team = true
+        var blueCount = 0
         for (loopPlayer in Data.DataManager.gameData.ParticipatingPlayer) {
             if (team) {
                 redTeam?.addPlayer(loopPlayer)
@@ -67,6 +71,7 @@ class Team {
             } else {
                 blueTeam?.addPlayer(loopPlayer)
                 loopPlayer.teleport(Data.DataManager.LocationData.bluespawn!!)
+                blueCount++
             }
             loopPlayer.addPotionEffect(PotionEffect(PotionEffectType.SATURATION, Int.MAX_VALUE, 100, true, false))
             Equipment().Initial(loopPlayer)
@@ -76,6 +81,13 @@ class Team {
                 loopPlayer.inventory.addItem(Give().GameSetting())
             }
             team = !team
+        }
+        if (!team) {
+            Data.DataManager.gameData.shortage = true
+            if (blueCount >= 2) {
+                val blocktime = Data.DataManager.teamDataMap.getOrPut("blue") { TeamData() }.blockTime
+                Data.DataManager.teamDataMap.getOrPut("blue") { TeamData() }.blockTime = blocktime - 1
+            }
         }
     }
     fun respawn(player: Player, plugin: Plugin) {

@@ -29,6 +29,7 @@ class GUI {
         item.setItemMeta(itemMeta)
         GUI.setItem(number, item)
     }
+    @Suppress("DEPRECATION")
     fun set_playerHead(GUI: Inventory, number: Int, name: String, displayname: String, lore: String) {
         // GUIにアイテムを楽にセットする
         val item = ItemStack(Material.PLAYER_HEAD)
@@ -80,7 +81,7 @@ class GUI {
         if (player.inventory.contains(Material.WOODEN_PICKAXE)) {
             set_GUIitem(GUI, 0, Material.STONE_PICKAXE, "[ツール]石ピッケル", "5p")
         } else if (player.inventory.contains(Material.STONE_PICKAXE)) {
-            set_GUIitem(GUI, 0, Material.IRON_PICKAXE, "[ツール]鉄ピッケル", "20p")
+            set_GUIitem(GUI, 0, Material.IRON_PICKAXE, "[ツール]鉄ピッケル", "40p")
         } else if (player.inventory.contains(Material.IRON_PICKAXE)) {
             set_GUIitem(GUI, 0, Material.DIAMOND_PICKAXE, "[ツール]ダイヤモンドピッケル", "300p")
         } else if (player.inventory.contains(Material.DIAMOND_PICKAXE)) {
@@ -98,7 +99,7 @@ class GUI {
         dividing_line(GUI, 9)
         set_GUIitem(GUI, 0, Material.STONE_AXE, "[斧]石斧", "5p")
         if (player.inventory.contains(Material.STONE_AXE)) {
-            set_GUIitem(GUI, 0, Material.IRON_AXE, "[斧]鉄斧", "20p")
+            set_GUIitem(GUI, 0, Material.IRON_AXE, "[斧]鉄斧", "40p")
         } else if (player.inventory.contains(Material.IRON_AXE)) {
             set_GUIitem(GUI, 0, Material.DIAMOND_AXE, "[斧]ダイヤモンド斧", "300p")
         } else if (player.inventory.contains(Material.DIAMOND_AXE)) {
@@ -130,11 +131,11 @@ class GUI {
         set_GUIitem(GUI, 3, Material.CROSSBOW, "クロスボー", "300p")
         set_GUIitem(GUI, 4, Material.ARROW, "矢", "1p")
         set_enchant_GUIitem(GUI, 18, "40p", Enchantment.DAMAGE_ALL, 1)
-        set_enchant_GUIitem(GUI, 19, "200p", Enchantment.DAMAGE_ALL, 2)
+        set_enchant_GUIitem(GUI, 19, "300p", Enchantment.DAMAGE_ALL, 2)
         set_enchant_GUIitem(GUI, 20, "600p", Enchantment.DAMAGE_ALL, 3)
         set_enchant_GUIitem(GUI, 21, "1000p", Enchantment.DAMAGE_ALL, 4)
         set_enchant_GUIitem(GUI, 27, "40p", Enchantment.DAMAGE_UNDEAD, 1)
-        set_enchant_GUIitem(GUI, 28, "200p", Enchantment.DAMAGE_UNDEAD, 2)
+        set_enchant_GUIitem(GUI, 28, "300p", Enchantment.DAMAGE_UNDEAD, 2)
         set_enchant_GUIitem(GUI, 29, "600p", Enchantment.DAMAGE_UNDEAD, 3)
         set_enchant_GUIitem(GUI, 30, "1000p", Enchantment.DAMAGE_UNDEAD, 4)
     }
@@ -152,10 +153,10 @@ class GUI {
         set_GUIitem(GUI, 13, Material.NETHERITE_CHESTPLATE, "[装備]ネザーライトのチェストプレート", "10000p")
         set_GUIitem(GUI, 14, Material.NETHERITE_LEGGINGS, "[装備]ネザーライトのレギンス", "8000p")
         set_GUIitem(GUI, 15, Material.NETHERITE_BOOTS, "[装備]ネザーライトのブーツ", "5000p")
-        set_enchant_GUIitem(GUI, 27, "20p", Enchantment.PROTECTION_ENVIRONMENTAL, 1)
-        set_enchant_GUIitem(GUI, 28, "100p", Enchantment.PROTECTION_ENVIRONMENTAL, 2)
-        set_enchant_GUIitem(GUI, 29, "300p", Enchantment.PROTECTION_ENVIRONMENTAL, 3)
-        set_enchant_GUIitem(GUI, 30, "500p", Enchantment.PROTECTION_ENVIRONMENTAL, 4)
+        set_enchant_GUIitem(GUI, 27, "10p", Enchantment.PROTECTION_ENVIRONMENTAL, 1)
+        set_enchant_GUIitem(GUI, 28, "50p", Enchantment.PROTECTION_ENVIRONMENTAL, 2)
+        set_enchant_GUIitem(GUI, 29, "150p", Enchantment.PROTECTION_ENVIRONMENTAL, 3)
+        set_enchant_GUIitem(GUI, 30, "250p", Enchantment.PROTECTION_ENVIRONMENTAL, 4)
     }
     fun potionshop(GUI: Inventory, player: Player) {
         player.openInventory(GUI)
@@ -171,13 +172,14 @@ class GUI {
         set_GUIitem(GUI, 23, Material.NETHER_STAR, "${ChatColor.YELLOW}★チーム全員に攻撃力UP&再生(1分)", "1000p")
     }
     fun zombieshop(GUI: Inventory) {
-        set_GUIitem(GUI, 0, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]ノーマルゾンビ", "20p")
+        set_GUIitem(GUI, 0, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]ノーマルゾンビ", "30p")
         set_GUIitem(GUI, 1, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]チビゾンビ", "40p")
         set_GUIitem(GUI, 2, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]シールドゾンビ", "40p")
         set_GUIitem(GUI, 3, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]ゾンビソルジャー", "40p")
         set_GUIitem(GUI, 4, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]タンクマン", "300p")
-        set_GUIitem(GUI, 5, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]ダッシュマン", "100p")
+        set_GUIitem(GUI, 5, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]ダッシュマン", "250p")
         set_GUIitem(GUI, 6, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]スケルトンマン", "100p")
+        set_GUIitem(GUI, 7, Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]シャーマン", "500p")
     }
     fun general_merchandiseshop(GUI: Inventory, player: Player) {
         player.openInventory(GUI)
@@ -237,6 +239,8 @@ class GUI {
         set_GUIitem(GUI, 7, Material.DIAMOND, "${ChatColor.GREEN}参加", "")
         set_GUIitem(GUI, 8, Material.REDSTONE_BLOCK, "${ChatColor.RED}プラグインリロード", "")
         set_GUIitem(GUI, 9, Material.PLAYER_HEAD, "${ChatColor.BLUE}プレイヤー", "")
+        set_GUIitem(GUI, 10, Material.COMMAND_BLOCK, "${ChatColor.YELLOW}実験所へ", "")
+        set_GUIitem(GUI, 11, Material.COMMAND_BLOCK, "${ChatColor.YELLOW}ロビーへ", "")
         player.openInventory(GUI)
     }
     fun JoinPlayers(player: Player) {

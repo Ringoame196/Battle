@@ -4,8 +4,11 @@ import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Chest
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.EnchantmentStorageMeta
+import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -63,19 +66,28 @@ class randomChest {
     }
     fun setList(): MutableList<ItemStack> {
         val item: MutableList<ItemStack> = mutableListOf()
-        item.add(setItem(Material.NETHERITE_HELMET, ""))
         item.add(setItem(Material.NETHERITE_CHESTPLATE, ""))
         item.add(setItem(Material.NETHERITE_LEGGINGS, ""))
         item.add(setItem(Material.NETHERITE_BOOTS, ""))
         item.add(setItem(Material.NETHERITE_SWORD, ""))
-        item.add(setItem(Material.NETHERITE_PICKAXE, ""))
+        item.add(set_enchant_GUIitem(Material.NETHERITE_PICKAXE, Enchantment.DIG_SPEED, 3))
         item.add(setItem(Material.STONE_SWORD, ""))
         item.add(setItem(Material.STONE_PICKAXE, ""))
         item.add(setItem(Material.ENCHANTED_GOLDEN_APPLE, ""))
         item.add(setItem(Material.FISHING_ROD, ""))
         item.add(setItem(Material.SLIME_BALL, "${ChatColor.YELLOW}[召喚]ネザーライトゾンビ"))
-        item.add(setItem(Material.NETHERITE_BLOCK, "ネザーライトゴーレム"))
+        item.add(setItem(Material.NETHERITE_BLOCK, "ネザライトゴーレム"))
         item.add(set_potionGUIitem(Material.SPLASH_POTION, PotionEffectType.HEAL, 2, 1))
+        return item
+    }
+    fun set_enchant_GUIitem(item: Material, enchant: Enchantment, level: Int): ItemStack {
+        // GUIにエンチャント本を楽にセットする
+        val item = ItemStack(item)
+        val itemMeta: ItemMeta = item.itemMeta!!
+        if (itemMeta is EnchantmentStorageMeta) {
+            itemMeta.addStoredEnchant(enchant, level, true)
+        }
+        item.setItemMeta(itemMeta)
         return item
     }
 }

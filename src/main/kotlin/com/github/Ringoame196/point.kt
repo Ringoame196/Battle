@@ -15,7 +15,11 @@ class point {
     fun set(player: Player, setpoint: Int) {
         Data.DataManager.playerDataMap[player.uniqueId]?.point = setpoint
     }
-    fun add(player: Player, addpoint: Int) {
+    fun add(player: Player, add: Int) {
+        val addpoint = when {
+            GET().TeamName(player) == "blue" && Data.DataManager.gameData.shortage -> add * 2
+            else -> add
+        }
         player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f)
         val point = GET().point(player) + addpoint
         player.sendMessage("${ChatColor.GREEN}+$addpoint (${point}ポイント)")
@@ -60,21 +64,21 @@ class point {
             true
         }
     }
-    fun NotAppropriate(item: ItemStack, block: Block, e: BlockDamageEvent, player: Player) {
+    fun NotAppropriate(item: ItemStack, block: Block, e: BlockDamageEvent) {
 
         when (block.type) {
             Material.DIAMOND_ORE -> when (item.type) {
                 Material.NETHERITE_PICKAXE -> {}
                 Material.DIAMOND_PICKAXE -> {}
                 Material.IRON_PICKAXE -> {}
-                else -> NotAppropriateMessage(player, e)
+                else -> e.isCancelled = true
             }
 
             Material.GOLD_ORE -> when (item.type) {
                 Material.NETHERITE_PICKAXE -> {}
                 Material.DIAMOND_PICKAXE -> {}
                 Material.IRON_PICKAXE -> {}
-                else -> NotAppropriateMessage(player, e)
+                else -> e.isCancelled = true
             }
 
             Material.IRON_ORE -> when (item.type) {
@@ -82,14 +86,10 @@ class point {
                 Material.DIAMOND_PICKAXE -> {}
                 Material.IRON_PICKAXE -> {}
                 Material.STONE_PICKAXE -> {}
-                else -> NotAppropriateMessage(player, e)
+                else -> e.isCancelled = true
             }
 
             else -> {}
         }
-    }
-    fun NotAppropriateMessage(player: Player, e: BlockDamageEvent) {
-        e.isCancelled
-        player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
     }
 }

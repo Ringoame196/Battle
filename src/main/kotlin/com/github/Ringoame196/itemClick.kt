@@ -1,5 +1,6 @@
 package com.github.Ringoame196
 
+import com.github.Ringoame196.data.Data
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -70,12 +71,16 @@ class itemClick {
                 golem.health = 5.0
                 golem.customName = "${ChatColor.RED}ゴールデンゴーレム"
                 golem.addPotionEffect(PotionEffect(PotionEffectType.WEAKNESS, Int.MAX_VALUE, 255))
+                golem.scoreboardTags.add(GET().TeamName(player))
+                Data.DataManager.gameData.goldenGolem.add(golem)
             }
             Material.DIAMOND_BLOCK -> {
+                golem.maxHealth = 500.0
                 golem.health = 500.0
                 golem.damage(10.0)
             }
             Material.NETHERITE_BLOCK -> {
+                golem.maxHealth = 600.0
                 golem.health = 600.0
                 golem.damage(15.0)
             }

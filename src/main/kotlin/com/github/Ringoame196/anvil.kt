@@ -32,7 +32,7 @@ class anvil {
         }
         val enchantitem_name = enchantitem.type.toString()
         val shouldExecute: Boolean
-        val supportedItems = listOf("PICKAXE", "SWORD", "CHESTPLATE", "LEGGINGS", "BOOTS")
+        val supportedItems = listOf("PICKAXE", "SWORD", "CHESTPLATE", "LEGGINGS", "BOOTS", "AXE")
         shouldExecute = supportedItems.any { enchantitem_name.contains(it) }
         if (!shouldExecute) {
             PlayerSend().errormessage("${ChatColor.RED}対応しているアイテムをセットしてください(左)", player)

@@ -3,6 +3,7 @@ package com.github.Ringoame196
 import com.github.Ringoame196.data.Data
 import org.bukkit.ChatColor
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
@@ -21,8 +22,8 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 
 class Events(private val plugin: Plugin) : Listener {
@@ -91,10 +92,7 @@ class Events(private val plugin: Plugin) : Listener {
         val block = e.block
         when (block.type) {
             Material.OAK_LOG -> Wood().blockBreak(e, player, block, team_name, plugin)
-            Material.OAK_FENCE -> {
-                block.setType(Material.AIR)
-                player.inventory.addItem(ItemStack(Material.OAK_FENCE))
-            }
+            Material.OAK_FENCE -> block.setType(Material.AIR)
             else -> point().ore(e, player, block, team_name, plugin)
         }
     }
@@ -105,7 +103,14 @@ class Events(private val plugin: Plugin) : Listener {
         val player = e.player
         val block = e.block
         if (block.type == Material.OAK_FENCE) {
-            Data.DataManager.gameData.fence.add(block)
+            val location = block.location.clone()
+            if (location.add(0.0, -2.0, 0.0).block.type == Material.END_STONE || location.add(0.0, -1.0, 0.0).block.type == Material.OAK_FENCE) {
+                Data.DataManager.gameData.fence.add(block)
+            } else {
+                GameSystem().adventure(e, player)
+                player.sendMessage("${ChatColor.RED}ここで設置することはできません")
+                player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
+            }
         } else {
             GameSystem().adventure(e, player)
         }
@@ -131,6 +136,8 @@ class Events(private val plugin: Plugin) : Listener {
         } else {
             if (killer !is Player) { return }
             point().add(killer, 1)
+            Data.DataManager.gameData.goldenGolem.remove(mob)
+            Data.DataManager.gameData.zombie.remove(mob)
         }
     }
 
@@ -171,11 +178,15 @@ class Events(private val plugin: Plugin) : Listener {
     @EventHandler
     fun onPlayerQuitEvent(e: PlayerQuitEvent) {
         // プレイヤーが抜けたとき
-        if (GET().status()) { return }
         val player = e.player
         if (Data.DataManager.gameData.ParticipatingPlayer.contains(player)) {
             Team().inAndout(player)
         }
+    }
+    @EventHandler
+    fun onPlayerJoin(e: PlayerJoinEvent) {
+        val player = e.player
+        if (GET().JoinTeam(player)) { Data.DataManager.gameData.ParticipatingPlayer.add(player) }
     }
     @EventHandler
     fun onPlayerRespawn(e: EntityDamageEvent) {
@@ -185,6 +196,7 @@ class Events(private val plugin: Plugin) : Listener {
 
         // ダメージが0以上の場合（リスポーン判定）
         if (e.damage > 0 && player.health <= e.damage) {
+            if (!GET().JoinTeam(player)) { return }
             e.isCancelled = true
             Team().respawn(player, plugin)
 
@@ -199,6 +211,6 @@ class Events(private val plugin: Plugin) : Listener {
     fun onBlockDamage(e: BlockDamageEvent) {
         val player = e.player
         val block = e.block
-        point().NotAppropriate(player.inventory.itemInMainHand, block, e, player)
+        point().NotAppropriate(player.inventory.itemInMainHand, block, e)
     }
 }

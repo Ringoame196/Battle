@@ -2,6 +2,7 @@ package com.github.Ringoame196
 
 import com.github.Ringoame196.data.Data
 import com.github.Ringoame196.data.Gamedata
+import com.github.Ringoame196.data.TeamData
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
@@ -23,7 +24,14 @@ class GameSystem {
             "${ChatColor.RED}終了" -> stop(player)
             "${ChatColor.YELLOW}ショップ召喚" -> shop().summon(player.location, null)
             "${ChatColor.GREEN}参加" -> Team().inAndout(player)
-            "${ChatColor.RED}プラグインリロード" -> Bukkit.dispatchCommand(player, "pluginmanager reload Battle")
+            "${ChatColor.RED}プラグインリロード" -> {
+                if (e.isShiftClick) {
+                    Bukkit.dispatchCommand(player, "pluginmanager reload Battle")
+                    e.isCancelled = true
+                }
+            }
+            "${ChatColor.YELLOW}実験所へ" -> Bukkit.dispatchCommand(player, "mvtp jikken")
+            "${ChatColor.YELLOW}ロビーへ" -> Bukkit.dispatchCommand(player, "mvtp world")
             "${ChatColor.BLUE}プレイヤー" -> {
                 GUI().JoinPlayers(player)
                 return
@@ -32,6 +40,7 @@ class GameSystem {
         player.closeInventory()
         if (item.type == Material.ENDER_EYE && e.isShiftClick) {
             setlocation(item, player)
+            e.isCancelled = true
         }
     }
 
@@ -54,7 +63,8 @@ class GameSystem {
         if (Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("red") == null) { Team().make("red", ChatColor.RED) }
         if (Bukkit.getScoreboardManager()?.mainScoreboard?.getTeam("blue") == null) { Team().make("blue", ChatColor.BLUE) }
         randomChest().set()
-        val location = Data.DataManager.LocationData.randomChest?.add(0.5, -1.0, 0.0)
+        val location = Data.DataManager.LocationData.randomChest?.clone()
+        location?.add(0.5, -1.0, 0.0)
         val armorStand = location?.let { ArmorStand().summon(it, "") }
         Data.DataManager.gameData.randomChestTitle = armorStand
 
@@ -69,6 +79,17 @@ class GameSystem {
                     Team().division()
                     Sign().Numberdisplay("ゲーム進行中")
                     Bukkit.broadcastMessage("${ChatColor.GREEN}攻防戦ゲームスタート！！")
+                    if (Data.DataManager.gameData.shortage) {
+                        val teamDataMap = Data.DataManager.teamDataMap
+                        val blocktime = teamDataMap.getOrPut("blue") { TeamData() }.blockTime
+                        if (blocktime == teamDataMap.getOrPut("red") { TeamData() }.blockTime) {
+                            PlayerSend().participantmessage("${ChatColor.RED}人数不足のため 青チームのポイントが2倍になりました")
+                        } else {
+                            PlayerSend().participantmessage("${ChatColor.RED}人数不足のため 青チームの復活速度が1上がりになりました")
+                            Data.DataManager.gameData.shortage = false
+                        }
+                        PlayerSend().participantplaysound(Sound.BLOCK_BELL_USE)
+                    }
                     PlayerSend().participantplaysound(Sound.ENTITY_ENDER_DRAGON_AMBIENT)
                     timer(plugin)
                     this.cancel()
@@ -144,6 +165,9 @@ class GameSystem {
                 loopPlayer.inventory.addItem(Give().coin())
             }
         }
+        for (player in Bukkit.getWorld("BATTLE")?.players!!) {
+            Bukkit.getWorld("world")?.let { player.teleport(it.spawnLocation) }
+        }
         Sign().Numberdisplay("(参加中:0人)")
         Data.DataManager.gameData.status = false
         reset()
@@ -174,17 +198,15 @@ class GameSystem {
     }
     fun Regularly() {
         val time = Data.DataManager.gameData.time
-        when {
-            time % 300 == 0 -> {
-                randomChest().set()
-            }
-            else -> {}
-        }
+        if (time == 299) { PlayerSend().participantmessage("${ChatColor.YELLOW}ゾンビ解放!") }
+        if (time % 300 == 0) { randomChest().set() }
+        if (time % 10 == 0) { Golem().Golden() }
+        if (time % 10 == 0) { Zombie().breakcheck() }
     }
     fun playersJoin(PlayerName: String, sender: Player) {
         val player = Bukkit.getPlayer(PlayerName.replace("${ChatColor.YELLOW}", "")) ?: return
         Team().inAndout(player)
         player.sendMessage("${ChatColor.RED}※${sender.displayName}があなたのゲーム参加を操作しました")
-        GUI().JoinPlayers(player)
+        GUI().JoinPlayers(sender)
     }
 }
