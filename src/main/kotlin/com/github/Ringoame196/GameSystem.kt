@@ -17,14 +17,19 @@ import org.bukkit.scheduler.BukkitRunnable
 class GameSystem {
     fun system(plugin: Plugin, player: Player, item: ItemStack, e: InventoryClickEvent) {
         player.playSound(player, Sound.UI_BUTTON_CLICK, 1f, 1f)
-        player.closeInventory()
         val displayName = item.itemMeta?.displayName
         when (displayName) {
             "${ChatColor.AQUA}ゲームスタート" -> start(plugin, player)
             "${ChatColor.RED}終了" -> stop(player)
             "${ChatColor.YELLOW}ショップ召喚" -> shop().summon(player.location, null)
             "${ChatColor.GREEN}参加" -> Team().inAndout(player)
+            "${ChatColor.RED}プラグインリロード" -> Bukkit.dispatchCommand(player, "pluginmanager reload Battle")
+            "${ChatColor.BLUE}プレイヤー" -> {
+                GUI().JoinPlayers(player)
+                return
+            }
         }
+        player.closeInventory()
         if (item.type == Material.ENDER_EYE && e.isShiftClick) {
             setlocation(item, player)
         }
@@ -130,19 +135,20 @@ class GameSystem {
                 loopPlayer.removePotionEffect(effect.type)
             }
             Bukkit.getWorld("world")?.let { loopPlayer.teleport(it.spawnLocation) }
-            if (winTeam != null) {
-                if (winTeam == GET().TeamName(loopPlayer)) {
-                    loopPlayer.inventory.addItem(Give().coin(), Give().coin(), Give().coin(), Give().coin(), Give().coin())
-                } else {
+            if (winTeam == null) { continue }
+            if (winTeam == GET().TeamName(loopPlayer)) {
+                for (i in 1..5) {
                     loopPlayer.inventory.addItem(Give().coin())
                 }
+            } else {
+                loopPlayer.inventory.addItem(Give().coin())
             }
-            Sign().Numberdisplay("(参加中:0人)")
-            Data.DataManager.gameData.status = false
-            reset()
-            Team().make("red", ChatColor.RED)
-            Team().make("blue", ChatColor.BLUE)
         }
+        Sign().Numberdisplay("(参加中:0人)")
+        Data.DataManager.gameData.status = false
+        reset()
+        Team().make("red", ChatColor.RED)
+        Team().make("blue", ChatColor.BLUE)
     }
 
     fun adventure(e: org.bukkit.event.Event, player: Player) {
@@ -150,10 +156,14 @@ class GameSystem {
         if (e is Cancellable) { e.isCancelled = true }
     }
     fun reset() {
+        BreakBlock().deleteRevival()
         for (entity in Bukkit.getWorld("BATTLE")?.entities!!) {
             if (entity !is Player) {
                 entity.remove()
             }
+        }
+        for (block in Data.DataManager.gameData.fence) {
+            block.setType(Material.AIR)
         }
         Data.DataManager.teamDataMap.clear() // teamDataMap を空にする
         Data.DataManager.playerDataMap.clear() // playerDataMap を空にする
@@ -170,5 +180,11 @@ class GameSystem {
             }
             else -> {}
         }
+    }
+    fun playersJoin(PlayerName: String, sender: Player) {
+        val player = Bukkit.getPlayer(PlayerName.replace("${ChatColor.YELLOW}", "")) ?: return
+        Team().inAndout(player)
+        player.sendMessage("${ChatColor.RED}※${sender.displayName}があなたのゲーム参加を操作しました")
+        GUI().JoinPlayers(player)
     }
 }

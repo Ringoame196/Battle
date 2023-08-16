@@ -4,10 +4,8 @@ import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.block.Block
-import org.bukkit.block.Sign
 import org.bukkit.entity.IronGolem
 import org.bukkit.entity.Player
-import org.bukkit.entity.Zombie
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
@@ -23,7 +21,7 @@ class itemClick {
                     player.sendMessage("${ChatColor.RED}ガラスの上で実行してください")
                     return
                 }
-                Zombie().summon(player, item_name)
+                Zombie().summonSystem(player, item_name)
             }
             item_type == Material.EMERALD -> {
                 money(player, item_name)
@@ -35,6 +33,7 @@ class itemClick {
             item_type == Material.COMMAND_BLOCK && item_name == "ゲーム設定" -> {
                 e.isCancelled = true
                 GUI().gamesettingGUI(player)
+                return
             }
             block?.type == Material.OAK_WALL_SIGN -> {
                 e.isCancelled = true

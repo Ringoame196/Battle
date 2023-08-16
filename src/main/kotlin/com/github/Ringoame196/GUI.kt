@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.PotionMeta
+import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
@@ -25,6 +26,17 @@ class GUI {
         itemMeta?.setDisplayName(displayname)
         lore(itemMeta, lore)
         itemMeta?.isUnbreakable = true // 不破壊
+        item.setItemMeta(itemMeta)
+        GUI.setItem(number, item)
+    }
+    fun set_playerHead(GUI: Inventory, number: Int, name: String, displayname: String, lore: String) {
+        // GUIにアイテムを楽にセットする
+        val item = ItemStack(Material.PLAYER_HEAD)
+        val itemMeta = item.itemMeta as SkullMeta
+        itemMeta.owningPlayer = Bukkit.getOfflinePlayer(name) // プレイヤー名で設定
+        itemMeta.setDisplayName(displayname)
+        lore(itemMeta, lore)
+        itemMeta.isUnbreakable = true // 不破壊
         item.setItemMeta(itemMeta)
         GUI.setItem(number, item)
     }
@@ -74,6 +86,24 @@ class GUI {
         } else if (player.inventory.contains(Material.DIAMOND_PICKAXE)) {
             set_GUIitem(GUI, 0, Material.NETHERITE_PICKAXE, "[ツール]ネザライトピッケル", "5000p")
         } else if (player.inventory.contains(Material.NETHERITE_PICKAXE)) {
+            set_GUIitem(GUI, 0, Material.BARRIER, "${ChatColor.RED}選択不可", "")
+        }
+        set_enchant_GUIitem(GUI, 18, "5p", Enchantment.DIG_SPEED, 1)
+        set_enchant_GUIitem(GUI, 19, "20p", Enchantment.DIG_SPEED, 2)
+        set_enchant_GUIitem(GUI, 20, "300p", Enchantment.DIG_SPEED, 3)
+        set_enchant_GUIitem(GUI, 21, "500p", Enchantment.DIG_SPEED, 4)
+        set_enchant_GUIitem(GUI, 22, "5000p", Enchantment.DIG_SPEED, 5)
+    }
+    fun axeshop(GUI: Inventory, player: Player) {
+        dividing_line(GUI, 9)
+        set_GUIitem(GUI, 0, Material.STONE_AXE, "[斧]石斧", "5p")
+        if (player.inventory.contains(Material.STONE_AXE)) {
+            set_GUIitem(GUI, 0, Material.IRON_AXE, "[斧]鉄斧", "20p")
+        } else if (player.inventory.contains(Material.IRON_AXE)) {
+            set_GUIitem(GUI, 0, Material.DIAMOND_AXE, "[斧]ダイヤモンド斧", "300p")
+        } else if (player.inventory.contains(Material.DIAMOND_AXE)) {
+            set_GUIitem(GUI, 0, Material.NETHERITE_AXE, "[斧]ネザライト斧", "5000p")
+        } else if (player.inventory.contains(Material.NETHERITE_AXE)) {
             set_GUIitem(GUI, 0, Material.BARRIER, "${ChatColor.RED}選択不可", "")
         }
         set_enchant_GUIitem(GUI, 18, "5p", Enchantment.DIG_SPEED, 1)
@@ -191,7 +221,7 @@ class GUI {
         }
     }
     fun gamesettingGUI(player: Player) {
-        val GUI = Bukkit.createInventory(null, 9, "${ChatColor.DARK_GREEN}設定画面[BATTLEGUI]")
+        val GUI = Bukkit.createInventory(null, 18, "${ChatColor.DARK_GREEN}設定画面[BATTLEGUI]")
         if (GET().status()) {
             set_GUIitem(GUI, 0, Material.BARRIER, "${ChatColor.RED}終了", "")
         } else {
@@ -205,6 +235,22 @@ class GUI {
         set_GUIitem(GUI, 5, Material.ENDER_EYE, "${ChatColor.BLUE}spawn", GET().locationTitle(location.bluespawn))
         set_GUIitem(GUI, 6, Material.ENDER_EYE, "${ChatColor.YELLOW}ランダムチェスト", GET().locationTitle(location.randomChest))
         set_GUIitem(GUI, 7, Material.DIAMOND, "${ChatColor.GREEN}参加", "")
+        set_GUIitem(GUI, 8, Material.REDSTONE_BLOCK, "${ChatColor.RED}プラグインリロード", "")
+        set_GUIitem(GUI, 9, Material.PLAYER_HEAD, "${ChatColor.BLUE}プレイヤー", "")
+        player.openInventory(GUI)
+    }
+    fun JoinPlayers(player: Player) {
+        val GUI = Bukkit.createInventory(null, 18, "${ChatColor.DARK_GREEN}参加プレイヤー[BATTLEGUI]")
+        var i = 0
+        for (loopPlayer in Bukkit.getOnlinePlayers()) {
+            if (Data.DataManager.gameData.ParticipatingPlayer.contains(loopPlayer)) {
+                set_playerHead(GUI, i, loopPlayer.name, loopPlayer.name, "${ChatColor.GREEN}参加済み")
+            } else {
+                set_playerHead(GUI, i, loopPlayer.name, loopPlayer.name, "${ChatColor.RED}未参加")
+            }
+            i++
+            if (i == 18) { return }
+        }
         player.openInventory(GUI)
     }
     fun close(title: String, player: Player, inventory: Inventory) {

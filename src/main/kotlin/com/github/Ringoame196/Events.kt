@@ -22,6 +22,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 
 class Events(private val plugin: Plugin) : Listener {
@@ -88,14 +89,26 @@ class Events(private val plugin: Plugin) : Listener {
         GameSystem().adventure(e, player)
         val team_name = GET().TeamName(player)
         val block = e.block
-        point().ore(e, player, block, team_name, plugin)
+        when (block.type) {
+            Material.OAK_LOG -> Wood().blockBreak(e, player, block, team_name, plugin)
+            Material.OAK_FENCE -> {
+                block.setType(Material.AIR)
+                player.inventory.addItem(ItemStack(Material.OAK_FENCE))
+            }
+            else -> point().ore(e, player, block, team_name, plugin)
+        }
     }
 
     @EventHandler
     fun onBlockPlaceEvent(e: BlockPlaceEvent) {
         // ブロック設置阻止
         val player = e.player
-        GameSystem().adventure(e, player)
+        val block = e.block
+        if (block.type == Material.OAK_FENCE) {
+            Data.DataManager.gameData.fence.add(block)
+        } else {
+            GameSystem().adventure(e, player)
+        }
     }
 
     @EventHandler
@@ -186,6 +199,6 @@ class Events(private val plugin: Plugin) : Listener {
     fun onBlockDamage(e: BlockDamageEvent) {
         val player = e.player
         val block = e.block
-        point().NotAppropriate(player.inventory.itemInMainHand, block, e)
+        point().NotAppropriate(player.inventory.itemInMainHand, block, e, player)
     }
 }

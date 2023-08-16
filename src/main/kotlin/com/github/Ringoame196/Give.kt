@@ -45,4 +45,10 @@ class Give {
         coin.setItemMeta(meta)
         return coin
     }
+    fun Axe(player: Player) {
+        player.inventory.remove(Material.WOODEN_AXE)
+        player.inventory.remove(Material.STONE_AXE)
+        player.inventory.remove(Material.IRON_AXE)
+        player.inventory.remove(Material.DIAMOND_AXE)
+    }
 }

@@ -23,6 +23,7 @@ class GUIClick {
             "${ChatColor.BLUE}攻防戦ショップ" -> homeshop(player, item)
             "${ChatColor.DARK_GREEN}ショップ" -> shop().system(item, player)
             "${ChatColor.DARK_GREEN}設定画面" -> GameSystem().system(plugin, player, item, e)
+            "${ChatColor.DARK_GREEN}参加プレイヤー" -> item.itemMeta?.let { GameSystem().playersJoin(it.displayName, player) }
         }
     }
 
@@ -41,6 +42,7 @@ class GUIClick {
             "${ChatColor.YELLOW}その他" -> GUI().general_merchandiseshop(shop, player)
             "${ChatColor.YELLOW}お邪魔アイテム" -> GUI().disturbshop(shop)
             "${ChatColor.YELLOW}ゾンビ" -> GUI().zombieshop(shop)
+            "${ChatColor.YELLOW}斧" -> GUI().axeshop(shop, player)
             else -> return
         }
         shop.getItem(0) ?: return

@@ -58,6 +58,10 @@ class shop {
                     Give().Pickaxe(player)
                     player.inventory.addItem(it)
                     GUI().pickaxeshop(player.openInventory.topInventory, player)
+                } else if (it.itemMeta?.displayName?.contains("[斧]") == true) {
+                    Give().Axe(player)
+                    player.inventory.addItem(it)
+                    GUI().axeshop(player.openInventory.topInventory, player)
                 } else {
                     player.inventory.addItem(it)
                 }
@@ -80,7 +84,7 @@ class shop {
         GUIclass.set_GUIitem(GUI, 14, Material.ZOMBIE_SPAWN_EGG, "${ChatColor.YELLOW}ゾンビ", "")
         GUIclass.set_GUIitem(GUI, 16, Material.BEACON, "${ChatColor.YELLOW}その他", "")
         GUIclass.set_GUIitem(GUI, 18, Material.CHEST, "${ChatColor.YELLOW}共通チェスト", "チーム共通")
-        GUIclass.no_set(GUI, 19)
+        GUIclass.set_GUIitem(GUI, 19, Material.IRON_AXE, "${ChatColor.YELLOW}斧", "")
         GUIclass.no_set(GUI, 21)
         GUIclass.no_set(GUI, 23)
         GUIclass.no_set(GUI, 25)

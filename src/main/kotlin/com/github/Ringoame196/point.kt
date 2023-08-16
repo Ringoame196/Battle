@@ -6,12 +6,10 @@ import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Block
-import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockDamageEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
-import org.bukkit.scheduler.BukkitRunnable
 
 class point {
     fun set(player: Player, setpoint: Int) {
@@ -32,6 +30,7 @@ class point {
     }
     fun ore(e: org.bukkit.event.Event, player: Player, block: Block, team: String?, plugin: Plugin) {
         val block_type = block.type
+        val blockData = block.blockData
         GameSystem().adventure(e, player)
         var cooltime = Data.DataManager.teamDataMap.getOrPut(team) { TeamData() }.blockTime
         val point: Int
@@ -46,25 +45,7 @@ class point {
             else -> return
         }
         point().add(player, point)
-        block.setType(Material.GLASS)
-
-        // 復活
-        val location = block.getLocation()
-        location.add(0.5, -1.0, 0.5)
-        val armorStand: ArmorStand = ArmorStand().summon(location, "")
-        object : BukkitRunnable() {
-            override fun run() {
-                if (!GET().status()) { cooltime = -1 }
-                if (cooltime >= 0) {
-                    armorStand.customName = "${ChatColor.GREEN}${GET().minutes(cooltime)}"
-                    cooltime --
-                } else {
-                    block.setType(block_type)
-                    armorStand.remove()
-                    this.cancel()
-                }
-            }
-        }.runTaskTimer(plugin, 0L, 20L)
+        BreakBlock().revival(plugin, block.location, cooltime, block_type, blockData)
     }
 
     fun purchase(player: Player, price: String): Boolean {
@@ -79,32 +60,36 @@ class point {
             true
         }
     }
-    fun NotAppropriate(item: ItemStack, block: Block, e: BlockDamageEvent) {
-        if (item.type == Material.AIR) {
-            e.isCancelled = true
-        }
+    fun NotAppropriate(item: ItemStack, block: Block, e: BlockDamageEvent, player: Player) {
 
         when (block.type) {
             Material.DIAMOND_ORE -> when (item.type) {
                 Material.NETHERITE_PICKAXE -> {}
                 Material.DIAMOND_PICKAXE -> {}
                 Material.IRON_PICKAXE -> {}
-                else -> e.isCancelled = true
+                else -> NotAppropriateMessage(player, e)
             }
+
             Material.GOLD_ORE -> when (item.type) {
                 Material.NETHERITE_PICKAXE -> {}
                 Material.DIAMOND_PICKAXE -> {}
                 Material.IRON_PICKAXE -> {}
-                else -> e.isCancelled = true
+                else -> NotAppropriateMessage(player, e)
             }
+
             Material.IRON_ORE -> when (item.type) {
                 Material.NETHERITE_PICKAXE -> {}
                 Material.DIAMOND_PICKAXE -> {}
                 Material.IRON_PICKAXE -> {}
                 Material.STONE_PICKAXE -> {}
-                else -> e.isCancelled = true
+                else -> NotAppropriateMessage(player, e)
             }
+
             else -> {}
         }
+    }
+    fun NotAppropriateMessage(player: Player, e: BlockDamageEvent) {
+        e.isCancelled
+        player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
     }
 }

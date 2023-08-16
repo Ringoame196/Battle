@@ -2,6 +2,7 @@ package com.github.Ringoame196
 
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.Location
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
@@ -26,19 +27,14 @@ class Zombie {
 
         return nearestVillager
     }
-    fun summon(player: Player, item_name: String) {
+    fun summonSystem(player: Player, item_name: String) {
         var summon_name = item_name.replace("[召喚]", "")
         summon_name = summon_name.replace("${ChatColor.YELLOW}", "")
 
         val world = player.world
         val location = player.getLocation()
         location.add(0.0, -3.0, 0.0)
-        val zombie: Zombie = world.spawn(location, org.bukkit.entity.Zombie::class.java)
-        zombie.scoreboardTags.add("targetshop")
-        zombie.scoreboardTags.add("BATTLEmob")
-
-        var command = "execute as ${zombie.uniqueId} at @s run function akmob:"
-        command += when (summon_name) {
+        val function = when (summon_name) {
             "ノーマルゾンビ" -> "normal"
             "チビゾンビ" -> "chibi"
             "シールドゾンビ" -> "shield"
@@ -47,12 +43,15 @@ class Zombie {
             "ダッシュマン" -> "dashman"
             "スケルトンマン" -> "skeletonman"
             "ネザーライトゾンビ" -> "netherite"
-            else -> {
-                zombie.remove()
-                return // 不明な召喚名の場合は何もせずに処理が終了します
-            }
+            else -> { return }
         }
-
+        summon(location, function)
+    }
+    fun summon(location: Location, function: String) {
+        val world = location.world
+        val zombie: Zombie? = world?.spawn(location, org.bukkit.entity.Zombie::class.java)
+        zombie?.scoreboardTags?.add("targetshop")
+        val command = "execute as ${zombie?.uniqueId} at @s run function akmob:$function"
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)
     }
 }
