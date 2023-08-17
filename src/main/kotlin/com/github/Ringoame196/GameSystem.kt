@@ -1,8 +1,10 @@
 package com.github.Ringoame196
 
+import com.github.Ringoame196.Entity.ArmorStand
+import com.github.Ringoame196.Entity.Golem
+import com.github.Ringoame196.Entity.Zombie
 import com.github.Ringoame196.data.Data
 import com.github.Ringoame196.data.Gamedata
-import com.github.Ringoame196.data.Ranking
 import com.github.Ringoame196.data.TeamData
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -15,8 +17,10 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.scheduler.BukkitTask
 
 class GameSystem {
+    private var timerTask: BukkitTask? = null
     fun system(plugin: Plugin, player: Player, item: ItemStack, e: InventoryClickEvent) {
         player.playSound(player, Sound.UI_BUTTON_CLICK, 1f, 1f)
         val displayName = item.itemMeta?.displayName
@@ -103,17 +107,18 @@ class GameSystem {
         player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
     }
     fun timer(plugin: Plugin) {
-        Bukkit.getScheduler().runTaskTimer(
-            plugin,
-            Runnable {
-                if (!GET().status()) { return@Runnable }
+        timerTask = object : BukkitRunnable() {
+            override fun run() {
+                if (!GET().status()) {
+                    this.cancel()
+                    return
+                }
                 Data.DataManager.gameData.time += 1
                 Regularly()
                 val randomChestTime = 300 - (Data.DataManager.gameData.time % 300)
                 Data.DataManager.gameData.randomChestTitle?.customName = "${ChatColor.AQUA}${GET().minutes(randomChestTime)}"
-            },
-            0L, 20L
-        )
+            }
+        }.runTaskTimer(plugin, 0L, 20L)
     }
     fun setlocation(item: ItemStack, player: Player) {
         when (item.itemMeta?.displayName) {
@@ -158,17 +163,14 @@ class GameSystem {
             }
             Bukkit.getWorld("world")?.let { loopPlayer.teleport(it.spawnLocation) }
             if (winTeam == null) { continue }
-            val ranking = Data.DataManager.RankingDataMap
             if (winTeam == GET().TeamName(loopPlayer)) {
                 for (i in 1..5) {
                     loopPlayer.inventory.addItem(Give().coin())
                 }
-                ranking.getOrPut(loopPlayer.name) { Ranking() }.win += 1
+                Ranking().addScore(loopPlayer.name)
             } else {
                 loopPlayer.inventory.addItem(Give().coin())
-                ranking.getOrPut(loopPlayer.name) { Ranking() }.lose += 1
             }
-            Ranking().calculation(loopPlayer)
         }
         for (player in Bukkit.getWorld("BATTLE")?.players!!) {
             Bukkit.getWorld("world")?.let { player.teleport(it.spawnLocation) }
@@ -178,6 +180,7 @@ class GameSystem {
         reset()
         Team().make("red", ChatColor.RED)
         Team().make("blue", ChatColor.BLUE)
+        Ranking().updateRankingScoreboard()
     }
 
     fun adventure(e: org.bukkit.event.Event, player: Player) {
@@ -203,10 +206,19 @@ class GameSystem {
     }
     fun Regularly() {
         val time = Data.DataManager.gameData.time
-        if (time == 299) { PlayerSend().participantmessage("${ChatColor.YELLOW}ゾンビ解放!") }
+        if (time == 900) {
+            PlayerSend().participantmessage("${ChatColor.RED}15分経ったためポイントが2倍になりました")
+            PlayerSend().participantplaysound(Sound.BLOCK_ANVIL_USE)
+            Data.DataManager.gameData.magnification = 2
+        }
+        if (time == 300) { PlayerSend().participantmessage("${ChatColor.YELLOW}ゾンビ解放!") }
         if (time % 300 == 0) { randomChest().set() }
-        if (time % 10 == 0) { Golem().Golden() }
-        if (time % 10 == 0) { Zombie().breakcheck() }
+        if (time % 17 == 0) { Zombie().summonner("${ChatColor.DARK_PURPLE}エンペラー", "shield", "soldier") }
+        if (time % 10 == 0) {
+            Golem().Golden()
+            Zombie().breakcheck()
+        }
+        if (time % 7 == 0) { Zombie().summonner("${ChatColor.DARK_PURPLE}ネクロマンサー", "normal", "normal") }
     }
     fun playersJoin(PlayerName: String, sender: Player) {
         val player = Bukkit.getPlayer(PlayerName.replace("${ChatColor.YELLOW}", "")) ?: return

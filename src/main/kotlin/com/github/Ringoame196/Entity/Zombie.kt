@@ -1,4 +1,4 @@
-package com.github.Ringoame196
+package com.github.Ringoame196.Entity
 
 import com.github.Ringoame196.data.Data
 import org.bukkit.Bukkit
@@ -6,10 +6,12 @@ import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound
+import org.bukkit.block.Block
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
 import org.bukkit.entity.Zombie
+import kotlin.random.Random
 
 class Zombie {
     fun getNearestVillager(location: Location, radius: Double): Villager? {
@@ -46,6 +48,8 @@ class Zombie {
             "スケルトンマン" -> "skeletonman"
             "ネザーライトゾンビ" -> "netherite"
             "シャーマン" -> "shaman"
+            "ネクロマンサー" -> "necromancer"
+            "エンペラー" -> "emperor"
             else -> { return }
         }
         summon(location, function)
@@ -58,32 +62,60 @@ class Zombie {
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)
         zombie?.scoreboardTags?.add("targetshop")
         if (function == "netherite") {
-            zombie?.maxHealth = 500.0
-            zombie?.health = 500.0
+            zombie?.maxHealth = 80.0
+            zombie?.health = 80.0
         }
         zombie?.let { Data.DataManager.gameData.zombie.add(it) }
     }
     fun breakcheck() {
+        val breakBlock: MutableList<Block> = mutableListOf()
         for (zombie in Data.DataManager.gameData.zombie) {
             if (Bukkit.getWorld("BATTLE")?.entities?.contains(zombie) == false) {
                 Data.DataManager.gameData.zombie.remove(zombie)
                 continue
             }
             val location = zombie.location
-            breakFence(location)
+            breakFence(location)?.let { breakBlock.add(it) }
+        }
+        for (block in breakBlock) {
+            block.setType(Material.AIR)
+            block.world.playSound(block.location, Sound.BLOCK_BELL_USE, 1f, 1f)
         }
     }
-    fun breakFence(location: Location) {
+    fun breakFence(location: Location): Block? {
+        val fencelist: MutableList<Block> = mutableListOf()
         for (xOffset in -1..1) {
             for (yOffset in -1..1) {
                 for (zOffset in -1..1) {
                     val block = location.clone().add(xOffset.toDouble(), yOffset.toDouble(), zOffset.toDouble()).block
-                    if (block.type != Material.OAK_FENCE) { continue }
-                    block.type = Material.AIR
-                    location.world?.playSound(location, Sound.BLOCK_BELL_USE, 1f, 1f)
-                    return
+                    if (block.type == Material.OAK_FENCE) { fencelist.add(block) }
                 }
             }
+        }
+        if (fencelist.isEmpty()) {
+            // fencelistが空の場合の処理を記述
+            return null // または何か適切な値を返す
+        } else {
+            return fencelist[Random.nextInt(fencelist.size)]
+        }
+    }
+
+    fun damage(zombie: Zombie) {
+        if (!zombie.scoreboardTags.contains("targetshop")) { return }
+        zombie.scoreboardTags.remove("targetshop")
+    }
+    fun summonner(zombieName: String, function1: String, function2: String) {
+        val selectZombie = mutableListOf<Zombie>()
+        for (zombie in Data.DataManager.gameData.zombie) {
+            if (zombie.customName == zombieName) {
+                selectZombie.add(zombie)
+            }
+        }
+        for (zombie in selectZombie) {
+            val location = zombie.location
+            location.add(0.0, 1.0, 0.0)
+            summon(location, function1)
+            summon(location, function2)
         }
     }
 }

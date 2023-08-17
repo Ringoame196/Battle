@@ -1,4 +1,4 @@
-package com.github.Ringoame196
+package com.github.Ringoame196.Entity
 
 import org.bukkit.Location
 import org.bukkit.entity.ArmorStand

@@ -1,5 +1,6 @@
 package com.github.Ringoame196
 
+import com.github.Ringoame196.Entity.Zombie
 import com.github.Ringoame196.data.Data
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
@@ -75,8 +76,8 @@ class itemClick {
                 Data.DataManager.gameData.goldenGolem.add(golem)
             }
             Material.DIAMOND_BLOCK -> {
-                golem.maxHealth = 500.0
-                golem.health = 500.0
+                golem.maxHealth = 300.0
+                golem.health = 300.0
                 golem.damage(10.0)
             }
             Material.NETHERITE_BLOCK -> {

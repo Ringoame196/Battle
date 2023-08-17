@@ -1,6 +1,8 @@
-package com.github.Ringoame196
+package com.github.Ringoame196.Entity
 
+import com.github.Ringoame196.GET
 import com.github.Ringoame196.data.Data
+import com.github.Ringoame196.point
 
 class Golem {
     fun Golden() {

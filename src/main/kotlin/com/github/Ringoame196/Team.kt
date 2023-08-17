@@ -73,6 +73,7 @@ class Team {
                 loopPlayer.teleport(Data.DataManager.LocationData.bluespawn!!)
                 blueCount++
             }
+            loopPlayer.scoreboardTags.remove("pvpjoin")
             loopPlayer.addPotionEffect(PotionEffect(PotionEffectType.SATURATION, Int.MAX_VALUE, 100, true, false))
             Equipment().Initial(loopPlayer)
             loopPlayer.gameMode = GameMode.SURVIVAL

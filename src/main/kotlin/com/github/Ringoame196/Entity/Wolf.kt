@@ -1,4 +1,4 @@
-package com.github.Ringoame196
+package com.github.Ringoame196.Entity
 
 import org.bukkit.entity.Player
 import org.bukkit.entity.Wolf

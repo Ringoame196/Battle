@@ -18,7 +18,7 @@ class point {
     fun add(player: Player, add: Int) {
         val addpoint = when {
             GET().TeamName(player) == "blue" && Data.DataManager.gameData.shortage -> add * 2
-            else -> add
+            else -> add * Data.DataManager.gameData.magnification
         }
         player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f)
         val point = GET().point(player) + addpoint
@@ -45,6 +45,10 @@ class point {
             Material.DIAMOND_ORE -> {
                 point = 100
                 cooltime = 210 // ダイヤモンドだけ別時間
+            }
+            Material.BEDROCK -> {
+                point = 10000
+                cooltime = 1
             }
             else -> return
         }

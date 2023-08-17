@@ -1,9 +1,12 @@
 package com.github.Ringoame196
 
+import com.github.Ringoame196.Entity.Zombie
 import com.github.Ringoame196.data.Data
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.Sound
+import org.bukkit.entity.Arrow
+import org.bukkit.entity.Golem
 import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
@@ -57,17 +60,33 @@ class Events(private val plugin: Plugin) : Listener {
         GUI().close(title, player, inventory)
     }
 
+    @Suppress("DEPRECATION")
     @EventHandler
     fun onEntityDamageByEntityEvent(e: EntityDamageByEntityEvent) {
         val entity = e.entity
-        if (entity is Villager) {
-            // ショップがダメージを受けたときの処理
-            val damager = e.damager
-            if (inspection().shop(entity)) {
+        val damager = e.damager
+        when (entity) {
+            is Villager -> {
+                if (!inspection().shop(entity)) { return }
                 shop().attack(e, damager, entity)
             }
-        } else if (entity is org.bukkit.entity.Zombie && entity.scoreboardTags.contains("targetshop")) {
-            entity.scoreboardTags.remove("targetshop")
+            is org.bukkit.entity.Zombie -> {
+                Zombie().damage(entity)
+            }
+            is Player -> {
+                if (damager is Arrow && damager.shooter is Player) {
+                    val shooter = damager.shooter as Player
+                    val hp = entity.health - e.finalDamage // ダメージ後のHP
+                    val maxHp = entity.maxHealth // 最大HP
+
+                    shooter.sendMessage("${ChatColor.RED}HP: $hp / $maxHp")
+                }
+            }
+            is Golem -> {
+                if (damager !is Player) { return }
+                GameSystem().adventure(e, damager)
+            }
+            else -> {}
         }
     }
 
@@ -104,7 +123,7 @@ class Events(private val plugin: Plugin) : Listener {
         val block = e.block
         if (block.type == Material.OAK_FENCE) {
             val location = block.location.clone()
-            if (location.add(0.0, -2.0, 0.0).block.type == Material.END_STONE || location.add(0.0, -1.0, 0.0).block.type == Material.OAK_FENCE) {
+            if (location.add(0.0, -2.0, 0.0).block.type == Material.END_STONE) {
                 Data.DataManager.gameData.fence.add(block)
             } else {
                 GameSystem().adventure(e, player)
@@ -122,7 +141,7 @@ class Events(private val plugin: Plugin) : Listener {
         val killer = e.entity.killer
         val mob = e.entity
         if (inspection().shop(mob)) {
-            shop().delete_name(mob.location)
+            shop().deletename(mob.location)
             if (!GET().status()) {
                 return
             }

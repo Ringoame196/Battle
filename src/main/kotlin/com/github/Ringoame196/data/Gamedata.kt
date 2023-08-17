@@ -17,4 +17,5 @@ class Gamedata {
     var title: MutableList<ArmorStand> = mutableListOf()
     var goldenGolem: MutableList<Golem> = mutableListOf()
     var shortage: Boolean = false
+    var magnification = 1
 }

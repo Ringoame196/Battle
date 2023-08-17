@@ -18,12 +18,14 @@ import org.bukkit.entity.Villager
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 
 class shop {
     fun open(e: PlayerInteractEntityEvent, player: Player, entity: Mob, team: String) {
         e.isCancelled = true
         Data.DataManager.teamDataMap[team]?.entities?.add(entity)
-        if (Data.DataManager.teamDataMap[team]?.opening == true) {
+        if (Data.DataManager.teamDataMap[team]?.opening == true || player.gameMode == GameMode.CREATIVE) {
             GUI(player)
         } else {
             unopened(player)
@@ -33,20 +35,20 @@ class shop {
         if (item.type == Material.RED_STAINED_GLASS_PANE) {
             return
         }
-        val item_name = item.itemMeta?.displayName
+        val itemname = item.itemMeta?.displayName
         val price = item.itemMeta?.lore?.get(0) // 値段取得
         if (!price!!.contains("p")) { return }
         if (!point().purchase(player, price)) { return }
 
-        if (item_name?.contains("★")!!) {
-            val set_team_name = GET().TeamName(player) ?: return
-            GUIClick().click_invocation(player, item_name, set_team_name)
+        if (itemname?.contains("★")!!) {
+            val setteamname = GET().TeamName(player) ?: return
+            GUIClick().click_invocation(player, itemname, setteamname)
         } else {
-            val give_item = ItemStack(item)
-            give_item.let {
+            val giveitem = ItemStack(item)
+            giveitem.let {
                 val meta = item.itemMeta
                 meta?.lore = null
-                give_item.setItemMeta(meta)
+                giveitem.setItemMeta(meta)
                 if (it.itemMeta?.displayName?.contains("[装備]") == true) {
                     Give().Equipment(player, it)
                     return
@@ -73,22 +75,22 @@ class shop {
         val point = Data.DataManager.playerDataMap.getOrPut(player.uniqueId) { PlayerData() }.point
         val GUIclass = GUI()
 
-        GUIclass.set_GUIitem(GUI, 0, Material.EMERALD, "${ChatColor.GREEN}所持ポイント:" + point + "p", "")
-        GUIclass.set_GUIitem(GUI, 1, Material.IRON_PICKAXE, "${ChatColor.YELLOW}ピッケル", "")
-        GUIclass.set_GUIitem(GUI, 3, Material.IRON_SWORD, "${ChatColor.YELLOW}武器", "")
-        GUIclass.set_GUIitem(GUI, 5, Material.IRON_CHESTPLATE, "${ChatColor.YELLOW}防具", "")
-        GUIclass.set_GUIitem(GUI, 7, Material.TNT, "${ChatColor.YELLOW}お邪魔アイテム", "")
-        GUIclass.set_GUIitem(GUI, 9, Material.ANVIL, "${ChatColor.YELLOW}金床", "エンチャント用")
-        GUIclass.set_GUIitem(GUI, 10, Material.POTION, "${ChatColor.YELLOW}チーム強化", "")
-        GUIclass.set_GUIitem(GUI, 12, Material.VILLAGER_SPAWN_EGG, "${ChatColor.YELLOW}村人強化", "")
+        GUIclass.setGUIitem(GUI, 0, Material.EMERALD, "${ChatColor.GREEN}所持ポイント:" + point + "p", "")
+        GUIclass.setGUIitem(GUI, 1, Material.IRON_PICKAXE, "${ChatColor.YELLOW}ピッケル", "")
+        GUIclass.setGUIitem(GUI, 3, Material.IRON_SWORD, "${ChatColor.YELLOW}武器", "")
+        GUIclass.setGUIitem(GUI, 5, Material.IRON_CHESTPLATE, "${ChatColor.YELLOW}防具", "")
+        GUIclass.setGUIitem(GUI, 7, Material.TNT, "${ChatColor.YELLOW}お邪魔アイテム", "")
+        GUIclass.setGUIitem(GUI, 9, Material.ANVIL, "${ChatColor.YELLOW}金床", "エンチャント用")
+        GUIclass.setGUIitem(GUI, 10, Material.POTION, "${ChatColor.YELLOW}チーム強化", "")
+        GUIclass.setGUIitem(GUI, 12, Material.VILLAGER_SPAWN_EGG, "${ChatColor.YELLOW}村人強化", "")
         if (Data.DataManager.gameData.time >= 300 || player.gameMode == GameMode.CREATIVE) {
-            GUIclass.set_GUIitem(GUI, 14, Material.ZOMBIE_SPAWN_EGG, "${ChatColor.YELLOW}ゾンビ", "")
+            GUIclass.setGUIitem(GUI, 14, Material.ZOMBIE_SPAWN_EGG, "${ChatColor.YELLOW}ゾンビ", "")
         } else {
-            GUIclass.set_GUIitem(GUI, 14, Material.BARRIER, "${ChatColor.RED}選択禁止", "")
+            GUIclass.setGUIitem(GUI, 14, Material.BARRIER, "${ChatColor.RED}選択禁止", "")
         }
-        GUIclass.set_GUIitem(GUI, 16, Material.BEACON, "${ChatColor.YELLOW}その他", "")
-        GUIclass.set_GUIitem(GUI, 18, Material.CHEST, "${ChatColor.YELLOW}共通チェスト", "チーム共通")
-        GUIclass.set_GUIitem(GUI, 19, Material.IRON_AXE, "${ChatColor.YELLOW}斧", "")
+        GUIclass.setGUIitem(GUI, 16, Material.BEACON, "${ChatColor.YELLOW}その他", "")
+        GUIclass.setGUIitem(GUI, 18, Material.CHEST, "${ChatColor.YELLOW}共通チェスト", "チーム共通")
+        GUIclass.setGUIitem(GUI, 19, Material.IRON_AXE, "${ChatColor.YELLOW}斧", "")
         GUIclass.no_set(GUI, 21)
         GUIclass.no_set(GUI, 23)
         GUIclass.no_set(GUI, 25)
@@ -96,7 +98,7 @@ class shop {
     }
     fun unopened(player: Player) {
         val GUI = Bukkit.createInventory(null, 9, "${ChatColor.DARK_GREEN}ショップ[BATTLEGUI]")
-        GUI().set_GUIitem(GUI, 4, Material.GOLD_BLOCK, "${ChatColor.YELLOW}★ショップ解放", "15p")
+        GUI().setGUIitem(GUI, 4, Material.GOLD_BLOCK, "${ChatColor.YELLOW}★ショップ解放", "15p")
         player.openInventory(GUI)
     }
     fun recovery(shop: Villager, amount: Double) {
@@ -123,15 +125,15 @@ class shop {
         val maxHP = GET().MaxHP(shop)
         name(shop, health.toString(), maxHP.toString())
         val blockBelow = shop.location.subtract(0.0, 1.0, 0.0).block.type
-        val set_team_name = when (blockBelow) {
+        val setteamname = when (blockBelow) {
             Material.RED_WOOL -> "red"
             Material.BLUE_WOOL -> "blue"
             else -> return
         }
 
         for (player in Data.DataManager.gameData.ParticipatingPlayer) {
-            val team_name = GET().TeamName(player)
-            if (team_name != set_team_name) {
+            val teamname = GET().TeamName(player)
+            if (teamname != setteamname) {
                 continue
             }
             player.sendMessage(message)
@@ -139,10 +141,10 @@ class shop {
         }
     }
     fun summon(location: Location?, tag: String?) {
-        val Initial_HP = 100.0
+        val InitialHP = 100.0
         val world = location?.world
         val villager: Villager = world!!.spawn(location, Villager::class.java)
-        shop().name(villager, Initial_HP.toString(), Initial_HP.toString())
+        shop().name(villager, InitialHP.toString(), InitialHP.toString())
         villager.isCustomNameVisible = true
         villager.scoreboardTags.add("shop")
         villager.setAI(false)
@@ -150,16 +152,16 @@ class shop {
         if (tag != null) { villager.scoreboardTags.add(tag) }
 
         val maxHPAttribute = villager.getAttribute(Attribute.GENERIC_MAX_HEALTH)
-        maxHPAttribute?.baseValue = Initial_HP
-        villager.health = Initial_HP
-        villager.customName = "${ChatColor.RED}${villager.health}HP/${Initial_HP}HP" // カスタムネームの表示を更新
+        maxHPAttribute?.baseValue = InitialHP
+        villager.health = InitialHP
+        villager.customName = "${ChatColor.RED}${villager.health}HP/${InitialHP}HP" // カスタムネームの表示を更新
 
         // アーマースタンドを召喚
         val armorStandLocation = location.clone()
         armorStandLocation.add(0.0, 1.3, 0.0)
-        ArmorStand().summon(armorStandLocation, "${ChatColor.GOLD}攻防戦ショップ")
+        com.github.Ringoame196.Entity.ArmorStand().summon(armorStandLocation, "${ChatColor.GOLD}攻防戦ショップ")
     }
-    fun delete_name(location: Location) {
+    fun deletename(location: Location) {
         val world = location.world
         val nearbyEntities = world!!.getNearbyEntities(location, 0.0, 2.0, 0.0)
         for (armorStand in nearbyEntities.filterIsInstance<ArmorStand>()) {
@@ -167,19 +169,19 @@ class shop {
             return
         }
     }
-    fun release(player: Player, team_name: String, item_name: String) {
-        val teamData = Data.DataManager.teamDataMap[team_name]
+    fun release(player: Player, teamname: String, itemname: String) {
+        val teamData = Data.DataManager.teamDataMap[teamname]
         if (teamData?.opening == null) {
             PlayerSend().errormessage("${ChatColor.RED}鉱石を破壊してお金をゲットしてください", player)
             point().add(player, 30)
         } else {
             teamData.opening = true
             shop().GUI(player)
-            PlayerSend().TeamGiveEffect(player, item_name, null, null, 0, 0)
+            PlayerSend().TeamGiveEffect(player, itemname, null, null, 0, 0)
         }
     }
-    fun TeamMaxHPadd(team_name: String, player: Player, item_name: String, add: Int) {
-        val entity = Data.DataManager.teamDataMap[team_name]?.entities?.lastOrNull() as? LivingEntity ?: return
+    fun TeamMaxHPadd(teamname: String, player: Player, itemname: String, add: Int) {
+        val entity = Data.DataManager.teamDataMap[teamname]?.entities?.lastOrNull() as? LivingEntity ?: return
         val maxHPAttribute = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH) ?: return
         // 現在の最大HPを取得
         val currentMaxHP = maxHPAttribute.baseValue + add
@@ -188,6 +190,11 @@ class shop {
         // 村人の名前を更新（HP表示を変更する場合）
         shop().name(entity as Villager, GET().HP(entity).toString(), currentMaxHP.toString())
         GUI().villagerlevelup(player.openInventory.topInventory, player)
-        PlayerSend().TeamGiveEffect(player, item_name, null, null, 0, 0)
+        PlayerSend().TeamGiveEffect(player, itemname, null, null, 0, 0)
+    }
+    fun effect(player: Player, itemName: String, potion: PotionEffectType, time: Int, level: Int) {
+        val entity = Data.DataManager.teamDataMap[GET().TeamName(player)]?.entities?.lastOrNull() as? LivingEntity ?: return
+        entity.addPotionEffect(PotionEffect(potion, time * 20, level - 1))
+        PlayerSend().TeamGiveEffect(player, itemName, null, null, 0, 0)
     }
 }
